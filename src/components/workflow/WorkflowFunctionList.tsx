@@ -13,11 +13,14 @@ import type {
 } from "@/gen/sapphillon/v1/plugin_pb";
 import { PermissionLevel } from "@/gen/sapphillon/v1/permission_pb";
 import {
+    LuAppWindow,
     LuDatabase,
+    LuFileSpreadsheet,
     LuFileText,
     LuGlobe,
     LuMail,
     LuMessageSquare,
+    LuPlus,
     LuShield,
     LuTerminal,
     LuTriangleAlert,
@@ -36,27 +39,57 @@ interface WorkflowFunctionListProps {
  * 関数IDからアイコンを取得
  */
 const getFunctionIcon = (functionId: string, size = 14) => {
-    const id = functionId.toLowerCase();
-    if (id.includes("email") || id.includes("mail")) {
+    // 関数名の最後の部分を取得 (e.g., "app.sapphillon.core.excel.createWorkbook" -> "createworkbook")
+    const parts = functionId.split(".");
+    const funcName = (parts[parts.length - 1] || functionId).toLowerCase();
+
+    // 具体的なアクションを先にチェック
+    if (funcName.includes("read")) {
+        return <LuFileText size={size} />;
+    }
+    if (funcName.includes("write")) {
+        return <LuFileText size={size} />;
+    }
+    if (
+        funcName.includes("create") || funcName.includes("add") ||
+        funcName.includes("new")
+    ) {
+        return <LuPlus size={size} />;
+    }
+    if (funcName.includes("open") || funcName.includes("launch")) {
+        return <LuAppWindow size={size} />;
+    }
+    if (
+        funcName.includes("get") || funcName.includes("list") ||
+        funcName.includes("fetch")
+    ) {
+        return <LuDatabase size={size} />;
+    }
+    if (funcName.includes("email") || funcName.includes("mail")) {
         return <LuMail size={size} />;
     }
     if (
-        id.includes("slack") || id.includes("message") || id.includes("notify")
+        funcName.includes("slack") || funcName.includes("message") ||
+        funcName.includes("notify")
     ) {
         return <LuMessageSquare size={size} />;
     }
-    if (id.includes("file") || id.includes("read") || id.includes("write")) {
-        return <LuFileText size={size} />;
-    }
-    if (id.includes("fetch") || id.includes("http") || id.includes("request")) {
-        return <LuGlobe size={size} />;
-    }
-    if (id.includes("query") || id.includes("database") || id.includes("sql")) {
-        return <LuDatabase size={size} />;
-    }
-    if (id.includes("exec") || id.includes("shell") || id.includes("command")) {
+    if (
+        funcName.includes("exec") || funcName.includes("shell") ||
+        funcName.includes("command")
+    ) {
         return <LuTerminal size={size} />;
     }
+    if (funcName.includes("http") || funcName.includes("request")) {
+        return <LuGlobe size={size} />;
+    }
+
+    // パッケージ名でフォールバック
+    const id = functionId.toLowerCase();
+    if (id.includes("excel") || id.includes("spreadsheet")) {
+        return <LuFileSpreadsheet size={size} />;
+    }
+
     return <LuZap size={size} />;
 };
 
