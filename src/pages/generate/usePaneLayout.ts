@@ -7,7 +7,7 @@ export const MIN_RIGHT = 240; // モバイル・タブレット対応で最小�
 export const MIN_BOTTOM = 140;
 export const GUTTER = 6;
 const DEFAULT_RIGHT = 320;
-const DEFAULT_BOTTOM = 200;
+const DEFAULT_BOTTOM = 280;
 const KEY_STEP = 16;
 const KEY_FINE_STEP = 4;
 

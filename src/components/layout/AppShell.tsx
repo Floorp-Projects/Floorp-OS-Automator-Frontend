@@ -17,7 +17,7 @@ import { SideNav } from "@/components/nav/SideNav";
 import { KeyboardShortcutsDialog } from "@/components/ui/KeyboardShortcutsDialog";
 import { MemoryRouter, useInRouterContext } from "react-router-dom";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcut";
-import { GLOBAL_SHORTCUTS, createShortcut } from "@/lib/keyboard-shortcuts";
+import { createShortcut, GLOBAL_SHORTCUTS } from "@/lib/keyboard-shortcuts";
 
 /**
  * AppShellコンポーネントのProps
@@ -156,7 +156,7 @@ export function AppShell({ children }: AppShellProps) {
             <OmniBar isOpen={omniOpen} onClose={() => setOmniOpen(false)} />
           </MemoryRouter>
         )}
-      
+
       {/* キーボードショートカット一覧ダイアログ */}
       <KeyboardShortcutsDialog
         open={shortcutsDialogOpen}

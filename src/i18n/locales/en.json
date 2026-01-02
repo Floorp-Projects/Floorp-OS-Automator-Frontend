@@ -38,6 +38,7 @@
     "subtitle": "Floorp OS safely executes commands like you would and reports the results.",
     "placeholder": "Example: Download the latest report and email it to the team",
     "sendHint": "Press ⌘ + Enter to send",
+    "promptLabel": "Give instructions to AI",
     "searchPlaceholder": "Search workflows...",
     "emptyStateTitle": "No workflows yet",
     "emptyStateDescription": "Create a new workflow to get started with automation",
@@ -176,7 +177,9 @@
   "generate": {
     "workflow": "Workflow",
     "workflowSteps": "Workflow Steps",
+    "workflowAndRun": "Workflow & Run",
     "expandWorkflow": "Expand workflow",
+    "noFunctionsGuide": "Functions and required permissions will be displayed here",
     "close": "Close",
     "prompt": "Prompt",
     "characters": "characters",
@@ -193,6 +196,7 @@
   "run": {
     "title": "Run",
     "running": "Running",
+    "runStatus": "Run Status",
     "completed": "Completed",
     "waiting": "Waiting",
     "notExecuted": "Workflow has not been executed",

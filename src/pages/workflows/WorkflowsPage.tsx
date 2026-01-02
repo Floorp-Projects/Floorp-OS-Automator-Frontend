@@ -26,6 +26,7 @@ import {
     LuCopy,
     LuEllipsisVertical,
     LuFileText,
+    LuPlay,
     LuPlus,
     LuRefreshCw,
     LuSearch,
@@ -170,6 +171,7 @@ function WorkflowRow({
             </Table.Cell>
             <Table.Cell onClick={(e) => e.stopPropagation()}>
                 <HStack gap={1.5}>
+                    {/* Desktop: Show Run button */}
                     <Button
                         size="sm"
                         variant="outline"
@@ -186,6 +188,7 @@ function WorkflowRow({
                                 borderColor: "floorp.700",
                             },
                         }}
+                        display={{ base: "none", md: "flex" }}
                     >
                         {t("workflows.run")}
                     </Button>
@@ -203,6 +206,18 @@ function WorkflowRow({
                         <Portal>
                             <MenuPositioner>
                                 <MenuContent>
+                                    {/* Mobile: Show Run in menu */}
+                                    <MenuItem
+                                        value="run"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            onRun(workflow.id);
+                                        }}
+                                        display={{ base: "flex", md: "none" }}
+                                    >
+                                        <LuPlay />
+                                        {t("workflows.run")}
+                                    </MenuItem>
                                     <MenuItem
                                         value="clone"
                                         onClick={(e) => {

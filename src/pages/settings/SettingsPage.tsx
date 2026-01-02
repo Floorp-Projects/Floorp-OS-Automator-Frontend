@@ -9,8 +9,12 @@ export function SettingsPage() {
         <Box h="full" overflow="auto">
             <Tabs.Root defaultValue="providers" variant="enclosed">
                 <Tabs.List>
-                    <Tabs.Trigger value="providers">{t("settings.providers")}</Tabs.Trigger>
-                    <Tabs.Trigger value="models">{t("settings.models")}</Tabs.Trigger>
+                    <Tabs.Trigger value="providers">
+                        {t("settings.providers")}
+                    </Tabs.Trigger>
+                    <Tabs.Trigger value="models">
+                        {t("settings.models")}
+                    </Tabs.Trigger>
                 </Tabs.List>
 
                 <Tabs.Content value="providers">

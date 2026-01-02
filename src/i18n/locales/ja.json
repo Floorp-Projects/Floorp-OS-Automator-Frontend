@@ -35,6 +35,7 @@
         "subtitle": "Floorp OSが、命令をあなたのように安全に実行し、結果を報告します。",
         "placeholder": "例: 最新のレポートをダウンロードして、チームにメールで送信する",
         "sendHint": "⌘ + Enter で送信",
+        "promptLabel": "AI に指示を出す",
         "searchPlaceholder": "ワークフローを検索...",
         "emptyStateTitle": "ワークフローがありません",
         "emptyStateDescription": "新しいワークフローを作成して、自動化を始めましょう",
@@ -173,7 +174,9 @@
     "generate": {
         "workflow": "ワークフロー",
         "workflowSteps": "ワークフローの権限とアクセス",
+        "workflowAndRun": "ワークフロー・実行",
         "expandWorkflow": "ワークフローを展開",
+        "noFunctionsGuide": "ここに実行予定の関数と必要な権限が表示されます",
         "close": "閉じる",
         "prompt": "プロンプト",
         "characters": "文字",
@@ -190,6 +193,7 @@
     "run": {
         "title": "実行",
         "running": "実行中",
+        "runStatus": "実行ステータス",
         "completed": "完了",
         "waiting": "待機中",
         "notExecuted": "ワークフローを実行していません",

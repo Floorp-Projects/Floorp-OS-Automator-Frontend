@@ -98,7 +98,7 @@ export function PromptPanel({
   return (
     <>
       <VStack align="stretch" gap={2}>
-        <HStack gap={2} flexWrap="wrap" minH="40px" alignItems="center">
+        <HStack gap={2} flexWrap="wrap" alignItems="center">
           <Text fontWeight="medium" fontSize={{ base: "sm", md: "md" }}>
             {t("generate.prompt")}
           </Text>
@@ -109,33 +109,91 @@ export function PromptPanel({
           )}
           <Spacer minW={2} />
 
-          {/* アクションボタン群 */}
-          <HStack gap={1.5} flexWrap="wrap" alignItems="center">
-            {/* テンプレートボタン */}
+          {/* 生成・停止ボタンのみ */}
+          <HStack gap={1.5} alignItems="center">
+            {/* 生成ボタン */}
             <Button
               size="sm"
-              variant="ghost"
-              onClick={() => setTemplatesDialogOpen(true)}
+              colorPalette="floorp"
+              onClick={handleStart}
+              disabled={!prompt.trim() || streaming}
               minH={{ base: "36px", md: "auto" }}
               flexShrink={0}
             >
-              <LuFileText size={14} />
-              <Text fontSize={{ base: "xs", sm: "sm" }}>{t("generate.template")}</Text>
+              {streaming
+                ? (
+                  <HStack gap={1}>
+                    <Spinner size="xs" />
+                    <Text fontSize={{ base: "xs", sm: "sm" }}>
+                      {t("generate.generating")}
+                    </Text>
+                  </HStack>
+                )
+                : (
+                  <>
+                    <LuSparkles size={14} />
+                    <Text fontSize={{ base: "xs", sm: "sm" }}>
+                      {t("common.generate")}
+                    </Text>
+                  </>
+                )}
+            </Button>
+
+            {/* 停止ボタン */}
+            <Button
+              size="sm"
+              variant="outline"
+              colorPalette="red"
+              onClick={onStop}
+              disabled={!streaming}
+              minH={{ base: "36px", md: "auto" }}
+              flexShrink={0}
+            >
+              <LuSquare size={14} />
+              <Text fontSize={{ base: "xs", sm: "sm" }}>
+                {t("generate.stop")}
+              </Text>
+            </Button>
+          </HStack>
+        </HStack>
+
+        <Textarea
+          rows={2}
+          resize="none"
+          placeholder={t("home.placeholder")}
+          value={prompt}
+          onChange={(e) => onChange(e.target.value)}
+          onKeyDown={handleKeyDown}
+          fontSize={{ base: "sm", md: "md" }}
+          minH={{ base: "60px", md: "100px" }}
+          css={{
+            "@media (min-width: 1024px)": {
+              minHeight: "100px",
+            },
+          }}
+        />
+
+        {/* テンプレート・履歴・クリアボタン + ショートカットヒント */}
+        <HStack justify="space-between" gap={2} flexWrap="wrap">
+          <HStack gap={1} flexWrap="wrap">
+            {/* テンプレートボタン */}
+            <Button
+              size="xs"
+              variant="ghost"
+              onClick={() => setTemplatesDialogOpen(true)}
+            >
+              <LuFileText size={12} />
+              <Text fontSize="xs">{t("generate.template")}</Text>
             </Button>
 
             {/* 履歴ボタン（メニュー付き） */}
-            <MenuRoot positioning={{ placement: "bottom-end" }}>
+            <MenuRoot positioning={{ placement: "top-end" }}>
               <MenuTrigger asChild>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  minH={{ base: "36px", md: "auto" }}
-                  flexShrink={0}
-                >
-                  <LuClock size={14} />
-                  <Text fontSize={{ base: "xs", sm: "sm" }}>{t("generate.history")}</Text>
+                <Button size="xs" variant="ghost">
+                  <LuClock size={12} />
+                  <Text fontSize="xs">{t("generate.history")}</Text>
                   {history.length > 0 && (
-                    <Badge ml={1} size="xs" colorPalette="blue">
+                    <Badge ml={0.5} size="xs" colorPalette="blue">
                       {history.length}
                     </Badge>
                   )}
@@ -151,7 +209,8 @@ export function PromptPanel({
                             <MenuItem
                               key={item.id}
                               value={item.id}
-                              onClick={() => handleSelectHistoryPrompt(item.prompt)}
+                              onClick={() =>
+                                handleSelectHistoryPrompt(item.prompt)}
                               fontSize="xs"
                               css={{
                                 maxWidth: "300px",
@@ -183,89 +242,24 @@ export function PromptPanel({
 
             {/* クリアボタン */}
             <Button
-              size="sm"
+              size="xs"
               variant="ghost"
               onClick={() => onChange("")}
               disabled={streaming || !prompt}
-              minH={{ base: "36px", md: "auto" }}
-              flexShrink={0}
             >
-              <LuEraser size={14} />
-              <Text fontSize={{ base: "xs", sm: "sm" }}>{t("generate.clear")}</Text>
-            </Button>
-
-            {/* 生成ボタン */}
-            <Button
-              size="sm"
-              colorPalette="floorp"
-              onClick={handleStart}
-              disabled={!prompt.trim() || streaming}
-              minH={{ base: "36px", md: "auto" }}
-              flexShrink={0}
-            >
-              {streaming
-                ? (
-                  <HStack gap={1}>
-                    <Spinner size="xs" />
-                    <Text fontSize={{ base: "xs", sm: "sm" }}>{t("generate.generating")}</Text>
-                  </HStack>
-                )
-                : (
-                  <>
-                    <LuSparkles size={14} />
-                    <Text fontSize={{ base: "xs", sm: "sm" }}>{t("common.generate")}</Text>
-                  </>
-                )}
-            </Button>
-
-            {/* 停止ボタン */}
-            <Button
-              size="sm"
-              variant="outline"
-              colorPalette="red"
-              onClick={onStop}
-              disabled={!streaming}
-              minH={{ base: "36px", md: "auto" }}
-              flexShrink={0}
-            >
-              <LuSquare size={14} />
-              <Text fontSize={{ base: "xs", sm: "sm" }}>{t("generate.stop")}</Text>
+              <LuEraser size={12} />
+              <Text fontSize="xs">{t("generate.clear")}</Text>
             </Button>
           </HStack>
-        </HStack>
 
-        <Textarea
-          rows={4}
-          resize="vertical"
-          placeholder={t("home.placeholder")}
-          value={prompt}
-          onChange={(e) => onChange(e.target.value)}
-          onKeyDown={handleKeyDown}
-          fontSize={{ base: "sm", md: "md" }}
-        />
-
-        <HStack justify="space-between" gap={2} flexWrap="wrap">
-          <Text fontSize="xs" color="fg.muted">
+          {/* ショートカットヒント（デスクトップのみ） */}
+          <Text
+            fontSize="xs"
+            color="fg.muted"
+            display={{ base: "none", lg: "block" }}
+          >
             {t("generate.executeHint")}
           </Text>
-          <HStack gap={2} fontSize="xs" color="fg.muted">
-            <Button
-              size="xs"
-              variant="ghost"
-              onClick={() => setTemplatesDialogOpen(true)}
-            >
-              {t("generate.selectFromTemplate")}
-            </Button>
-            {history.length > 0 && (
-              <Button
-                size="xs"
-                variant="ghost"
-                onClick={() => setHistoryDialogOpen(true)}
-              >
-                {t("generate.selectFromHistory")}
-              </Button>
-            )}
-          </HStack>
         </HStack>
       </VStack>
 

@@ -14,6 +14,7 @@ import {
   Textarea,
   VStack,
 } from "@chakra-ui/react";
+import { Tooltip } from "@/components/ui/tooltip";
 import { useNavigate } from "react-router-dom";
 import {
   LuClock,
@@ -109,18 +110,23 @@ function WorkflowCard({ workflow }: { workflow: Workflow }) {
         <VStack align="stretch" gap={3}>
           <HStack justify="space-between" align="start">
             <VStack align="start" gap={1} flex="1">
-              <Text
-                fontWeight="semibold"
-                fontSize="md"
-                css={{
-                  display: "-webkit-box",
-                  WebkitLineClamp: 1,
-                  WebkitBoxOrient: "vertical",
-                  overflow: "hidden",
-                }}
+              <Tooltip
+                content={workflow.displayName || t("common.untitledWorkflow")}
+                openDelay={500}
               >
-                {workflow.displayName || t("common.untitledWorkflow")}
-              </Text>
+                <Text
+                  fontWeight="semibold"
+                  fontSize="md"
+                  css={{
+                    display: "-webkit-box",
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: "vertical",
+                    overflow: "hidden",
+                  }}
+                >
+                  {workflow.displayName || t("common.untitledWorkflow")}
+                </Text>
+              </Tooltip>
               {workflow.description && (
                 <Text
                   fontSize="sm"
@@ -534,6 +540,13 @@ export function HomePage() {
           bg="bg"
           shadow="sm"
         >
+          {/* Prompt label */}
+          <HStack mb={2} color="fg.muted" gap={1.5}>
+            <LuSparkles size={14} />
+            <Text fontSize="sm" fontWeight="medium">
+              {t("home.promptLabel")}
+            </Text>
+          </HStack>
           <HStack gap={2} align="flex-end">
             <Textarea
               ref={textareaRef}

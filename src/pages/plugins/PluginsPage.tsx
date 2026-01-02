@@ -148,11 +148,9 @@ export function PluginsPage() {
             <EmptyState
               icon={<LuPackage size={40} />}
               title={t("plugins.emptyTitle")}
-              description={
-                searchQuery
-                  ? t("pluginsPage.noSearchResults")
-                  : t("plugins.emptyDescription")
-              }
+              description={searchQuery
+                ? t("pluginsPage.noSearchResults")
+                : t("plugins.emptyDescription")}
             />
           )
           : (
@@ -301,4 +299,3 @@ function PluginCard({
 }
 
 export default PluginsPage;
-
