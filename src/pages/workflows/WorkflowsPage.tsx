@@ -37,6 +37,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useWorkflowsList } from "./useWorkflowsList";
 import { WorkflowCloneDialog } from "./WorkflowCloneDialog";
+import { useWorkflowRunState } from "@/contexts/WorkflowRunContext";
 import type { Workflow } from "@/gen/sapphillon/v1/workflow_pb";
 import {
     OrderByClauseSchema,
@@ -63,15 +64,19 @@ function WorkflowRow({
     onRun,
     onClone,
     onDelete,
+    activeWorkflowId,
 }: {
     workflow: Workflow;
     onRun: (id: string) => void;
     onClone: (workflow: Workflow) => void;
     onDelete?: (id: string) => void;
+    activeWorkflowId: string | null;
 }) {
     const { t } = useI18n();
     const latestResult = workflow.workflowResults
         ?.[workflow.workflowResults.length - 1];
+
+    const isRunning = activeWorkflowId === workflow.id;
 
     return (
         <Table.Row
@@ -178,8 +183,9 @@ function WorkflowRow({
                         colorPalette="floorp"
                         onClick={(e) => {
                             e.stopPropagation();
-                            onRun(workflow.id);
+                            if (!isRunning) onRun(workflow.id);
                         }}
+                        disabled={isRunning}
                         _hover={{
                             bg: "floorp.50",
                             borderColor: "floorp.300",
@@ -211,8 +217,9 @@ function WorkflowRow({
                                         value="run"
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            onRun(workflow.id);
+                                            if (!isRunning) onRun(workflow.id);
                                         }}
+                                        disabled={isRunning}
                                         display={{ base: "flex", md: "none" }}
                                     >
                                         <LuPlay />
@@ -263,6 +270,8 @@ export function WorkflowsPage() {
     >(
         null,
     );
+
+    const { activeWorkflowId } = useWorkflowRunState(); // Get active workflow ID
 
     const {
         workflows,
@@ -558,6 +567,7 @@ export function WorkflowsPage() {
                                                         )}
                                                     onClone={handleClone}
                                                     onDelete={handleDelete}
+                                                    activeWorkflowId={activeWorkflowId}
                                                 />
                                             ))}
                                         </Table.Body>

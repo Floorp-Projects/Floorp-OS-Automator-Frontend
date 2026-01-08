@@ -21,7 +21,7 @@ import type { GenerationEvent } from "@/components/console/utils";
 import { EmptyState } from "@/components/ui/empty-state";
 import { useWorkflow } from "./useWorkflow";
 import { useWorkflowRun } from "./useWorkflowRun";
-import type { RunEvent } from "./useWorkflowRun";
+import type { RunEvent } from "@/types/workflow";
 
 import { PermissionList } from "@/components/workflow/PermissionList";
 import { useI18n } from "@/hooks/useI18n";
