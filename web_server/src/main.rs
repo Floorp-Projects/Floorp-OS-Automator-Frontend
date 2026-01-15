@@ -1,4 +1,4 @@
-use actix_web::{App, HttpResponse, HttpServer, get, middleware::Logger};
+use actix_web::{App, HttpResponse, HttpServer, get, middleware::Logger, web};
 use actix_web_static_files::ResourceFiles;
 use log::{error, info};
 use std::env;
@@ -63,6 +63,7 @@ async fn main() -> std::io::Result<()> {
             .service(index)
             .service(index_html)
             .service(ResourceFiles::new("/", generated))
+            .default_service(web::route().to(serve_index))
     })
     .bind(&listen)
     {
