@@ -72,6 +72,10 @@ function PromptStep({
     }, [prompt]);
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
+        // IME変換中は無視
+        if (e.nativeEvent.isComposing) {
+            return;
+        }
         if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
             e.preventDefault();
             onSubmit();
@@ -490,6 +494,10 @@ function ConfirmStep({
                                 boxShadow: "0 0 0 1px var(--chakra-colors-floorp-500)",
                             }}
                             onKeyDown={(e) => {
+                                // IME変換中は無視
+                                if (e.nativeEvent.isComposing) {
+                                    return;
+                                }
                                 if (e.key === "Enter" && !e.shiftKey && refinePrompt.trim()) {
                                     e.preventDefault();
                                     onRefine(refinePrompt.trim());

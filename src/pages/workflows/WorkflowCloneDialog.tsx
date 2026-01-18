@@ -61,6 +61,10 @@ export function WorkflowCloneDialog({
 
   const handleKeyDown = React.useCallback(
     (e: React.KeyboardEvent) => {
+      // IME変換中は無視
+      if (e.nativeEvent.isComposing) {
+        return;
+      }
       if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && !cloning) {
         e.preventDefault();
         handleClone();

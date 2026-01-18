@@ -188,22 +188,31 @@ export function HomePage() {
   const { t } = useI18n();
   const navigate = useNavigate();
   const [prompt, setPrompt] = React.useState("");
-  const [searchQuery, setSearchQuery] = React.useState("");
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
 
   // ワークフロー一覧を取得
   const { workflows, loading, error, refetch } = useWorkflowsList();
 
-  // 検索フィルタリング
+  // 最新順にソート（updatedAtの降順）
+  const sortedWorkflows = React.useMemo(() => {
+    return [...workflows].sort((a, b) => {
+      const aTime = a.updatedAt?.seconds ?? a.createdAt?.seconds ?? BigInt(0);
+      const bTime = b.updatedAt?.seconds ?? b.createdAt?.seconds ?? BigInt(0);
+      // 降順（新しいものが先）
+      return Number(bTime - aTime);
+    });
+  }, [workflows]);
+
+  // プロンプト入力に基づいてフィルタリング
   const filteredWorkflows = React.useMemo(() => {
-    if (!searchQuery.trim()) return workflows;
-    const query = searchQuery.toLowerCase();
-    return workflows.filter((w) => {
+    if (!prompt.trim()) return sortedWorkflows;
+    const query = prompt.toLowerCase();
+    return sortedWorkflows.filter((w) => {
       const name = (w.displayName || "").toLowerCase();
       const desc = (w.description || "").toLowerCase();
       return name.includes(query) || desc.includes(query);
     });
-  }, [workflows, searchQuery]);
+  }, [sortedWorkflows, prompt]);
 
   const hasWorkflows = workflows.length > 0;
   const hasFilteredWorkflows = filteredWorkflows.length > 0;
@@ -390,45 +399,6 @@ export function HomePage() {
                 )}
               </HStack>
 
-              {/* Search bar */}
-              {hasWorkflows && (
-                <Box
-                  mb={4}
-                  flexShrink={0}
-                  maxW={{ base: "full", lg: "md", xl: "lg" }}
-                >
-                  <HStack
-                    gap={2}
-                    borderWidth="1px"
-                    rounded="md"
-                    px={3}
-                    py={2}
-                    bg="bg"
-                    _focusWithin={{ borderColor: "border.emphasized" }}
-                  >
-                    <LuSearch size={18} color="var(--chakra-colors-fg-muted)" />
-                    <Input
-                      placeholder={t("home.searchPlaceholder")}
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      borderWidth="0"
-                      px={0}
-                      flex="1"
-                    />
-                    {searchQuery && (
-                      <IconButton
-                        size="xs"
-                        variant="ghost"
-                        onClick={() => setSearchQuery("")}
-                        aria-label={t("common.clearSearch")}
-                      >
-                        <LuX />
-                      </IconButton>
-                    )}
-                  </HStack>
-                </Box>
-              )}
-
               <Box
                 flex="1"
                 minH={0}
@@ -474,7 +444,7 @@ export function HomePage() {
                       </Button>
                     </VStack>
                   )
-                  : !hasFilteredWorkflows && searchQuery
+                  : !hasFilteredWorkflows && prompt.trim()
                   ? (
                     <VStack
                       align="center"
@@ -488,7 +458,7 @@ export function HomePage() {
                         {t("common.noResults")}
                       </Text>
                       <Text fontSize="sm">
-                        {t("home.searchNoResults", { query: searchQuery })}
+                        {t("home.searchNoResults", { query: prompt })}
                       </Text>
                     </VStack>
                   )
@@ -554,6 +524,10 @@ export function HomePage() {
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               onKeyDown={(e) => {
+                // IME変換中は無視（日本語入力の確定Enterで送信しない）
+                if (e.nativeEvent.isComposing) {
+                  return;
+                }
                 // Cmd/Ctrl+Enter で送信（デスクトップ）
                 if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
                   e.preventDefault();

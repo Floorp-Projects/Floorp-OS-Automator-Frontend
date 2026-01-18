@@ -56,6 +56,10 @@ export function PromptPanel({
 
   const handleKeyDown = React.useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      // IME変換中は無視
+      if (e.nativeEvent.isComposing) {
+        return;
+      }
       if (
         (e.ctrlKey || e.metaKey) &&
         e.key === "Enter" &&
