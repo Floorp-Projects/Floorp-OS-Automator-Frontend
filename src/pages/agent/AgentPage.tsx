@@ -201,14 +201,12 @@ function GeneratingStep({
 function ConfirmStep({
     workflow,
     onConfirm,
-    onBack,
     onRefine,
     saving,
     refining,
 }: {
     workflow: ReturnType<typeof useAgentExecution>["generatedWorkflow"];
     onConfirm: () => void;
-    onBack: () => void;
     onRefine: (prompt: string) => void;
     saving: boolean;
     refining: boolean;
@@ -721,7 +719,6 @@ export function AgentPage() {
 
     const {
         currentStep,
-        setCurrentStep,
         generating,
         executing,
         events,
@@ -772,10 +769,6 @@ export function AgentPage() {
             setSaving(false);
         }
     }, [confirmAndSave, executeWorkflow]);
-
-    const handleBack = React.useCallback(() => {
-        setCurrentStep("prompt");
-    }, [setCurrentStep]);
 
     const handleViewWorkflow = React.useCallback(() => {
         if (savedWorkflowId) {
@@ -849,7 +842,6 @@ export function AgentPage() {
                     <ConfirmStep
                         workflow={generatedWorkflow}
                         onConfirm={handleConfirmAndRun}
-                        onBack={handleBack}
                         onRefine={(prompt) => refine(prompt)}
                         saving={saving || executing}
                         refining={refining}
