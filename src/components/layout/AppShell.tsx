@@ -135,7 +135,7 @@ export function AppShell({ children }: AppShellProps) {
         <Box
           id="main-content"
           flex="1"
-          p={{ base: 2, md: 4 }}
+          p={{ base: 0, md: 4 }}
           minH="0"
           minW="0"
           overflow="hidden"

@@ -210,7 +210,7 @@ export function HomePage() {
 
   const handleSubmit = React.useCallback(() => {
     if (prompt.trim()) {
-      navigate("/generate", { state: { prompt: prompt.trim() } });
+      navigate("/agent", { state: { prompt: prompt.trim(), autoStart: true } });
     }
   }, [prompt, navigate]);
 
@@ -298,11 +298,11 @@ export function HomePage() {
                 <Button
                   onClick={() => {
                     if (prompt.trim()) {
-                      navigate("/generate", {
-                        state: { prompt: prompt.trim() },
+                      navigate("/agent", {
+                        state: { prompt: prompt.trim(), autoStart: true },
                       });
                     } else {
-                      navigate("/generate");
+                      navigate("/agent");
                     }
                   }}
                   colorPalette="floorp"
