@@ -13,6 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { LuArrowLeft, LuArrowRight, LuCheck, LuX } from "react-icons/lu";
 import type { OnboardingTour } from "@/hooks/useOnboarding";
+import { useI18n } from "@/hooks/useI18n";
 
 interface OnboardingTourComponentProps {
   tour: OnboardingTour;
@@ -31,6 +32,7 @@ export function OnboardingTourComponent({
   onSkip,
   onComplete,
 }: OnboardingTourComponentProps) {
+  const { t } = useI18n();
   const step = tour.steps[currentStep];
   const isFirstStep = currentStep === 0;
   const isLastStep = currentStep === tour.steps.length - 1;
@@ -126,7 +128,7 @@ export function OnboardingTourComponent({
                   {tour.name}
                 </Text>
                 <IconButton
-                  aria-label="ツアーをスキップ"
+                  aria-label={t("onboarding.skipTour")}
                   variant="ghost"
                   size="sm"
                   onClick={onSkip}
@@ -142,7 +144,7 @@ export function OnboardingTourComponent({
                 <Box>
                   <HStack justify="space-between" mb={2}>
                     <Text fontSize="xs" color="fg.muted">
-                      ステップ {currentStep + 1} / {tour.steps.length}
+                      {t("onboarding.step", { current: currentStep + 1, total: tour.steps.length })}
                     </Text>
                     <Text fontSize="xs" color="fg.muted">
                       {Math.round(progress)}%
@@ -176,7 +178,7 @@ export function OnboardingTourComponent({
                   size="sm"
                 >
                   <LuArrowLeft />
-                  戻る
+                  {t("onboarding.back")}
                 </Button>
                 <Button
                   colorPalette="floorp"
@@ -187,12 +189,12 @@ export function OnboardingTourComponent({
                     ? (
                       <>
                         <LuCheck />
-                        完了
+                        {t("onboarding.complete")}
                       </>
                     )
                     : (
                       <>
-                        次へ
+                        {t("onboarding.next")}
                         <LuArrowRight />
                       </>
                     )}
@@ -262,10 +264,10 @@ export function OnboardingTourComponent({
             {/* Header */}
             <HStack justify="space-between">
               <Text fontSize="xs" color="fg.muted">
-                {tour.name} - ステップ {currentStep + 1} / {tour.steps.length}
+                {tour.name} - {t("onboarding.step", { current: currentStep + 1, total: tour.steps.length })}
               </Text>
               <IconButton
-                aria-label="ツアーをスキップ"
+                aria-label={t("onboarding.skipTour")}
                 variant="ghost"
                 size="xs"
                 onClick={onSkip}
@@ -300,7 +302,7 @@ export function OnboardingTourComponent({
                 size="xs"
               >
                 <LuArrowLeft size={12} />
-                戻る
+                {t("onboarding.back")}
               </Button>
               <Button
                 colorPalette="floorp"
@@ -311,12 +313,12 @@ export function OnboardingTourComponent({
                   ? (
                     <>
                       <LuCheck size={12} />
-                      完了
+                      {t("onboarding.complete")}
                     </>
                   )
                   : (
                     <>
-                      次へ
+                      {t("onboarding.next")}
                       <LuArrowRight size={12} />
                     </>
                   )}

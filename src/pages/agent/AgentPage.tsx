@@ -41,7 +41,7 @@ import {
 import { useAgentExecution } from "./useAgentExecution";
 import { PermissionList } from "@/components/workflow/PermissionList";
 import { WorkflowCanvas, WorkflowFunctionList } from "@/components/workflow";
-import { StreamConsole } from "@/components/console";
+import { TerminalConsole } from "@/components/console";
 import type { GenerationEvent } from "@/components/console/utils";
 import { useI18n } from "@/hooks/useI18n";
 import { PermissionLevel } from "@/gen/sapphillon/v1/permission_pb";
@@ -187,8 +187,8 @@ function GeneratingStep({
                             {t("agent.stop")}
                         </Button>
                     </HStack>
-                    <Box flex={1} minH={0} overflow="auto">
-                        <StreamConsole
+                    <Box flex={1} minH={0} overflow="hidden">
+                        <TerminalConsole
                             events={events as GenerationEvent[]}
                             streaming={true}
                         />
@@ -337,7 +337,6 @@ function ConfirmStep({
                             </Card.Body>
                         </Card.Root>
                     )}
-
                 </VStack>
 
                 {/* 右カラム：ワークフローステップ */}
@@ -426,16 +425,21 @@ function ConfirmStep({
                                 rounded="md"
                                 bg="red.50"
                                 borderWidth="1px"
-                                borderColor={riskAcknowledged ? "green.400" : "red.300"}
+                                borderColor={riskAcknowledged
+                                    ? "green.400"
+                                    : "red.300"}
                                 _dark={{
                                     bg: "red.950/50",
-                                    borderColor: riskAcknowledged ? "green.600" : "red.700",
+                                    borderColor: riskAcknowledged
+                                        ? "green.600"
+                                        : "red.700",
                                 }}
                                 flex={1}
                             >
                                 <Checkbox.Root
                                     checked={riskAcknowledged}
-                                    onCheckedChange={(e) => setRiskAcknowledged(!!e.checked)}
+                                    onCheckedChange={(e) =>
+                                        setRiskAcknowledged(!!e.checked)}
                                     colorPalette="green"
                                     size="sm"
                                 >
@@ -452,7 +456,9 @@ function ConfirmStep({
                             </HStack>
                         )}
                         <Button
-                            colorPalette={hasHighRisk && !riskAcknowledged ? "gray" : "floorp"}
+                            colorPalette={hasHighRisk && !riskAcknowledged
+                                ? "gray"
+                                : "floorp"}
                             onClick={onConfirm}
                             disabled={saving || !canConfirm}
                             size="md"
@@ -461,16 +467,18 @@ function ConfirmStep({
                             fontWeight="bold"
                             opacity={canConfirm ? 1 : 0.6}
                         >
-                            {saving ? (
-                                <>
-                                    <Spinner size="sm" />
-                                </>
-                            ) : (
-                                <>
-                                    <LuPlay size={14} />
-                                    {t("agent.confirmAndRun")}
-                                </>
-                            )}
+                            {saving
+                                ? (
+                                    <>
+                                        <Spinner size="sm" />
+                                    </>
+                                )
+                                : (
+                                    <>
+                                        <LuPlay size={14} />
+                                        {t("agent.confirmAndRun")}
+                                    </>
+                                )}
                         </Button>
                     </HStack>
 
@@ -491,14 +499,18 @@ function ConfirmStep({
                             fontSize="md"
                             _focus={{
                                 borderColor: "floorp.500",
-                                boxShadow: "0 0 0 1px var(--chakra-colors-floorp-500)",
+                                boxShadow:
+                                    "0 0 0 1px var(--chakra-colors-floorp-500)",
                             }}
                             onKeyDown={(e) => {
                                 // IME変換中は無視
                                 if (e.nativeEvent.isComposing) {
                                     return;
                                 }
-                                if (e.key === "Enter" && !e.shiftKey && refinePrompt.trim()) {
+                                if (
+                                    e.key === "Enter" && !e.shiftKey &&
+                                    refinePrompt.trim()
+                                ) {
                                     e.preventDefault();
                                     onRefine(refinePrompt.trim());
                                     setRefinePrompt("");
@@ -510,7 +522,8 @@ function ConfirmStep({
                             colorPalette="floorp"
                             variant="ghost"
                             size="md"
-                            disabled={!refinePrompt.trim() || saving || refining}
+                            disabled={!refinePrompt.trim() || saving ||
+                                refining}
                             onClick={() => {
                                 if (refinePrompt.trim()) {
                                     onRefine(refinePrompt.trim());
@@ -518,7 +531,9 @@ function ConfirmStep({
                                 }
                             }}
                         >
-                            {refining ? <Spinner size="md" /> : <LuSend size={18} />}
+                            {refining
+                                ? <Spinner size="md" />
+                                : <LuSend size={18} />}
                         </IconButton>
                     </HStack>
                 </VStack>
@@ -532,30 +547,73 @@ function ConfirmStep({
  */
 function ExecutingStep({
     events,
+    workflowName,
 }: {
     events: { t: number; kind: string; payload?: unknown }[];
+    workflowName?: string;
 }) {
     const { t } = useI18n();
 
     return (
-        <VStack gap={6} w="full" maxW="4xl" mx="auto" align="stretch" h="full">
-            <VStack gap={2} textAlign="center">
-                <Box position="relative">
-                    <Spinner size="xl" color="floorp.500" />
-                </Box>
-                <Heading size="lg">{t("agent.executingTitle")}</Heading>
-                <Text color="fg.muted" fontSize="sm">
-                    {t("agent.executingHint")}
-                </Text>
-            </VStack>
+        <VStack
+            gap={{ base: 2, md: 6 }}
+            w="full"
+            maxW="4xl"
+            mx="auto"
+            align="stretch"
+            h="full"
+        >
+            {/* モバイル: コンパクトな横並び / デスクトップ: 縦並び中央揃え */}
+            <HStack
+                gap={{ base: 3, md: 4 }}
+                justify={{ base: "flex-start", md: "center" }}
+                align="center"
+                py={{ base: 2, md: 4 }}
+                flexWrap="wrap"
+            >
+                <Spinner
+                    size={{ base: "md", md: "xl" }}
+                    color="floorp.500"
+                    flexShrink={0}
+                />
+                <VStack
+                    gap={0}
+                    align={{ base: "flex-start", md: "center" }}
+                    flex={1}
+                    minW={0}
+                >
+                    <Heading size={{ base: "md", md: "lg" }} lineHeight="short">
+                        {t("agent.executingTitle")}
+                    </Heading>
+                    {workflowName && (
+                        <Text
+                            fontWeight="medium"
+                            fontSize={{ base: "sm", md: "md" }}
+                            color="fg.muted"
+                            lineClamp={1}
+                        >
+                            {workflowName}
+                        </Text>
+                    )}
+                </VStack>
+            </HStack>
 
             <Card.Root flex={1} minH={0} overflow="hidden">
-                <Card.Body p={4} display="flex" flexDirection="column" h="full">
-                    <Text fontWeight="medium" mb={3}>
+                <Card.Body
+                    p={{ base: 2, md: 4 }}
+                    display="flex"
+                    flexDirection="column"
+                    h="full"
+                >
+                    <Text
+                        fontWeight="medium"
+                        mb={{ base: 2, md: 3 }}
+                        fontSize={{ base: "sm", md: "md" }}
+                    >
                         {t("agent.executionLog")}
                     </Text>
-                    <Box flex={1} minH={0} overflow="auto">
-                        <StreamConsole
+                    <Box flex={1} minH={0} overflow="hidden">
+                        <TerminalConsole
                             events={events as GenerationEvent[]}
                             streaming={true}
                         />
@@ -610,12 +668,11 @@ function CompletedStep({
 
                         <Box
                             maxH="300px"
-                            overflow="auto"
+                            overflow="hidden"
                             borderWidth="1px"
                             rounded="md"
-                            p={3}
                         >
-                            <StreamConsole
+                            <TerminalConsole
                                 events={events as GenerationEvent[]}
                                 streaming={false}
                             />
@@ -729,6 +786,7 @@ export function AgentPage() {
         currentStep,
         generating,
         executing,
+        saving,
         events,
         generatedWorkflow,
         error,
@@ -748,7 +806,8 @@ export function AgentPage() {
         return state?.prompt || "";
     });
 
-    const [saving, setSaving] = React.useState(false);
+    // 連打防止用の同期フラグ
+    const isRunningRef = React.useRef(false);
 
     // 初期プロンプトがある場合、自動的に生成を開始
     const hasStartedRef = React.useRef(false);
@@ -769,14 +828,25 @@ export function AgentPage() {
     }, [prompt, generate]);
 
     const handleConfirmAndRun = React.useCallback(async () => {
-        setSaving(true);
+        // 同期ガード: ref で即座にチェック（連打防止）
+        if (isRunningRef.current) return;
+        // 状態チェックも併用
+        if (saving || executing) return;
+
+        isRunningRef.current = true;
         try {
-            await confirmAndSave();
-            await executeWorkflow();
+            // 保存してIDを取得
+            const savedIds = await confirmAndSave();
+            if (!savedIds) {
+                // 保存失敗または既に保存中
+                return;
+            }
+            // 取得したIDを直接渡して実行
+            await executeWorkflow(savedIds);
         } finally {
-            setSaving(false);
+            isRunningRef.current = false;
         }
-    }, [confirmAndSave, executeWorkflow]);
+    }, [confirmAndSave, executeWorkflow, saving, executing]);
 
     const handleViewWorkflow = React.useCallback(() => {
         if (savedWorkflowId) {
@@ -857,7 +927,11 @@ export function AgentPage() {
                 )}
 
                 {currentStep === "executing" && (
-                    <ExecutingStep events={events} />
+                    <ExecutingStep
+                        events={events}
+                        workflowName={generatedWorkflow?.workflowDefinition
+                            ?.displayName}
+                    />
                 )}
 
                 {currentStep === "completed" && (

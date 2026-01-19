@@ -78,12 +78,12 @@
     },
     "nav": {
         "home": "ホーム",
-        "agent": "Agent",
+        "agent": "エージェント",
         "generate": "生成",
         "workflows": "ワークフロー",
         "plugins": "プラグイン",
         "settings": "設定",
-        "about": "About",
+        "about": "このアプリについて",
         "openMenu": "メニューを開く",
         "openOmniBar": "Omni Barを開く",
         "searchOrRun": "検索または実行…",
@@ -342,6 +342,9 @@
         "executionStart": "実行開始",
         "executionComplete": "実行完了",
         "generationComplete": "生成完了",
+        "saveStart": "ワークフローを保存中...",
+        "saveComplete": "ワークフローを保存しました",
+        "saving": "保存中...",
         "errorOccurred": "エラーが発生しました",
         "complete": "完了",
         "workflowDefinitionUpdated": "ワークフロー定義を更新しました",
@@ -420,7 +423,7 @@
         "resizeRunPanel": "実行パネルのサイズを変更"
     },
     "agent": {
-        "title": "Agent",
+        "title": "エージェント",
         "whatToDo": "何を実行しますか？",
         "promptHint": "自然言語でタスクを説明してください。AIがワークフローを生成し、実行します。",
         "placeholder": "例: 最新のレポートをダウンロードして、チームにメールで送信する",
@@ -471,5 +474,203 @@
         "refineHint": "ワークフローを修正したい場合は、指示を入力してください",
         "detailView": "詳細を表示",
         "compactView": "コンパクト"
+    },
+    "onboarding": {
+        "skipTour": "ツアーをスキップ",
+        "step": "ステップ {{current}} / {{total}}",
+        "back": "戻る",
+        "next": "次へ",
+        "complete": "完了",
+        "homeTour": {
+            "name": "ホームページツアー",
+            "welcome": {
+                "title": "Sapphillonへようこそ！",
+                "description": "AIを活用したワークフロー自動化プラットフォームです。このツアーでは、基本的な使い方をご紹介します。"
+            },
+            "navGenerate": {
+                "title": "ワークフローの生成",
+                "description": "「Generate」ページで、自然言語でワークフローを生成できます。"
+            },
+            "navWorkflows": {
+                "title": "ワークフローの管理",
+                "description": "「Workflows」ページで、作成したワークフローを確認・管理できます。"
+            },
+            "navSettings": {
+                "title": "設定",
+                "description": "「Settings」ページで、AIモデルやプロバイダーの設定を行えます。"
+            }
+        },
+        "generateTour": {
+            "name": "ワークフロー生成ツアー",
+            "welcome": {
+                "title": "ワークフローを生成しましょう",
+                "description": "このページでは、自然言語でワークフローを生成できます。"
+            },
+            "prompt": {
+                "title": "プロンプト入力",
+                "description": "ここにやりたいことを自然な言葉で入力してください。例：「最新のレポートをダウンロードして、チームにメールで送信する」"
+            },
+            "templates": {
+                "title": "テンプレート",
+                "description": "テンプレートボタンから、よく使うワークフローのサンプルを選べます。"
+            },
+            "history": {
+                "title": "履歴",
+                "description": "過去に使用したプロンプトを履歴から呼び出せます。"
+            },
+            "generate": {
+                "title": "生成",
+                "description": "Generateボタンをクリックするか、Ctrl/Cmd + Enterでワークフローを生成できます。"
+            },
+            "run": {
+                "title": "実行",
+                "description": "生成されたワークフローは、Runパネルから実行できます。"
+            }
+        },
+        "workflowsTour": {
+            "name": "ワークフロー管理ツアー",
+            "welcome": {
+                "title": "ワークフロー一覧",
+                "description": "作成したワークフローがここに表示されます。"
+            },
+            "search": {
+                "title": "検索",
+                "description": "ワークフロー名で検索できます。"
+            },
+            "newWorkflow": {
+                "title": "新しいワークフロー",
+                "description": "「New Workflow」ボタンから、新しいワークフローを作成できます。"
+            },
+            "actions": {
+                "title": "アクション",
+                "description": "各ワークフローには、表示、実行、複製、削除のアクションがあります。"
+            }
+        }
+    },
+    "promptTemplates": {
+        "reportDownloadEmail": {
+            "title": "レポートのダウンロードとメール送信",
+            "description": "最新のレポートをダウンロードしてチームにメール送信",
+            "prompt": "最新の月次レポートをダウンロードして、そのレポートをチーム全員にメールで送信してください。件名は「月次レポート - [現在の日付]」としてください。"
+        },
+        "fileBackup": {
+            "title": "ファイルのバックアップ",
+            "description": "指定フォルダのファイルをバックアップ先にコピー",
+            "prompt": "プロジェクトフォルダ内のすべてのドキュメントファイルを検索して、バックアップフォルダにコピーしてください。完了後、バックアップされたファイル数を報告してください。"
+        },
+        "scheduleMeeting": {
+            "title": "ミーティングのスケジュール",
+            "description": "カレンダーに会議を追加し、参加者に通知",
+            "prompt": "来週の火曜日10時に「週次レビュー会議」をスケジュールして、チームメンバー全員を招待してください。会議の議題には進捗確認と課題の共有を含めてください。"
+        },
+        "csvAnalysis": {
+            "title": "CSVデータの分析",
+            "description": "CSVファイルを読み込んで統計情報を出力",
+            "prompt": "sales_data.csvファイルを読み込んで、月別の売上合計、平均、最大値、最小値を計算してください。結果はわかりやすい表形式で出力してください。"
+        },
+        "jsonTransform": {
+            "title": "JSONデータの変換",
+            "description": "JSON形式のデータを別の形式に変換",
+            "prompt": "APIから取得したJSONデータを読み込んで、必要なフィールドのみを抽出し、新しいJSON形式に変換してください。変換後のデータをファイルに保存してください。"
+        },
+        "dataMerge": {
+            "title": "複数データソースの統合",
+            "description": "複数のデータファイルを1つに統合",
+            "prompt": "data1.csv、data2.csv、data3.csvの3つのファイルを読み込んで、共通のキー（ID列）で結合し、統合されたデータを merged_data.csv として保存してください。"
+        },
+        "dailyReport": {
+            "title": "日次レポートの作成と送信",
+            "description": "本日の作業内容をまとめてレポート送信",
+            "prompt": "本日の作業ログを確認して、完了したタスク、進行中のタスク、発生した問題をまとめた日次レポートを作成し、上司にメールで送信してください。"
+        },
+        "notificationSummary": {
+            "title": "通知の集約と要約",
+            "description": "複数の通知を1つのサマリーにまとめる",
+            "prompt": "過去24時間の通知をすべて確認して、重要度別に分類し、優先度の高いものから順に要約したサマリーを作成してください。"
+        },
+        "slackUpdate": {
+            "title": "Slackステータス更新",
+            "description": "作業状況に応じてSlackステータスを自動更新",
+            "prompt": "現在のカレンダーの予定を確認して、会議中の場合は「会議中」、作業中の場合は「集中作業中」とSlackのステータスを更新してください。"
+        },
+        "codeReview": {
+            "title": "コードレビューの準備",
+            "description": "変更されたファイルを確認してレビュー用の資料を作成",
+            "prompt": "Gitで変更されたファイルをすべてリストアップして、各ファイルの変更内容の要約を作成してください。レビュー用のMarkdownドキュメントとして出力してください。"
+        },
+        "testRun": {
+            "title": "テストの実行と結果通知",
+            "description": "テストスイートを実行して結果をチームに通知",
+            "prompt": "プロジェクトのすべてのテストを実行して、テスト結果（成功数、失敗数、失敗したテスト名）をまとめ、Slackの#testチャンネルに通知してください。"
+        },
+        "dependencyUpdate": {
+            "title": "依存関係の更新確認",
+            "description": "プロジェクトの依存関係に更新があるか確認",
+            "prompt": "package.jsonを確認して、更新可能なパッケージをリストアップしてください。セキュリティアップデートが含まれる場合は優先度を高くマークしてください。"
+        },
+        "webScraping": {
+            "title": "Webページからの情報収集",
+            "description": "指定したWebページから必要な情報を抽出",
+            "prompt": "指定されたWebページにアクセスして、最新のニュース記事のタイトル、URL、公開日を抽出し、CSV形式で保存してください。"
+        },
+        "imageResize": {
+            "title": "画像の一括リサイズ",
+            "description": "フォルダ内の画像を指定サイズにリサイズ",
+            "prompt": "imagesフォルダ内のすべての画像ファイルを800x600ピクセルにリサイズして、resizedフォルダに保存してください。元の画像は保持してください。"
+        },
+        "systemHealthCheck": {
+            "title": "システムヘルスチェック",
+            "description": "システムリソースの使用状況を確認",
+            "prompt": "CPU使用率、メモリ使用率、ディスク空き容量を確認して、いずれかが80%を超えている場合はアラートを送信してください。結果はログファイルにも記録してください。"
+        },
+        "tags": {
+            "email": "メール",
+            "report": "レポート",
+            "automation": "自動化",
+            "backup": "バックアップ",
+            "fileManagement": "ファイル管理",
+            "calendar": "カレンダー",
+            "meeting": "ミーティング",
+            "notification": "通知",
+            "csv": "CSV",
+            "dataAnalysis": "データ分析",
+            "statistics": "統計",
+            "json": "JSON",
+            "dataTransform": "データ変換",
+            "api": "API",
+            "dataIntegration": "データ統合",
+            "merge": "マージ",
+            "dailyWork": "日次作業",
+            "summary": "要約",
+            "priority": "優先度",
+            "slack": "Slack",
+            "status": "ステータス",
+            "git": "Git",
+            "codeReview": "コードレビュー",
+            "development": "開発",
+            "test": "テスト",
+            "cicd": "CI/CD",
+            "dependency": "依存関係",
+            "security": "セキュリティ",
+            "update": "更新",
+            "scraping": "スクレイピング",
+            "web": "Web",
+            "dataCollection": "データ収集",
+            "imageProcessing": "画像処理",
+            "resize": "リサイズ",
+            "batchProcessing": "バッチ処理",
+            "monitoring": "監視",
+            "system": "システム",
+            "alert": "アラート"
+        }
+    },
+    "colorMode": {
+        "toggle": "カラーモードを切り替え"
+    },
+    "pages": {
+        "fix": "修正",
+        "run": "実行",
+        "about": "このアプリについて",
+        "mockContent": "{{title}}ページのモックコンテンツです。"
     }
 }

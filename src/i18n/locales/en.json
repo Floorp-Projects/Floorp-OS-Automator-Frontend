@@ -345,6 +345,9 @@
     "executionStart": "Execution Start",
     "executionComplete": "Execution Complete",
     "generationComplete": "Generation Complete",
+    "saveStart": "Saving workflow...",
+    "saveComplete": "Workflow saved",
+    "saving": "Saving...",
     "errorOccurred": "An error occurred",
     "complete": "Complete",
     "workflowDefinitionUpdated": "Workflow definition updated",
@@ -474,5 +477,203 @@
     "refineHint": "Enter instructions to modify the workflow",
     "detailView": "Details",
     "compactView": "Compact"
+  },
+  "onboarding": {
+    "skipTour": "Skip tour",
+    "step": "Step {{current}} / {{total}}",
+    "back": "Back",
+    "next": "Next",
+    "complete": "Complete",
+    "homeTour": {
+      "name": "Home Page Tour",
+      "welcome": {
+        "title": "Welcome to Sapphillon!",
+        "description": "An AI-powered workflow automation platform. This tour will introduce you to the basics."
+      },
+      "navGenerate": {
+        "title": "Generate Workflows",
+        "description": "You can generate workflows from natural language on the \"Generate\" page."
+      },
+      "navWorkflows": {
+        "title": "Manage Workflows",
+        "description": "View and manage your created workflows on the \"Workflows\" page."
+      },
+      "navSettings": {
+        "title": "Settings",
+        "description": "Configure AI models and providers on the \"Settings\" page."
+      }
+    },
+    "generateTour": {
+      "name": "Workflow Generation Tour",
+      "welcome": {
+        "title": "Let's generate a workflow",
+        "description": "On this page, you can generate workflows from natural language."
+      },
+      "prompt": {
+        "title": "Prompt Input",
+        "description": "Enter what you want to do in natural language here. Example: \"Download the latest report and email it to the team\""
+      },
+      "templates": {
+        "title": "Templates",
+        "description": "You can select sample workflows from the template button."
+      },
+      "history": {
+        "title": "History",
+        "description": "You can recall previously used prompts from history."
+      },
+      "generate": {
+        "title": "Generate",
+        "description": "Click the Generate button or press Ctrl/Cmd + Enter to generate a workflow."
+      },
+      "run": {
+        "title": "Run",
+        "description": "You can run the generated workflow from the Run panel."
+      }
+    },
+    "workflowsTour": {
+      "name": "Workflow Management Tour",
+      "welcome": {
+        "title": "Workflow List",
+        "description": "Your created workflows are displayed here."
+      },
+      "search": {
+        "title": "Search",
+        "description": "You can search by workflow name."
+      },
+      "newWorkflow": {
+        "title": "New Workflow",
+        "description": "You can create a new workflow from the \"New Workflow\" button."
+      },
+      "actions": {
+        "title": "Actions",
+        "description": "Each workflow has actions for view, run, clone, and delete."
+      }
+    }
+  },
+  "promptTemplates": {
+    "reportDownloadEmail": {
+      "title": "Download and Email Report",
+      "description": "Download the latest report and email it to the team",
+      "prompt": "Download the latest monthly report and send it to all team members by email. Use the subject \"Monthly Report - [current date]\"."
+    },
+    "fileBackup": {
+      "title": "File Backup",
+      "description": "Copy files from a specified folder to a backup destination",
+      "prompt": "Search for all document files in the project folder and copy them to the backup folder. Report the number of files backed up when complete."
+    },
+    "scheduleMeeting": {
+      "title": "Schedule Meeting",
+      "description": "Add a meeting to the calendar and notify participants",
+      "prompt": "Schedule a \"Weekly Review Meeting\" for Tuesday at 10 AM next week and invite all team members. Include progress check and issue sharing in the agenda."
+    },
+    "csvAnalysis": {
+      "title": "CSV Data Analysis",
+      "description": "Read a CSV file and output statistical information",
+      "prompt": "Read the sales_data.csv file and calculate the monthly total, average, maximum, and minimum sales. Output the results in an easy-to-read table format."
+    },
+    "jsonTransform": {
+      "title": "JSON Data Transformation",
+      "description": "Transform JSON format data to another format",
+      "prompt": "Read JSON data retrieved from the API, extract only the required fields, and convert to a new JSON format. Save the converted data to a file."
+    },
+    "dataMerge": {
+      "title": "Merge Multiple Data Sources",
+      "description": "Merge multiple data files into one",
+      "prompt": "Read the three files data1.csv, data2.csv, and data3.csv, join them by the common key (ID column), and save the merged data as merged_data.csv."
+    },
+    "dailyReport": {
+      "title": "Create and Send Daily Report",
+      "description": "Summarize today's work and send a report",
+      "prompt": "Review today's work log, create a daily report summarizing completed tasks, tasks in progress, and issues that occurred, and send it to the manager by email."
+    },
+    "notificationSummary": {
+      "title": "Aggregate and Summarize Notifications",
+      "description": "Combine multiple notifications into one summary",
+      "prompt": "Review all notifications from the past 24 hours, classify them by importance, and create a summary in order of priority."
+    },
+    "slackUpdate": {
+      "title": "Slack Status Update",
+      "description": "Automatically update Slack status based on work status",
+      "prompt": "Check your current calendar schedule and update your Slack status to \"In a meeting\" if in a meeting, or \"Focused work\" if working."
+    },
+    "codeReview": {
+      "title": "Prepare Code Review",
+      "description": "Check changed files and create review materials",
+      "prompt": "List all files changed in Git and create a summary of the changes for each file. Output as a Markdown document for review."
+    },
+    "testRun": {
+      "title": "Run Tests and Notify Results",
+      "description": "Run the test suite and notify the team of results",
+      "prompt": "Run all tests for the project, summarize the test results (number of successes, failures, and failed test names), and notify the #test channel on Slack."
+    },
+    "dependencyUpdate": {
+      "title": "Check Dependency Updates",
+      "description": "Check if there are updates to project dependencies",
+      "prompt": "Check package.json and list packages that can be updated. Mark security updates as high priority."
+    },
+    "webScraping": {
+      "title": "Collect Information from Web Pages",
+      "description": "Extract required information from specified web pages",
+      "prompt": "Access the specified web page and extract the title, URL, and publication date of the latest news articles, and save them in CSV format."
+    },
+    "imageResize": {
+      "title": "Batch Resize Images",
+      "description": "Resize images in a folder to a specified size",
+      "prompt": "Resize all image files in the images folder to 800x600 pixels and save them in the resized folder. Keep the original images."
+    },
+    "systemHealthCheck": {
+      "title": "System Health Check",
+      "description": "Check system resource usage",
+      "prompt": "Check CPU usage, memory usage, and disk free space, and send an alert if any exceeds 80%. Also record the results in a log file."
+    },
+    "tags": {
+      "email": "Email",
+      "report": "Report",
+      "automation": "Automation",
+      "backup": "Backup",
+      "fileManagement": "File Management",
+      "calendar": "Calendar",
+      "meeting": "Meeting",
+      "notification": "Notification",
+      "csv": "CSV",
+      "dataAnalysis": "Data Analysis",
+      "statistics": "Statistics",
+      "json": "JSON",
+      "dataTransform": "Data Transformation",
+      "api": "API",
+      "dataIntegration": "Data Integration",
+      "merge": "Merge",
+      "dailyWork": "Daily Work",
+      "summary": "Summary",
+      "priority": "Priority",
+      "slack": "Slack",
+      "status": "Status",
+      "git": "Git",
+      "codeReview": "Code Review",
+      "development": "Development",
+      "test": "Test",
+      "cicd": "CI/CD",
+      "dependency": "Dependency",
+      "security": "Security",
+      "update": "Update",
+      "scraping": "Scraping",
+      "web": "Web",
+      "dataCollection": "Data Collection",
+      "imageProcessing": "Image Processing",
+      "resize": "Resize",
+      "batchProcessing": "Batch Processing",
+      "monitoring": "Monitoring",
+      "system": "System",
+      "alert": "Alert"
+    }
+  },
+  "colorMode": {
+    "toggle": "Toggle color mode"
+  },
+  "pages": {
+    "fix": "Fix",
+    "run": "Run",
+    "about": "About",
+    "mockContent": "Mock content for {{title}} page."
   }
 }

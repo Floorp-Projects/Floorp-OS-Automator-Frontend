@@ -50,6 +50,8 @@ export interface UseAgentExecutionReturn {
   generating: boolean;
   /** 現在実行中かどうか */
   executing: boolean;
+  /** 現在保存中かどうか */
+  saving: boolean;
   /** 発生したイベントのリスト */
   events: AgentEvent[];
   /** 最後に受信したワークフロー定義 */
@@ -68,10 +70,13 @@ export interface UseAgentExecutionReturn {
   refining: boolean;
   /** 生成を停止 */
   stopGeneration: () => void;
-  /** 権限を確認してワークフローを保存 */
-  confirmAndSave: () => Promise<void>;
-  /** 保存されたワークフローを実行 */
-  executeWorkflow: () => Promise<void>;
+  /** 権限を確認してワークフローを保存、保存したIDを返す */
+  confirmAndSave: () => Promise<{ workflowId: string; codeId: string } | null>;
+  /** 保存されたワークフローを実行、オプションでIDを渡せる */
+  executeWorkflow: (ids?: {
+    workflowId: string;
+    codeId: string;
+  }) => Promise<void>;
   /** すべてをリセット */
   reset: () => void;
   /** イベントログをクリア */
@@ -91,16 +96,19 @@ export function useAgentExecution(): UseAgentExecutionReturn {
   const [generatedWorkflow, setGeneratedWorkflow] =
     React.useState<GenerateWorkflowResponse | null>(null);
   const [runResult, setRunResult] = React.useState<RunWorkflowResponse | null>(
-    null
+    null,
   );
   const [error, setError] = React.useState<string | null>(null);
   const [savedWorkflowId, setSavedWorkflowId] = React.useState<string | null>(
-    null
+    null,
   );
   const [savedCodeId, setSavedCodeId] = React.useState<string | null>(null);
   const [refining, setRefining] = React.useState(false);
   const [originalPrompt, setOriginalPrompt] = React.useState<string>("");
   const abortRef = React.useRef<AbortController | null>(null);
+  // 連打防止用の同期フラグ（useStateは非同期なのでレースコンディションが発生する）
+  const savingRef = React.useRef(false);
+  const executingRef = React.useRef(false);
 
   const append = React.useCallback((e: Omit<AgentEvent, "t">) => {
     setEvents((prev) => [...prev, { t: Date.now(), ...e }]);
@@ -129,7 +137,7 @@ export function useAgentExecution(): UseAgentExecutionReturn {
       try {
         for await (const msg of clients.workflow.generateWorkflow(
           { prompt },
-          { signal: ac.signal }
+          { signal: ac.signal },
         )) {
           setGeneratedWorkflow(msg);
           append({ kind: "message", payload: msg });
@@ -149,7 +157,7 @@ export function useAgentExecution(): UseAgentExecutionReturn {
         abortRef.current = null;
       }
     },
-    [append, generating]
+    [append, generating],
   );
 
   /**
@@ -172,7 +180,7 @@ export function useAgentExecution(): UseAgentExecutionReturn {
       try {
         for await (const msg of clients.workflow.generateWorkflow(
           { prompt: combinedPrompt },
-          { signal: ac.signal }
+          { signal: ac.signal },
         )) {
           setGeneratedWorkflow(msg);
           append({ kind: "message", payload: msg });
@@ -192,7 +200,7 @@ export function useAgentExecution(): UseAgentExecutionReturn {
         abortRef.current = null;
       }
     },
-    [append, refining, generating, originalPrompt]
+    [append, refining, generating, originalPrompt],
   );
 
   /**
@@ -205,12 +213,23 @@ export function useAgentExecution(): UseAgentExecutionReturn {
     setCurrentStep("prompt");
   }, []);
 
+  // 保存中フラグ
+  const [saving, setSaving] = React.useState(false);
+
   /**
    * 権限を確認してワークフローを保存
+   * @returns 保存したID、または失敗時はnull
    */
-  const confirmAndSave = React.useCallback(async () => {
-    if (!generatedWorkflow?.workflowDefinition) return;
+  const confirmAndSave = React.useCallback(async (): Promise<{
+    workflowId: string;
+    codeId: string;
+  } | null> => {
+    // 同期ガード: ref で即座にチェック（連打防止）
+    if (savingRef.current) return null;
+    if (!generatedWorkflow?.workflowDefinition) return null;
 
+    savingRef.current = true;
+    setSaving(true);
     try {
       append({ kind: "message", payload: { stage: "save", status: "start" } });
 
@@ -233,67 +252,92 @@ export function useAgentExecution(): UseAgentExecutionReturn {
           workflowId: saveResponse.workflow.id,
         },
       });
+
+      return {
+        workflowId: saveResponse.workflow.id,
+        codeId: saveResponse.workflow.workflowCode?.[0]?.id || "",
+      };
     } catch (e) {
       setError((e as Error).message || "保存中にエラーが発生しました");
       setCurrentStep("error");
       append({ kind: "error", payload: e });
+      return null;
+    } finally {
+      savingRef.current = false;
+      setSaving(false);
     }
   }, [generatedWorkflow, append]);
 
   /**
    * ワークフローを実行
+   * @param ids オプションでワークフローIDを渡せる（confirmAndSaveからの戻り値を直接渡す用）
    */
-  const executeWorkflow = React.useCallback(async () => {
-    if (!savedWorkflowId) {
-      // まだ保存していない場合は、まず保存してから実行
-      if (generatedWorkflow?.workflowDefinition) {
-        await confirmAndSave();
-      } else {
-        return;
+  const executeWorkflow = React.useCallback(
+    async (ids?: { workflowId: string; codeId: string }) => {
+      // 同期ガード: ref で即座にチェック（連打防止）
+      if (executingRef.current) return;
+
+      // 引数でIDが渡された場合はそれを使用、そうでなければstateを参照
+      let workflowId = ids?.workflowId ?? savedWorkflowId;
+      let codeId = ids?.codeId ?? savedCodeId;
+
+      if (!workflowId) {
+        // まだ保存していない場合は、まず保存してから実行
+        if (generatedWorkflow?.workflowDefinition) {
+          const savedIds = await confirmAndSave();
+          if (!savedIds) return; // 保存失敗
+          workflowId = savedIds.workflowId;
+          codeId = savedIds.codeId;
+        } else {
+          return;
+        }
       }
-    }
 
-    // 保存後にIDを取得するためにstateを参照
-    const workflowId = savedWorkflowId;
-    const codeId = savedCodeId;
+      if (!workflowId) return;
 
-    if (!workflowId) return;
+      executingRef.current = true;
+      setCurrentStep("executing");
+      setExecuting(true);
 
-    setCurrentStep("executing");
-    setExecuting(true);
+      try {
+        append({ kind: "message", payload: { stage: "run", status: "start" } });
 
-    try {
-      append({ kind: "message", payload: { stage: "run", status: "start" } });
+        const res = await clients.workflow.runWorkflow({
+          byId: create(WorkflowSourceByIdSchema, {
+            workflowId,
+            workflowCodeId: codeId ?? "",
+          }),
+        });
 
-      const res = await clients.workflow.runWorkflow({
-        byId: create(WorkflowSourceByIdSchema, {
-          workflowId,
-          workflowCodeId: codeId || "",
-        }),
-      });
-
-      setRunResult(res);
-      append({ kind: "message", payload: res });
-      append({ kind: "done", payload: { stage: "run" } });
-      setCurrentStep("completed");
-    } catch (e) {
-      setError((e as Error).message || "実行中にエラーが発生しました");
-      setCurrentStep("error");
-      append({ kind: "error", payload: e });
-    } finally {
-      setExecuting(false);
-    }
-  }, [savedWorkflowId, savedCodeId, generatedWorkflow, confirmAndSave, append]);
+        setRunResult(res);
+        append({ kind: "message", payload: res });
+        append({ kind: "done", payload: { stage: "run" } });
+        setCurrentStep("completed");
+      } catch (e) {
+        setError((e as Error).message || "実行中にエラーが発生しました");
+        setCurrentStep("error");
+        append({ kind: "error", payload: e });
+      } finally {
+        executingRef.current = false;
+        setExecuting(false);
+      }
+    },
+    [savedWorkflowId, savedCodeId, generatedWorkflow, confirmAndSave, append],
+  );
 
   /**
    * すべてをリセット
    */
   const reset = React.useCallback(() => {
     abortRef.current?.abort();
+    // 同期フラグもリセット
+    savingRef.current = false;
+    executingRef.current = false;
     setCurrentStep("prompt");
     setGenerating(false);
     setExecuting(false);
     setRefining(false);
+    setSaving(false);
     setEvents([]);
     setGeneratedWorkflow(null);
     setRunResult(null);
@@ -312,6 +356,7 @@ export function useAgentExecution(): UseAgentExecutionReturn {
     setCurrentStep,
     generating,
     executing,
+    saving,
     events,
     generatedWorkflow,
     runResult,

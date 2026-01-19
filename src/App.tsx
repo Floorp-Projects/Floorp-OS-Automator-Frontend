@@ -10,8 +10,10 @@ import {
 } from "@/pages/workflows";
 import { PluginsPage } from "@/pages/plugins";
 import { SettingsPage } from "@/pages/settings";
+import { useI18n } from "@/hooks/useI18n";
 
 function App() {
+  const { t } = useI18n();
   return (
     <AppShell>
       <Routes>
@@ -23,10 +25,10 @@ function App() {
         <Route path="/workflows/:id" element={<WorkflowRunPage />} />
         <Route path="/workflows-parser-test" element={<WorkflowParserTest />} />
         <Route path="/settings" element={<SettingsPage />} />
-        <Route path="/fix" element={<PageBox title="Fix" />} />
-        <Route path="/run" element={<PageBox title="Run" />} />
+        <Route path="/fix" element={<PageBox title={t("pages.fix")} />} />
+        <Route path="/run" element={<PageBox title={t("pages.run")} />} />
         <Route path="/plugins" element={<PluginsPage />} />
-        <Route path="/about" element={<PageBox title="About" />} />
+        <Route path="/about" element={<PageBox title={t("pages.about")} />} />
       </Routes>
     </AppShell>
   );
@@ -34,10 +36,11 @@ function App() {
 
 import { Box, Text } from "@chakra-ui/react";
 function PageBox({ title }: { title: string }) {
+  const { t } = useI18n();
   return (
     <Box borderWidth="1px" rounded="md" p={4}>
       <Text fontWeight="medium">{title}</Text>
-      <Text color="fg.muted">Mock content for {title} page.</Text>
+      <Text color="fg.muted">{t("pages.mockContent", { title })}</Text>
     </Box>
   );
 }

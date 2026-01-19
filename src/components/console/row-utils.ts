@@ -69,7 +69,8 @@ export function toRows(events: GenerationEvent[]): Row[] {
         payload && typeof payload === "object" && "stage" in payload
           ? (payload as { stage?: unknown }).stage
           : undefined;
-      if (stage === "run") rows.push({ type: "sep", label: i18n.t("console.executionComplete") });
+      if (stage === "run")
+        rows.push({ type: "sep", label: i18n.t("console.executionComplete") });
       if (stage === "generate") {
         rows.push({ type: "sep", label: i18n.t("console.generationComplete") });
       }
@@ -101,6 +102,23 @@ export function summarize(e: GenerationEvent): string {
   // message
   const p = e.payload as unknown;
   if (p && typeof p === "object") {
+    // stage: save のハンドリング
+    if ("stage" in p && (p as { stage?: unknown }).stage === "save") {
+      const status =
+        "status" in p ? (p as { status?: unknown }).status : undefined;
+      if (status === "start") return i18n.t("console.saveStart");
+      if (status === "done") {
+        const workflowId =
+          "workflowId" in p
+            ? (p as { workflowId?: unknown }).workflowId
+            : undefined;
+        return workflowId
+          ? i18n.t("console.saveComplete")
+          : i18n.t("console.saveComplete");
+      }
+      return i18n.t("console.saving");
+    }
+    // stage: run のハンドリング
     if (
       "stage" in p &&
       (p as { stage?: unknown }).stage === "run" &&
@@ -130,9 +148,12 @@ export function summarize(e: GenerationEvent): string {
           ? (r as Record<string, unknown>).exitCode
           : undefined;
       const name = (displayName || id || i18n.t("console.execution")) as string;
-      const type = resultType === 1 ? i18n.t("console.failed") : i18n.t("console.success");
+      const type =
+        resultType === 1 ? i18n.t("console.failed") : i18n.t("console.success");
       const exit =
-        typeof exitCode === "number" ? i18n.t("console.exitCode", { code: exitCode }) : "";
+        typeof exitCode === "number"
+          ? i18n.t("console.exitCode", { code: exitCode })
+          : "";
       // Prefer textual result if present
       const resultStr =
         r && typeof r === "object" && "result" in r
