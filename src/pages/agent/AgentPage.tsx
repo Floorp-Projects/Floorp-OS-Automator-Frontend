@@ -667,8 +667,8 @@ function CompletedStep({
                         </HStack>
 
                         <Box
-                            maxH="300px"
-                            overflow="hidden"
+                            maxH="400px"
+                            overflowY="auto"
                             borderWidth="1px"
                             rounded="md"
                         >
