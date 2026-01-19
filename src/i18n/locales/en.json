@@ -23,6 +23,8 @@
     "failure": "Failure",
     "viewAll": "View all",
     "clearSearch": "Clear search",
+    "back": "Back",
+    "cancel": "Cancel",
     "time": {
       "justNow": "just now",
       "minutesAgo_one": "{{count}} minute ago",
@@ -201,7 +203,8 @@
     "completed": "Completed",
     "waiting": "Waiting",
     "notExecuted": "Workflow has not been executed",
-    "notExecutedDescription": "Click the \"Run\" button to execute the generated workflow."
+    "notExecutedDescription": "Click the \"Run\" button to execute the generated workflow.",
+    "confirmTitle": "Confirm Execution"
   },
   "clone": {
     "title": "Clone Workflow",

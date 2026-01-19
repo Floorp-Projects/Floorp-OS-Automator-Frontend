@@ -23,6 +23,8 @@
         "failure": "失敗",
         "viewAll": "すべて表示",
         "clearSearch": "検索をクリア",
+        "back": "戻る",
+        "cancel": "キャンセル",
         "time": {
             "justNow": "たった今",
             "minutesAgo": "{{count}}分前",
@@ -198,7 +200,8 @@
         "completed": "完了",
         "waiting": "待機中",
         "notExecuted": "ワークフローを実行していません",
-        "notExecutedDescription": "「実行」ボタンをクリックして、生成されたワークフローを実行してください。"
+        "notExecutedDescription": "「実行」ボタンをクリックして、生成されたワークフローを実行してください。",
+        "confirmTitle": "実行の確認"
     },
     "clone": {
         "title": "ワークフローを複製",

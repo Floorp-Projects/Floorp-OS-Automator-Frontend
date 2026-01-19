@@ -1,5 +1,6 @@
 import React from "react";
 import {
+    Badge,
     Box,
     Button,
     Card,
@@ -15,14 +16,16 @@ import {
     MenuRoot,
     MenuTrigger,
     Portal,
+    SimpleGrid,
     Spinner,
-    Table,
     Text,
     VStack,
 } from "@chakra-ui/react";
 import {
     LuArrowDown,
+    LuArrowLeft,
     LuArrowUp,
+    LuClock,
     LuCopy,
     LuEllipsisVertical,
     LuFileText,
@@ -59,7 +62,27 @@ function formatDate(timestamp?: { seconds: bigint; nanos: number }): string {
     });
 }
 
-function WorkflowRow({
+function formatRelativeTime(
+    timestamp: { seconds: bigint; nanos: number },
+    t: (key: string, options?: Record<string, unknown>) => string,
+): string {
+    const now = Date.now();
+    const date = Number(timestamp.seconds) * 1000;
+    const diff = now - date;
+
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+
+    if (minutes < 1) return t("common.time.justNow");
+    if (minutes < 60) {
+        return t("common.time.minutesAgo", { count: minutes });
+    }
+    if (hours < 24) return t("common.time.hoursAgo", { count: hours });
+    return t("common.time.daysAgo", { count: days });
+}
+
+function WorkflowCard({
     workflow,
     onRun,
     onClone,
@@ -73,188 +96,150 @@ function WorkflowRow({
     activeWorkflowId: string | null;
 }) {
     const { t } = useI18n();
+    const navigate = useNavigate();
     const latestResult = workflow.workflowResults
         ?.[workflow.workflowResults.length - 1];
+    const latestCode = workflow.workflowCode
+        ?.[workflow.workflowCode.length - 1];
 
     const isRunning = activeWorkflowId === workflow.id;
+    const hasResult = latestResult !== undefined;
+    const isSuccess = latestResult?.resultType === 0;
+
+    const handleView = React.useCallback(() => {
+        navigate(`/workflows/${workflow.id}`);
+    }, [navigate, workflow.id]);
 
     return (
-        <Table.Row
-            key={workflow.id}
+        <Card.Root
+            cursor="pointer"
             _hover={{
-                backgroundColor: "var(--chakra-colors-bg-subtle)",
+                borderColor: "floorp.300",
+                shadow: "md",
+                _dark: {
+                    borderColor: "floorp.700",
+                },
             }}
+            onClick={handleView}
+            transition="all 0.2s"
         >
-            <Table.Cell>
-                <VStack align="start" gap={1}>
-                    <Text
-                        fontWeight="medium"
-                        css={{
-                            display: "-webkit-box",
-                            WebkitLineClamp: 1,
-                            WebkitBoxOrient: "vertical",
-                            overflow: "hidden",
-                        }}
-                    >
-                        {workflow.displayName || "-"}
-                    </Text>
-                    {workflow.description && (
-                        <Text
-                            fontSize="sm"
-                            color="fg.muted"
-                            css={{
-                                display: "-webkit-box",
-                                WebkitLineClamp: 1,
-                                WebkitBoxOrient: "vertical",
-                                overflow: "hidden",
-                            }}
-                        >
-                            {workflow.description}
-                        </Text>
-                    )}
-                </VStack>
-            </Table.Cell>
-            <Table.Cell display={{ base: "none", md: "table-cell" }}>
-                {latestResult
-                    ? (
-                        <VStack align="start" gap={1}>
-                            <HStack gap={2}>
-                                <Box
-                                    w={2}
-                                    h={2}
-                                    rounded="full"
-                                    bg={latestResult.resultType === 0
-                                        ? "green.500"
-                                        : latestResult.resultType === 1
-                                        ? "red.500"
-                                        : "gray.500"}
-                                />
-                                <Text
-                                    fontSize="sm"
-                                    fontWeight="medium"
-                                    color={latestResult.resultType === 0
-                                        ? "green.700"
-                                        : latestResult.resultType === 1
-                                        ? "red.700"
-                                        : "fg.muted"}
-                                    css={{
-                                        _dark: {
-                                            color: latestResult.resultType === 0
-                                                ? "var(--chakra-colors-green-300)"
-                                                : latestResult.resultType === 1
-                                                ? "var(--chakra-colors-red-300)"
-                                                : "var(--chakra-colors-fg-muted)",
-                                        },
-                                    }}
-                                    whiteSpace="nowrap"
-                                >
-                                    {latestResult.resultType === 0
-                                        ? t("common.success")
-                                        : t("common.failure")}
-                                </Text>
-                            </HStack>
-                            {latestResult.ranAt && (
+            <Card.Body p={3}>
+                <VStack align="stretch" gap={2}>
+                    {/* Header: Name + Actions */}
+                    <HStack justify="space-between" align="start" gap={2}>
+                        <VStack align="start" gap={0.5} flex="1" minW={0}>
+                            <Text
+                                fontWeight="semibold"
+                                fontSize="sm"
+                                lineClamp={1}
+                            >
+                                {workflow.displayName ||
+                                    t("common.untitledWorkflow")}
+                            </Text>
+                            {workflow.description && (
                                 <Text
                                     fontSize="xs"
                                     color="fg.muted"
-                                    whiteSpace="nowrap"
+                                    lineClamp={2}
                                 >
-                                    {formatDate(latestResult.ranAt)}
+                                    {workflow.description}
                                 </Text>
                             )}
                         </VStack>
-                    )
-                    : (
-                        <Text
-                            fontSize="sm"
-                            color="fg.muted"
-                            whiteSpace="nowrap"
-                        >
-                            {t("workflows.noRuns")}
-                        </Text>
-                    )}
-            </Table.Cell>
-            <Table.Cell onClick={(e) => e.stopPropagation()}>
-                <HStack gap={1.5}>
-                    {/* Desktop: Show Run button */}
-                    <Button
-                        size="sm"
-                        variant="outline"
-                        colorPalette="floorp"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            if (!isRunning) onRun(workflow.id);
-                        }}
-                        disabled={isRunning}
-                        _hover={{
-                            bg: "floorp.50",
-                            borderColor: "floorp.300",
-                            _dark: {
-                                bg: "floorp.950",
-                                borderColor: "floorp.700",
-                            },
-                        }}
-                        display={{ base: "none", md: "flex" }}
-                    >
-                        {t("workflows.run")}
-                    </Button>
-                    <MenuRoot>
-                        <MenuTrigger asChild>
+                        <HStack gap={1} flexShrink={0}>
                             <IconButton
-                                size="sm"
-                                variant="ghost"
-                                aria-label={t("workflows.moreActions")}
-                                onClick={(e) => e.stopPropagation()}
+                                aria-label={t("workflows.run")}
+                                size="xs"
+                                colorPalette="floorp"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (!isRunning) onRun(workflow.id);
+                                }}
+                                disabled={isRunning || !latestCode}
                             >
-                                <LuEllipsisVertical />
+                                {isRunning
+                                    ? <Spinner size="xs" />
+                                    : <LuPlay size={14} />}
                             </IconButton>
-                        </MenuTrigger>
-                        <Portal>
-                            <MenuPositioner>
-                                <MenuContent>
-                                    {/* Mobile: Show Run in menu */}
-                                    <MenuItem
-                                        value="run"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            if (!isRunning) onRun(workflow.id);
-                                        }}
-                                        disabled={isRunning}
-                                        display={{ base: "flex", md: "none" }}
+                            <MenuRoot>
+                                <MenuTrigger asChild>
+                                    <IconButton
+                                        size="xs"
+                                        variant="ghost"
+                                        aria-label={t("workflows.moreActions")}
+                                        onClick={(e) => e.stopPropagation()}
                                     >
-                                        <LuPlay />
-                                        {t("workflows.run")}
-                                    </MenuItem>
-                                    <MenuItem
-                                        value="clone"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            onClone(workflow);
-                                        }}
-                                    >
-                                        <LuCopy />
-                                        {t("workflows.clone")}
-                                    </MenuItem>
-                                    {onDelete && (
-                                        <MenuItem
-                                            value="delete"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                onDelete(workflow.id);
-                                            }}
-                                            color="red.500"
-                                        >
-                                            <LuTrash2 />
-                                            {t("workflows.delete")}
-                                        </MenuItem>
-                                    )}
-                                </MenuContent>
-                            </MenuPositioner>
-                        </Portal>
-                    </MenuRoot>
-                </HStack>
-            </Table.Cell>
-        </Table.Row>
+                                        <LuEllipsisVertical size={14} />
+                                    </IconButton>
+                                </MenuTrigger>
+                                <Portal>
+                                    <MenuPositioner>
+                                        <MenuContent>
+                                            <MenuItem
+                                                value="clone"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    onClone(workflow);
+                                                }}
+                                            >
+                                                <LuCopy size={14} />
+                                                {t("workflows.clone")}
+                                            </MenuItem>
+                                            {onDelete && (
+                                                <MenuItem
+                                                    value="delete"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        onDelete(workflow.id);
+                                                    }}
+                                                    color="red.500"
+                                                >
+                                                    <LuTrash2 size={14} />
+                                                    {t("workflows.delete")}
+                                                </MenuItem>
+                                            )}
+                                        </MenuContent>
+                                    </MenuPositioner>
+                                </Portal>
+                            </MenuRoot>
+                        </HStack>
+                    </HStack>
+
+                    {/* Metadata */}
+                    <HStack
+                        gap={2}
+                        flexWrap="wrap"
+                        fontSize="xs"
+                        color="fg.muted"
+                    >
+                        {workflow.updatedAt && (
+                            <HStack gap={1}>
+                                <LuClock size={10} />
+                                <Text fontSize="2xs">
+                                    {formatRelativeTime(workflow.updatedAt, t)}
+                                </Text>
+                            </HStack>
+                        )}
+                        {hasResult && (
+                            <Badge
+                                colorPalette={isSuccess ? "green" : "red"}
+                                size="xs"
+                                fontSize="2xs"
+                            >
+                                {isSuccess
+                                    ? t("common.success")
+                                    : t("common.failure")}
+                            </Badge>
+                        )}
+                        {!hasResult && latestCode && (
+                            <Badge colorPalette="gray" size="xs" fontSize="2xs">
+                                {t("common.neverRun")}
+                            </Badge>
+                        )}
+                    </HStack>
+                </VStack>
+            </Card.Body>
+        </Card.Root>
     );
 }
 
@@ -373,66 +358,74 @@ export function WorkflowsPage() {
     );
 
     return (
-        <Flex direction="column" h="full" overflow="hidden">
-            {/* Header */}
+        <Flex direction="column" h="full" overflow="hidden" fontSize="md">
+            {/* Header - Agentスタイルに統一 */}
             <Box
                 borderBottomWidth="1px"
-                borderBottomColor="border"
-                px={{ base: 4, md: 6 }}
-                py={4}
+                px={3}
+                py={2}
+                bg="bg.panel"
+                flexShrink={0}
             >
-                <Flex
-                    justify="space-between"
-                    align="center"
-                    flexWrap="wrap"
-                    gap={4}
-                >
-                    <Heading size="lg">{t("workflows.title")}</Heading>
+                <HStack justify="space-between" align="center">
                     <HStack gap={2}>
-                        <Button
+                        <IconButton
+                            aria-label={t("common.back")}
+                            variant="ghost"
+                            size="xs"
+                            onClick={() => navigate("/home")}
+                        >
+                            <LuArrowLeft />
+                        </IconButton>
+                        <Heading size="sm">{t("workflows.title")}</Heading>
+                    </HStack>
+                    <HStack gap={1}>
+                        <IconButton
+                            aria-label={t("workflows.refresh")}
+                            variant="ghost"
+                            size="xs"
                             onClick={refetch}
-                            variant="outline"
-                            size="sm"
                             disabled={loading}
                         >
                             <LuRefreshCw />
-                            <Text>{t("workflows.refresh")}</Text>
-                        </Button>
+                        </IconButton>
                         <Button
                             colorPalette="floorp"
-                            size="sm"
+                            size="xs"
                             onClick={() => setIsNewWorkflowModalOpen(true)}
                         >
                             <LuPlus />
                             <Text>{t("workflows.newWorkflow")}</Text>
                         </Button>
                     </HStack>
-                </Flex>
+                </HStack>
             </Box>
 
-            {/* Filters */}
+            {/* Content */}
             <Box
-                borderBottomWidth="1px"
-                borderBottomColor="border"
-                px={{ base: 4, md: 6 }}
-                py={3}
+                flex="1"
+                overflowY="auto"
+                px={{ base: 3, md: 4 }}
+                py={{ base: 3, md: 4 }}
             >
-                <HStack gap={3} flexWrap="wrap">
+                {/* Search */}
+                <HStack gap={2} mb={3}>
                     <HStack
                         borderWidth="1px"
                         rounded="md"
-                        px={3}
+                        px={2}
                         py={1}
                         gap={2}
-                        maxW="300px"
+                        flex={1}
+                        maxW="400px"
                         bg="bg"
                         _focusWithin={{
-                            outline: "2px solid",
-                            outlineColor: "accent.focusRing",
+                            borderColor: "floorp.500",
+                            boxShadow: "0 0 0 1px var(--chakra-colors-floorp-500)",
                         }}
                     >
                         <LuSearch
-                            size={16}
+                            size={14}
                             color="var(--chakra-colors-fg-muted)"
                         />
                         <Input
@@ -444,19 +437,17 @@ export function WorkflowsPage() {
                             border="none"
                             outline="none"
                             bg="transparent"
+                            _focus={{ outline: "none", boxShadow: "none" }}
                         />
                     </HStack>
                 </HStack>
-            </Box>
 
-            {/* Content */}
-            <Box flex="1" overflowY="auto" px={{ base: 4, md: 6 }} py={4}>
                 {loading && workflows.length === 0
                     ? (
                         <Flex justify="center" align="center" h="200px">
                             <VStack gap={4}>
-                                <Spinner size="lg" />
-                                <Text color="fg.muted">
+                                <Spinner size="lg" color="floorp.500" />
+                                <Text color="fg.muted" fontSize="sm">
                                     {t("workflows.loading")}
                                 </Text>
                             </VStack>
@@ -518,69 +509,30 @@ export function WorkflowsPage() {
                         </Card.Root>
                     )
                     : (
-                        <Card.Root>
-                            <Card.Body p={0}>
-                                <Box overflowX="auto">
-                                    <Table.Root>
-                                        <Table.Header>
-                                            <Table.Row>
-                                                <Table.ColumnHeader
-                                                    cursor="pointer"
-                                                    onClick={() =>
-                                                        handleSort(
-                                                            "display_name",
-                                                        )}
-                                                    minW="200px"
-                                                    _hover={{ bg: "bg.subtle" }}
-                                                >
-                                                    <HStack gap={2}>
-                                                        <Text>
-                                                            {t("workflows.name")}
-                                                        </Text>
-                                                        {getSortIcon(
-                                                            "display_name",
-                                                        )}
-                                                    </HStack>
-                                                </Table.ColumnHeader>
-                                                <Table.ColumnHeader
-                                                    minW="120px"
-                                                    display={{
-                                                        base: "none",
-                                                        md: "table-cell",
-                                                    }}
-                                                >
-                                                    {t("workflows.lastRun")}
-                                                </Table.ColumnHeader>
-                                                <Table.ColumnHeader minW="150px">
-                                                    {t("workflows.actions")}
-                                                </Table.ColumnHeader>
-                                            </Table.Row>
-                                        </Table.Header>
-                                        <Table.Body>
-                                            {workflows.map((workflow) => (
-                                                <WorkflowRow
-                                                    key={workflow.id}
-                                                    workflow={workflow}
-                                                    onRun={(id) =>
-                                                        navigate(
-                                                            `/workflows/${id}`,
-                                                        )}
-                                                    onClone={handleClone}
-                                                    onDelete={handleDelete}
-                                                    activeWorkflowId={activeWorkflowId}
-                                                />
-                                            ))}
-                                        </Table.Body>
-                                    </Table.Root>
-                                </Box>
-                            </Card.Body>
-                        </Card.Root>
+                        <SimpleGrid
+                            columns={{ base: 1, sm: 2, lg: 3, xl: 4 }}
+                            gap={3}
+                        >
+                            {workflows.map((workflow) => (
+                                <WorkflowCard
+                                    key={workflow.id}
+                                    workflow={workflow}
+                                    onRun={(id) =>
+                                        navigate(`/workflows/${id}`, {
+                                            state: { autoRun: true },
+                                        })}
+                                    onClone={handleClone}
+                                    onDelete={handleDelete}
+                                    activeWorkflowId={activeWorkflowId}
+                                />
+                            ))}
+                        </SimpleGrid>
                     )}
 
                 {/* Pagination */}
                 {workflows.length > 0 && (
                     <Flex justify="space-between" align="center" mt={4} gap={4}>
-                        <Text fontSize="sm" color="fg.muted">
+                        <Text fontSize="xs" color="fg.muted">
                             {workflows.length === 1
                                 ? t("workflows.showing", {
                                     count: workflows.length,
