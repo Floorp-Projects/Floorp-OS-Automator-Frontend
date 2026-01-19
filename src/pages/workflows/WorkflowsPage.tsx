@@ -421,7 +421,8 @@ export function WorkflowsPage() {
                         bg="bg"
                         _focusWithin={{
                             borderColor: "floorp.500",
-                            boxShadow: "0 0 0 1px var(--chakra-colors-floorp-500)",
+                            boxShadow:
+                                "0 0 0 1px var(--chakra-colors-floorp-500)",
                         }}
                     >
                         <LuSearch
