@@ -14,6 +14,7 @@ import type {
   RunWorkflowResponse,
 } from "@/gen/sapphillon/v1/workflow_service_pb";
 import { WorkflowSourceByIdSchema } from "@/gen/sapphillon/v1/workflow_service_pb";
+import { enhanceWorkflowWithMockData } from "@/lib/mock-workflow-data";
 
 /**
  * エージェント実行のステップ
@@ -139,8 +140,18 @@ export function useAgentExecution(): UseAgentExecutionReturn {
           { prompt },
           { signal: ac.signal },
         )) {
-          setGeneratedWorkflow(msg);
-          append({ kind: "message", payload: msg });
+          // ワークフロー定義が含まれている場合、モックデータで拡張
+          let enhancedMsg = msg;
+          if (msg.workflowDefinition) {
+            enhancedMsg = {
+              ...msg,
+              workflowDefinition: enhanceWorkflowWithMockData(
+                msg.workflowDefinition
+              ),
+            };
+          }
+          setGeneratedWorkflow(enhancedMsg);
+          append({ kind: "message", payload: enhancedMsg });
         }
         append({ kind: "done", payload: { stage: "generate" } });
         setCurrentStep("confirm");
@@ -182,8 +193,18 @@ export function useAgentExecution(): UseAgentExecutionReturn {
           { prompt: combinedPrompt },
           { signal: ac.signal },
         )) {
-          setGeneratedWorkflow(msg);
-          append({ kind: "message", payload: msg });
+          // ワークフロー定義が含まれている場合、モックデータで拡張
+          let enhancedMsg = msg;
+          if (msg.workflowDefinition) {
+            enhancedMsg = {
+              ...msg,
+              workflowDefinition: enhanceWorkflowWithMockData(
+                msg.workflowDefinition
+              ),
+            };
+          }
+          setGeneratedWorkflow(enhancedMsg);
+          append({ kind: "message", payload: enhancedMsg });
         }
         append({ kind: "done", payload: { stage: "refine" } });
         setCurrentStep("confirm");
