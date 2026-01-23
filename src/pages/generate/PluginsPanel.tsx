@@ -56,9 +56,7 @@ export function PluginsPanel() {
       align="stretch"
       gap={2}
       p={{ base: 2, md: 3 }}
-      borderWidth="1px"
       bg="bg"
-      rounded="md"
       h="full"
       minH={0}
       display="grid"

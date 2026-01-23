@@ -6,7 +6,7 @@ import { useI18n } from "@/hooks/useI18n";
 export function SettingsPage() {
     const { t } = useI18n();
     return (
-        <Box h="full" overflow="auto">
+        <Box h="full" overflow="auto" p={4}>
             <Tabs.Root defaultValue="providers" variant="enclosed">
                 <Tabs.List>
                     <Tabs.Trigger value="providers">

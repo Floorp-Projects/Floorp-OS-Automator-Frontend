@@ -291,9 +291,7 @@ function DesktopLayout({
         align="stretch"
         gap={2}
         p={{ base: 2, md: 3 }}
-        borderWidth="1px"
         bg="bg"
-        rounded="md"
         gridColumn={1}
         gridRow={1}
         minW={0}
@@ -340,7 +338,6 @@ function DesktopLayout({
               <Box
                 minH={0}
                 h="full"
-                borderWidth="1px"
                 rounded="md"
                 bg="bg.subtle"
                 px={3}
@@ -370,6 +367,7 @@ function DesktopLayout({
       <Box
         gridColumn={2}
         gridRow={1}
+        bg="bg.subtle"
         onMouseDown={beginDrag("right")}
         onKeyDown={onGutterKeyDown("right")}
         role="separator"
@@ -388,6 +386,7 @@ function DesktopLayout({
       {/* Horizontal gutter */}
       <Box
         gridColumn="1 / span 3"
+        bg="bg.subtle"
         gridRow={2}
         onMouseDown={beginDrag("bottom")}
         onKeyDown={onGutterKeyDown("bottom")}
