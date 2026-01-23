@@ -3,6 +3,7 @@
  *
  * 全文選択可能なターミナルスタイルのログ表示。
  * LogRowのように1行ずつ区切らず、連続したテキストとして表示する。
+ * 外部からコピー・ダウンロード機能を呼び出し可能。
  */
 
 import React from "react";
@@ -16,6 +17,14 @@ import { useI18n } from "@/hooks/useI18n";
 export interface TerminalConsoleProps {
     events: GenerationEvent[];
     streaming: boolean;
+}
+
+/** TerminalConsole の外部公開メソッド */
+export interface TerminalConsoleHandle {
+    copy: () => Promise<void>;
+    download: () => void;
+    scrollToTop: () => void;
+    scrollToBottom: () => void;
 }
 
 /**
@@ -50,40 +59,18 @@ function getKindColor(kind: string): string {
     }
 }
 
-export const TerminalConsole: React.FC<TerminalConsoleProps> = ({
-    events,
-    streaming,
-}) => {
+export const TerminalConsole = React.forwardRef<
+    TerminalConsoleHandle,
+    TerminalConsoleProps
+>(({ events, streaming }, ref) => {
     const { t } = useI18n();
-    const [autoScroll, setAutoScroll] = React.useState(false);
+    const [autoScroll, setAutoScroll] = React.useState(true);
     const viewportRef = React.useRef<HTMLDivElement | null>(null);
     const preRef = React.useRef<HTMLPreElement | null>(null);
 
     const visible = React.useMemo(() => {
         return [...events].sort((a, b) => a.t - b.t);
     }, [events]);
-
-    // マウント時に最上部に固定
-    React.useLayoutEffect(() => {
-        const el = viewportRef.current;
-        if (el) el.scrollTop = 0;
-    }, []);
-
-    // Auto scroll behavior
-    React.useEffect(() => {
-        const el = viewportRef.current;
-        if (!el) return;
-        if (autoScroll) el.scrollTop = el.scrollHeight;
-    }, [visible, autoScroll]);
-
-    const onScroll = () => {
-        const el = viewportRef.current;
-        if (!el) return;
-        const nearBottom =
-            el.scrollTop + el.clientHeight >= el.scrollHeight - 24;
-        if (!nearBottom && autoScroll) setAutoScroll(false);
-        if (nearBottom && !autoScroll) setAutoScroll(true);
-    };
 
     const rows = toRows(visible);
 
@@ -119,9 +106,83 @@ export const TerminalConsole: React.FC<TerminalConsoleProps> = ({
             return lines;
         }, [rows]);
 
+    // プレーンテキストとしてのログ出力（コピー/ダウンロード用）
+    const plainText = React.useMemo(() => {
+        return logLines.map((l) => l.text).join("\n");
+    }, [logLines]);
+
+    // マウント時に最下部に固定（ストリーミング開始時）
+    React.useLayoutEffect(() => {
+        const el = viewportRef.current;
+        if (el && streaming) {
+            el.scrollTop = el.scrollHeight;
+        }
+    }, [streaming]);
+
+    // Auto scroll behavior
+    React.useEffect(() => {
+        const el = viewportRef.current;
+        if (!el) return;
+        if (autoScroll) el.scrollTop = el.scrollHeight;
+    }, [visible, autoScroll]);
+
+    const onScroll = () => {
+        const el = viewportRef.current;
+        if (!el) return;
+        const nearBottom =
+            el.scrollTop + el.clientHeight >= el.scrollHeight - 24;
+        if (!nearBottom && autoScroll) setAutoScroll(false);
+        if (nearBottom && !autoScroll) setAutoScroll(true);
+    };
+
+    // 最上部/最下部へスクロール
+    const scrollToTop = React.useCallback(() => {
+        const el = viewportRef.current;
+        if (el) {
+            el.scrollTop = 0;
+            setAutoScroll(false);
+        }
+    }, []);
+
+    const scrollToBottom = React.useCallback(() => {
+        const el = viewportRef.current;
+        if (el) {
+            el.scrollTop = el.scrollHeight;
+            setAutoScroll(true);
+        }
+    }, []);
+
+    // コピー処理
+    const copy = React.useCallback(async () => {
+        await navigator.clipboard.writeText(plainText);
+    }, [plainText]);
+
+    // ダウンロード処理
+    const download = React.useCallback(() => {
+        const blob = new Blob([plainText], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `log-${
+            new Date().toISOString().replace(/[:.]/g, "-")
+        }.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }, [plainText]);
+
+    // 外部からアクセス可能なメソッドを公開
+    React.useImperativeHandle(ref, () => ({
+        copy,
+        download,
+        scrollToTop,
+        scrollToBottom,
+    }), [copy, download, scrollToTop, scrollToBottom]);
+
     if (visible.length === 0) {
         return (
-            <VStack align="stretch" h="full" minH={0} gap={1}>
+            <VStack align="stretch" h="full" minH={0} gap={0}>
                 <Box
                     ref={viewportRef}
                     minH={0}
@@ -145,7 +206,7 @@ export const TerminalConsole: React.FC<TerminalConsoleProps> = ({
     }
 
     return (
-        <VStack align="stretch" h="full" minH={0} gap={0}>
+        <Box h="full" minH={0}>
             <Box
                 ref={viewportRef}
                 minH={0}
@@ -211,6 +272,8 @@ export const TerminalConsole: React.FC<TerminalConsoleProps> = ({
                     )}
                 </Box>
             </Box>
-        </VStack>
+        </Box>
     );
-};
+});
+
+TerminalConsole.displayName = "TerminalConsole";

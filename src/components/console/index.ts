@@ -10,5 +10,8 @@ export type { Row } from "./row-utils";
 export type { LogRowProps } from "./LogRow";
 export type { SeparatorRowProps } from "./SeparatorRow";
 export type { StreamConsoleProps } from "./StreamConsole";
-export type { TerminalConsoleProps } from "./TerminalConsole";
+export type {
+  TerminalConsoleProps,
+  TerminalConsoleHandle,
+} from "./TerminalConsole";
 export type { KindMeta } from "./kind-meta";

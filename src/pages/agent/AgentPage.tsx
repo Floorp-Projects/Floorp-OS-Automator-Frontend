@@ -28,6 +28,8 @@ import {
     LuArrowLeft,
     LuArrowRight,
     LuCheck,
+    LuClipboard,
+    LuDownload,
     LuHouse,
     LuPlay,
     LuRefreshCw,
@@ -39,10 +41,16 @@ import {
     LuX,
 } from "react-icons/lu";
 import { useAgentExecution } from "./useAgentExecution";
-import { WorkflowCanvas, WorkflowFunctionList, hasHighRiskFunctions } from "@/components/workflow";
+import {
+    hasHighRiskFunctions,
+    WorkflowCanvas,
+    WorkflowFunctionList,
+} from "@/components/workflow";
 import { TerminalConsole } from "@/components/console";
+import type { TerminalConsoleHandle } from "@/components/console";
 import type { GenerationEvent } from "@/components/console/utils";
 import { useI18n } from "@/hooks/useI18n";
+import { Tooltip } from "@/components/ui/tooltip";
 
 /**
  * プロンプト入力ステップ
@@ -81,67 +89,148 @@ function PromptStep({
     };
 
     return (
-        <VStack gap={6} w="full" maxW="3xl" mx="auto" align="stretch">
-            <VStack gap={2} textAlign="center">
-                <Box fontSize="5xl" color="floorp.500">
-                    <LuSparkles />
-                </Box>
-                <Heading size="xl">{t("agent.whatToDo")}</Heading>
-                <Text color="fg.muted" fontSize="md">
-                    {t("agent.promptHint")}
-                </Text>
-            </VStack>
+        <Flex
+            direction="column"
+            align="center"
+            justify="center"
+            w="full"
+            h="full"
+            minH={{ base: "auto", lg: "400px" }}
+        >
+            <VStack
+                gap={{ base: 6, lg: 8 }}
+                w="full"
+                maxW={{ base: "3xl", lg: "4xl", xl: "5xl" }}
+                align="stretch"
+            >
+                {/* デスクトップ：よりインパクトのあるヘッダー */}
+                <VStack gap={{ base: 2, lg: 4 }} textAlign="center">
+                    <Box
+                        fontSize={{ base: "5xl", lg: "6xl" }}
+                        color="floorp.500"
+                        transition="transform 0.2s"
+                        _hover={{ transform: "scale(1.05)" }}
+                    >
+                        <LuSparkles />
+                    </Box>
+                    <Heading size={{ base: "xl", lg: "2xl" }}>
+                        {t("agent.whatToDo")}
+                    </Heading>
+                    <Text
+                        color="fg.muted"
+                        fontSize={{ base: "md", lg: "lg" }}
+                        maxW="2xl"
+                    >
+                        {t("agent.promptHint")}
+                    </Text>
+                </VStack>
 
-            <Card.Root>
-                <Card.Body p={{ base: 4, md: 6 }}>
-                    <VStack gap={4} align="stretch">
-                        <Textarea
-                            ref={textareaRef}
-                            placeholder={t("agent.placeholder")}
-                            value={prompt}
-                            onChange={(e) => onPromptChange(e.target.value)}
-                            onKeyDown={handleKeyDown}
-                            rows={5}
-                            minH="150px"
-                            maxH="400px"
-                            fontSize="md"
-                            resize="none"
-                            disabled={generating}
-                            borderWidth="2px"
-                            _focus={{
-                                borderColor: "floorp.500",
-                                boxShadow:
-                                    "0 0 0 1px var(--chakra-colors-floorp-500)",
-                            }}
-                        />
-                        <HStack justify="space-between">
-                            <Text fontSize="sm" color="fg.muted">
-                                {t("agent.sendHint")}
-                            </Text>
-                            <Button
-                                colorPalette="floorp"
-                                onClick={onSubmit}
-                                disabled={!prompt.trim() || generating}
-                            >
-                                {generating
-                                    ? (
-                                        <>
-                                            <Spinner size="sm" />
-                                            {t("agent.generating")}
-                                        </>
-                                    )
-                                    : (
-                                        <>
-                                            <LuSparkles />
-                                            {t("agent.generateWorkflow")}
-                                        </>
-                                    )}
-                            </Button>
-                        </HStack>
-                    </VStack>
-                </Card.Body>
-            </Card.Root>
-        </VStack>
+                {/* 入力カード：デスクトップ向けに強化 */}
+                <Card.Root
+                    shadow={{ base: "sm", lg: "md" }}
+                    transition="all 0.2s"
+                    _hover={{ shadow: { lg: "lg" } }}
+                >
+                    <Card.Body p={{ base: 4, md: 6, lg: 8 }}>
+                        <VStack gap={{ base: 4, lg: 6 }} align="stretch">
+                            <Textarea
+                                ref={textareaRef}
+                                placeholder={t("agent.placeholder")}
+                                value={prompt}
+                                onChange={(e) => onPromptChange(e.target.value)}
+                                onKeyDown={handleKeyDown}
+                                rows={5}
+                                minH={{ base: "150px", lg: "180px" }}
+                                maxH="400px"
+                                fontSize={{ base: "md", lg: "lg" }}
+                                resize="none"
+                                disabled={generating}
+                                borderWidth="2px"
+                                _focus={{
+                                    borderColor: "floorp.500",
+                                    boxShadow:
+                                        "0 0 0 1px var(--chakra-colors-floorp-500)",
+                                }}
+                            />
+                            <HStack justify="space-between" align="center">
+                                <Text
+                                    fontSize={{ base: "sm", lg: "md" }}
+                                    color="fg.muted"
+                                >
+                                    {t("agent.sendHint")}
+                                </Text>
+                                <Button
+                                    colorPalette="floorp"
+                                    size={{ base: "md", lg: "lg" }}
+                                    onClick={onSubmit}
+                                    disabled={!prompt.trim() || generating}
+                                    px={{ base: 4, lg: 6 }}
+                                >
+                                    {generating
+                                        ? (
+                                            <>
+                                                <Spinner size="sm" />
+                                                {t("agent.generating")}
+                                            </>
+                                        )
+                                        : (
+                                            <>
+                                                <LuSparkles />
+                                                {t("agent.generateWorkflow")}
+                                            </>
+                                        )}
+                                </Button>
+                            </HStack>
+                        </VStack>
+                    </Card.Body>
+                </Card.Root>
+            </VStack>
+        </Flex>
+    );
+}
+
+/**
+ * コンソールツールバー（コピー・ダウンロードボタン）
+ */
+function ConsoleToolbar({
+    consoleRef,
+}: {
+    consoleRef: React.RefObject<TerminalConsoleHandle | null>;
+}) {
+    const { t } = useI18n();
+    const [copied, setCopied] = React.useState(false);
+
+    const handleCopy = async () => {
+        await consoleRef.current?.copy();
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
+    return (
+        <HStack gap={1}>
+            <Tooltip content={copied ? t("console.copied") : t("console.copy")}>
+                <IconButton
+                    aria-label={t("console.copy")}
+                    size="xs"
+                    variant="ghost"
+                    color={copied ? "green.500" : "fg.muted"}
+                    onClick={handleCopy}
+                >
+                    {copied ? <LuCheck size={14} /> : <LuClipboard size={14} />}
+                </IconButton>
+            </Tooltip>
+            <Tooltip content={t("console.download")}>
+                <IconButton
+                    aria-label={t("console.download")}
+                    size="xs"
+                    variant="ghost"
+                    color="fg.muted"
+                    onClick={() => consoleRef.current?.download()}
+                >
+                    <LuDownload size={14} />
+                </IconButton>
+            </Tooltip>
+        </HStack>
     );
 }
 
@@ -156,37 +245,67 @@ function GeneratingStep({
     onStop: () => void;
 }) {
     const { t } = useI18n();
+    const consoleRef = React.useRef<TerminalConsoleHandle>(null);
 
     return (
-        <VStack gap={6} w="full" maxW="4xl" mx="auto" align="stretch" h="full">
-            <VStack gap={2} textAlign="center">
+        <VStack
+            gap={{ base: 4, lg: 6 }}
+            w="full"
+            maxW={{ base: "4xl", lg: "5xl", xl: "6xl" }}
+            mx="auto"
+            align="stretch"
+            h="full"
+        >
+            <VStack gap={{ base: 2, lg: 3 }} textAlign="center">
                 <Box position="relative">
-                    <Spinner size="xl" color="floorp.500" />
+                    <Spinner
+                        size={{ base: "xl", lg: "xl" }}
+                        color="floorp.500"
+                    />
                 </Box>
-                <Heading size="lg">{t("agent.generatingTitle")}</Heading>
-                <Text color="fg.muted" fontSize="md">
+                <Heading size={{ base: "lg", lg: "xl" }}>
+                    {t("agent.generatingTitle")}
+                </Heading>
+                <Text color="fg.muted" fontSize={{ base: "md", lg: "lg" }}>
                     {t("agent.generatingHint")}
                 </Text>
             </VStack>
 
-            <Card.Root flex={1} minH={0} overflow="hidden">
-                <Card.Body p={4} display="flex" flexDirection="column" h="full">
-                    <HStack justify="space-between" mb={3}>
-                        <Text fontWeight="medium">
+            <Card.Root
+                flex={1}
+                minH={0}
+                overflow="hidden"
+                shadow={{ base: "sm", lg: "md" }}
+            >
+                <Card.Body
+                    p={{ base: 3, lg: 5 }}
+                    display="flex"
+                    flexDirection="column"
+                    h="full"
+                >
+                    <HStack justify="space-between" mb={{ base: 3, lg: 4 }}>
+                        <Text
+                            fontWeight="semibold"
+                            fontSize={{ base: "md", lg: "lg" }}
+                        >
                             {t("agent.generationLog")}
                         </Text>
-                        <Button
-                            size="sm"
-                            variant="ghost"
-                            colorPalette="red"
-                            onClick={onStop}
-                        >
-                            <LuSquare />
-                            {t("agent.stop")}
-                        </Button>
+                        <HStack gap={2}>
+                            <ConsoleToolbar consoleRef={consoleRef} />
+                            <Button
+                                size={{ base: "sm", lg: "md" }}
+                                variant="ghost"
+                                colorPalette="red"
+                                onClick={onStop}
+                            >
+                                <LuSquare />
+                                {t("agent.stop")}
+                            </Button>
+                        </HStack>
                     </HStack>
                     <Box flex={1} minH={0} overflow="hidden">
                         <TerminalConsole
+                            ref={consoleRef}
                             events={events as GenerationEvent[]}
                             streaming={true}
                         />
@@ -229,7 +348,8 @@ function ConfirmStep({
     }, [refinePrompt]);
 
     const hasWorkflowDefinition = !!workflow?.workflowDefinition;
-    const hasHighRisk = hasWorkflowDefinition && workflow.workflowDefinition && hasHighRiskFunctions(workflow.workflowDefinition);
+    const hasHighRisk = hasWorkflowDefinition && workflow.workflowDefinition &&
+        hasHighRiskFunctions(workflow.workflowDefinition);
     const canConfirm = !hasHighRisk || riskAcknowledged;
 
     return (
@@ -237,126 +357,114 @@ function ConfirmStep({
             direction="column"
             w="full"
             h="full"
-            gap={{ base: 2, md: 4 }}
+            gap={{ base: 2, md: 4, lg: 6 }}
+            maxW={{ lg: "6xl", xl: "7xl" }}
+            mx="auto"
         >
-            {/* ヘッダー - モバイル向けにコンパクト化 */}
-            <VStack align="stretch" gap={0.5} flexShrink={0}>
-                <HStack gap={2}>
-                    <Box
-                        p={1.5}
-                        rounded="md"
-                        bg="orange.100"
-                        _dark={{ bg: "orange.900/30" }}
-                    >
-                        <Box fontSize="lg" color="orange.500">
-                            <LuShield />
-                        </Box>
-                    </Box>
-                    <Heading size="md">{t("agent.confirmTitle")}</Heading>
-                </HStack>
-            </VStack>
-
-            {/* メインコンテンツ - 2カラムレイアウト（大画面時） */}
-            <Flex
-                direction={{ base: "column", lg: "row" }}
-                gap={{ base: 2, md: 4 }}
-                flex={1}
-                minH={0}
-                overflow="auto"
-            >
-                {/* 左カラム：権限とアクション */}
-                <VStack
-                    align="stretch"
-                    gap={{ base: 2, md: 3 }}
-                    w={{ base: "full", lg: "300px" }}
-                    flexShrink={0}
+            {/* ヘッダー - デスクトップでは少し大きく */}
+            <HStack gap={3} flexShrink={0}>
+                <Box
+                    p={{ base: 1.5, lg: 2 }}
+                    rounded="lg"
+                    bg="orange.100"
+                    _dark={{ bg: "orange.900/30" }}
                 >
-                    </VStack>
+                    <Box fontSize={{ base: "lg", lg: "xl" }} color="orange.500">
+                        <LuShield />
+                    </Box>
+                </Box>
+                <Heading size={{ base: "md", lg: "lg" }}>
+                    {t("agent.confirmTitle")}
+                </Heading>
+            </HStack>
 
-                {/* 右カラム：ワークフローステップ */}
-                {hasWorkflowDefinition && (
-                    <Card.Root
-                        flex={1}
-                        minH={{ base: "200px", lg: 0 }}
-                        overflow="hidden"
+            {/* メインコンテンツ - フル幅のワークフロー表示 */}
+            {hasWorkflowDefinition && (
+                <Card.Root
+                    flex={1}
+                    minH={{ base: "200px", lg: "300px" }}
+                    overflow="hidden"
+                    shadow={{ base: "sm", lg: "md" }}
+                >
+                    <Card.Body
+                        p={0}
+                        display="flex"
+                        flexDirection="column"
+                        h="full"
                     >
-                        <Card.Body
-                            p={0}
-                            display="flex"
-                            flexDirection="column"
-                            h="full"
+                        <HStack
+                            px={{ base: 3, lg: 5 }}
+                            py={{ base: 2, lg: 3 }}
+                            borderBottomWidth="1px"
+                            flexShrink={0}
+                            justify="space-between"
+                            bg="bg.subtle"
                         >
-                            <HStack
-                                px={{ base: 2, md: 4 }}
-                                py={2}
-                                borderBottomWidth="1px"
-                                flexShrink={0}
-                                justify="space-between"
+                            <Text
+                                fontWeight="semibold"
+                                fontSize={{ base: "sm", lg: "md" }}
                             >
-                                <Text fontWeight="medium" fontSize="sm">
-                                    {t("agent.workflowSteps")}
-                                </Text>
-                                <Button
-                                    size="xs"
-                                    variant="ghost"
-                                    onClick={() =>
-                                        setShowDetailView(!showDetailView)}
-                                    color="fg.muted"
-                                    fontSize="xs"
-                                >
-                                    {showDetailView
-                                        ? t("agent.compactView")
-                                        : t("agent.detailView")}
-                                </Button>
-                            </HStack>
-                            <Box
-                                flex={1}
-                                minH={0}
-                                overflow="auto"
+                                {t("agent.workflowSteps")}
+                            </Text>
+                            <Button
+                                size={{ base: "xs", lg: "sm" }}
+                                variant="ghost"
+                                onClick={() =>
+                                    setShowDetailView(!showDetailView)}
+                                color="fg.muted"
                             >
-                                {workflow?.workflowDefinition && (
-                                    showDetailView
-                                        ? (
-                                            <WorkflowCanvas
+                                {showDetailView
+                                    ? t("agent.compactView")
+                                    : t("agent.detailView")}
+                            </Button>
+                        </HStack>
+                        <Box flex={1} minH={0} overflow="auto">
+                            {workflow?.workflowDefinition &&
+                                (showDetailView
+                                    ? (
+                                        <WorkflowCanvas
+                                            workflow={workflow
+                                                .workflowDefinition}
+                                            withBackground={false}
+                                        />
+                                    )
+                                    : (
+                                        <Box p={{ base: 3, lg: 5 }}>
+                                            <WorkflowFunctionList
                                                 workflow={workflow
                                                     .workflowDefinition}
-                                                withBackground={false}
                                             />
-                                        )
-                                        : (
-                                            <Box p={{ base: 2, md: 3 }}>
-                                                <WorkflowFunctionList
-                                                    workflow={workflow
-                                                        .workflowDefinition}
-                                                />
-                                            </Box>
-                                        )
-                                )}
-                            </Box>
-                        </Card.Body>
-                    </Card.Root>
-                )}
-            </Flex>
+                                        </Box>
+                                    ))}
+                        </Box>
+                    </Card.Body>
+                </Card.Root>
+            )}
 
             {/* フッター：アクションボタンとチャットボックス */}
             <Box
                 flexShrink={0}
-                p={2}
+                p={{ base: 2, lg: 4 }}
                 borderWidth="1px"
-                rounded="lg"
+                rounded="xl"
                 bg="bg.subtle"
                 _dark={{ bg: "gray.900" }}
+                shadow="sm"
             >
-                <VStack gap={2} align="stretch">
-                    {/* 高リスク承認 + 実行ボタン（横並び） */}
-                    <HStack gap={2}>
+                <VStack gap={{ base: 2, lg: 3 }} align="stretch">
+                    {/* 高リスク承認 + 実行ボタン */}
+                    <Flex
+                        direction={{ base: "column", md: "row" }}
+                        gap={{ base: 2, md: 3 }}
+                        align={{ md: "center" }}
+                    >
                         {hasHighRisk && (
                             <HStack
                                 gap={2}
                                 align="center"
-                                px={2}
-                                py={1.5}
-                                rounded="md"
+                                px={3}
+                                py={2}
+                                rounded="lg"
                                 bg="red.50"
                                 borderWidth="1px"
                                 borderColor={riskAcknowledged
@@ -368,7 +476,7 @@ function ConfirmStep({
                                         ? "green.600"
                                         : "red.700",
                                 }}
-                                flex={1}
+                                flex={{ md: 1 }}
                             >
                                 <Checkbox.Root
                                     checked={riskAcknowledged}
@@ -381,7 +489,7 @@ function ConfirmStep({
                                     <Checkbox.Control />
                                 </Checkbox.Root>
                                 <Text
-                                    fontSize="xs"
+                                    fontSize={{ base: "xs", lg: "sm" }}
                                     color="red.700"
                                     _dark={{ color: "red.300" }}
                                 >
@@ -395,28 +503,23 @@ function ConfirmStep({
                                 : "floorp"}
                             onClick={onConfirm}
                             disabled={saving || !canConfirm}
-                            size="md"
-                            px={4}
+                            size={{ base: "md", lg: "lg" }}
+                            px={{ base: 4, lg: 6 }}
                             flexShrink={0}
                             fontWeight="bold"
                             opacity={canConfirm ? 1 : 0.6}
+                            ml={{ md: hasHighRisk ? 0 : "auto" }}
                         >
-                            {saving
-                                ? (
-                                    <>
-                                        <Spinner size="sm" />
-                                    </>
-                                )
-                                : (
-                                    <>
-                                        <LuPlay size={14} />
-                                        {t("agent.confirmAndRun")}
-                                    </>
-                                )}
+                            {saving ? <Spinner size="sm" /> : (
+                                <>
+                                    <LuPlay size={16} />
+                                    {t("agent.confirmAndRun")}
+                                </>
+                            )}
                         </Button>
-                    </HStack>
+                    </Flex>
 
-                    {/* チャットボックス（ワークフロー修正用）- 常に一番下 */}
+                    {/* チャットボックス（ワークフロー修正用） */}
                     <HStack gap={2} align="end">
                         <Textarea
                             ref={refineTextareaRef}
@@ -424,13 +527,12 @@ function ConfirmStep({
                             value={refinePrompt}
                             onChange={(e) => setRefinePrompt(e.target.value)}
                             disabled={saving || refining}
-                            size="md"
                             resize="none"
                             flex={1}
-                            minH="40px"
+                            minH={{ base: "40px", lg: "48px" }}
                             maxH="120px"
                             py={2}
-                            fontSize="md"
+                            fontSize={{ base: "md", lg: "md" }}
                             _focus={{
                                 borderColor: "floorp.500",
                                 boxShadow:
@@ -455,7 +557,7 @@ function ConfirmStep({
                             aria-label={t("agent.refine")}
                             colorPalette="floorp"
                             variant="ghost"
-                            size="md"
+                            size={{ base: "md", lg: "lg" }}
                             disabled={!refinePrompt.trim() || saving ||
                                 refining}
                             onClick={() => {
@@ -467,7 +569,7 @@ function ConfirmStep({
                         >
                             {refining
                                 ? <Spinner size="md" />
-                                : <LuSend size={18} />}
+                                : <LuSend size={20} />}
                         </IconButton>
                     </HStack>
                 </VStack>
@@ -487,42 +589,43 @@ function ExecutingStep({
     workflowName?: string;
 }) {
     const { t } = useI18n();
+    const consoleRef = React.useRef<TerminalConsoleHandle>(null);
 
     return (
         <VStack
-            gap={{ base: 2, md: 6 }}
+            gap={{ base: 3, md: 5, lg: 6 }}
             w="full"
-            maxW="4xl"
+            maxW={{ base: "4xl", lg: "5xl", xl: "6xl" }}
             mx="auto"
             align="stretch"
             h="full"
         >
             {/* モバイル: コンパクトな横並び / デスクトップ: 縦並び中央揃え */}
             <HStack
-                gap={{ base: 3, md: 4 }}
-                justify={{ base: "flex-start", md: "center" }}
+                gap={{ base: 3, lg: 4 }}
+                justify={{ base: "flex-start", lg: "center" }}
                 align="center"
-                py={{ base: 2, md: 4 }}
+                py={{ base: 2, lg: 4 }}
                 flexWrap="wrap"
             >
                 <Spinner
-                    size={{ base: "md", md: "xl" }}
+                    size={{ base: "md", lg: "xl" }}
                     color="floorp.500"
                     flexShrink={0}
                 />
                 <VStack
                     gap={0}
-                    align={{ base: "flex-start", md: "center" }}
+                    align={{ base: "flex-start", lg: "center" }}
                     flex={1}
                     minW={0}
                 >
-                    <Heading size={{ base: "md", md: "lg" }} lineHeight="short">
+                    <Heading size={{ base: "md", lg: "xl" }} lineHeight="short">
                         {t("agent.executingTitle")}
                     </Heading>
                     {workflowName && (
                         <Text
                             fontWeight="medium"
-                            fontSize={{ base: "sm", md: "md" }}
+                            fontSize={{ base: "sm", lg: "md" }}
                             color="fg.muted"
                             lineClamp={1}
                         >
@@ -532,22 +635,30 @@ function ExecutingStep({
                 </VStack>
             </HStack>
 
-            <Card.Root flex={1} minH={0} overflow="hidden">
+            <Card.Root
+                flex={1}
+                minH={0}
+                overflow="hidden"
+                shadow={{ base: "sm", lg: "md" }}
+            >
                 <Card.Body
-                    p={{ base: 2, md: 4 }}
+                    p={{ base: 3, lg: 5 }}
                     display="flex"
                     flexDirection="column"
                     h="full"
                 >
-                    <Text
-                        fontWeight="medium"
-                        mb={{ base: 2, md: 3 }}
-                        fontSize={{ base: "sm", md: "md" }}
-                    >
-                        {t("agent.executionLog")}
-                    </Text>
+                    <HStack justify="space-between" mb={{ base: 2, lg: 4 }}>
+                        <Text
+                            fontWeight="semibold"
+                            fontSize={{ base: "sm", lg: "lg" }}
+                        >
+                            {t("agent.executionLog")}
+                        </Text>
+                        <ConsoleToolbar consoleRef={consoleRef} />
+                    </HStack>
                     <Box flex={1} minH={0} overflow="hidden">
                         <TerminalConsole
+                            ref={consoleRef}
                             events={events as GenerationEvent[]}
                             streaming={true}
                         />
@@ -574,39 +685,59 @@ function CompletedStep({
 }) {
     const { t } = useI18n();
     const navigate = useNavigate();
+    const consoleRef = React.useRef<TerminalConsoleHandle>(null);
 
     return (
-        <VStack gap={6} w="full" maxW="4xl" mx="auto" align="stretch">
-            <VStack gap={2} textAlign="center">
-                <Box fontSize="5xl" color="green.500">
+        <VStack
+            gap={{ base: 6, lg: 8 }}
+            w="full"
+            maxW={{ base: "4xl", lg: "5xl", xl: "6xl" }}
+            mx="auto"
+            align="stretch"
+        >
+            <VStack gap={{ base: 2, lg: 4 }} textAlign="center">
+                <Box
+                    fontSize={{ base: "5xl", lg: "6xl" }}
+                    color="green.500"
+                    transition="transform 0.2s"
+                >
                     <LuCheck />
                 </Box>
-                <Heading size="xl">{t("agent.completedTitle")}</Heading>
-                <Text color="fg.muted" fontSize="md">
+                <Heading size={{ base: "xl", lg: "2xl" }}>
+                    {t("agent.completedTitle")}
+                </Heading>
+                <Text color="fg.muted" fontSize={{ base: "md", lg: "lg" }}>
                     {t("agent.completedHint")}
                 </Text>
             </VStack>
 
             {/* 実行結果 */}
-            <Card.Root>
-                <Card.Body p={4}>
-                    <VStack align="stretch" gap={4}>
+            <Card.Root shadow={{ base: "sm", lg: "md" }}>
+                <Card.Body p={{ base: 4, lg: 6 }}>
+                    <VStack align="stretch" gap={{ base: 4, lg: 5 }}>
                         <HStack justify="space-between">
-                            <Text fontWeight="medium">
+                            <Text
+                                fontWeight="semibold"
+                                fontSize={{ base: "md", lg: "lg" }}
+                            >
                                 {t("agent.executionResult")}
                             </Text>
-                            <Badge colorPalette="green">
-                                {t("common.success")}
-                            </Badge>
+                            <HStack gap={2}>
+                                <ConsoleToolbar consoleRef={consoleRef} />
+                                <Badge colorPalette="green" size={{ lg: "lg" }}>
+                                    {t("common.success")}
+                                </Badge>
+                            </HStack>
                         </HStack>
 
                         <Box
-                            maxH="400px"
+                            maxH={{ base: "400px", lg: "500px" }}
                             overflowY="auto"
                             borderWidth="1px"
-                            rounded="md"
+                            rounded="lg"
                         >
                             <TerminalConsole
+                                ref={consoleRef}
                                 events={events as GenerationEvent[]}
                                 streaming={false}
                             />
@@ -616,18 +747,30 @@ function CompletedStep({
             </Card.Root>
 
             {/* アクションボタン */}
-            <HStack justify="center" gap={4} flexWrap="wrap">
-                <Button variant="outline" onClick={() => navigate("/home")}>
+            <HStack justify="center" gap={{ base: 3, lg: 4 }} flexWrap="wrap">
+                <Button
+                    variant="outline"
+                    size={{ base: "md", lg: "lg" }}
+                    onClick={() => navigate("/home")}
+                >
                     <LuHouse />
                     {t("agent.backToHome")}
                 </Button>
                 {workflowId && (
-                    <Button variant="outline" onClick={onViewWorkflow}>
+                    <Button
+                        variant="outline"
+                        size={{ base: "md", lg: "lg" }}
+                        onClick={onViewWorkflow}
+                    >
                         <LuArrowRight />
                         {t("agent.viewWorkflow")}
                     </Button>
                 )}
-                <Button colorPalette="floorp" onClick={onReset}>
+                <Button
+                    colorPalette="floorp"
+                    size={{ base: "md", lg: "lg" }}
+                    onClick={onReset}
+                >
                     <LuRefreshCw />
                     {t("agent.createAnother")}
                 </Button>
@@ -651,60 +794,91 @@ function ErrorStep({
     const { t } = useI18n();
 
     return (
-        <VStack gap={6} w="full" maxW="lg" mx="auto" align="stretch">
-            <VStack gap={2} textAlign="center">
-                <Box fontSize="5xl" color="red.500">
-                    <LuX />
-                </Box>
-                <Heading size="xl">{t("agent.errorTitle")}</Heading>
-                <Text color="fg.muted" fontSize="md">
-                    {t("agent.errorHint")}
-                </Text>
-            </VStack>
-
-            <Card.Root
-                borderColor="red.300"
-                borderWidth="1px"
-                bg="red.50/50"
-                _dark={{ borderColor: "red.700", bg: "red.950/30" }}
+        <Flex
+            direction="column"
+            align="center"
+            justify="center"
+            w="full"
+            h="full"
+            minH={{ base: "auto", lg: "400px" }}
+        >
+            <VStack
+                gap={{ base: 6, lg: 8 }}
+                w="full"
+                maxW={{ base: "lg", lg: "xl" }}
+                align="stretch"
             >
-                <Card.Body p={{ base: 4, md: 6 }}>
-                    <VStack align="stretch" gap={3}>
-                        <HStack gap={2}>
-                            <Box color="red.500">
-                                <LuTriangleAlert size={18} />
-                            </Box>
-                            <Text fontWeight="medium" fontSize="sm">
-                                {t("agent.errorDetails")}
-                            </Text>
-                        </HStack>
-                        <Box
-                            bg="red.100"
-                            _dark={{ bg: "red.900/40", color: "red.200" }}
-                            p={3}
-                            rounded="md"
-                            fontFamily="mono"
-                            fontSize="sm"
-                            color="red.700"
-                            wordBreak="break-word"
-                        >
-                            {error || t("agent.unknownError")}
-                        </Box>
-                    </VStack>
-                </Card.Body>
-            </Card.Root>
+                <VStack gap={{ base: 2, lg: 4 }} textAlign="center">
+                    <Box fontSize={{ base: "5xl", lg: "6xl" }} color="red.500">
+                        <LuX />
+                    </Box>
+                    <Heading size={{ base: "xl", lg: "2xl" }}>
+                        {t("agent.errorTitle")}
+                    </Heading>
+                    <Text
+                        color="fg.muted"
+                        fontSize={{ base: "md", lg: "lg" }}
+                    >
+                        {t("agent.errorHint")}
+                    </Text>
+                </VStack>
 
-            <HStack justify="center" gap={4}>
-                <Button variant="outline" onClick={onReset} size="lg">
-                    <LuArrowLeft />
-                    {t("agent.startOver")}
-                </Button>
-                <Button colorPalette="floorp" onClick={onRetry} size="lg">
-                    <LuRefreshCw />
-                    {t("agent.retry")}
-                </Button>
-            </HStack>
-        </VStack>
+                <Card.Root
+                    borderColor="red.300"
+                    borderWidth="1px"
+                    bg="red.50/50"
+                    _dark={{ borderColor: "red.700", bg: "red.950/30" }}
+                    shadow={{ base: "sm", lg: "md" }}
+                >
+                    <Card.Body p={{ base: 4, lg: 6 }}>
+                        <VStack align="stretch" gap={{ base: 3, lg: 4 }}>
+                            <HStack gap={2}>
+                                <Box color="red.500">
+                                    <LuTriangleAlert size={20} />
+                                </Box>
+                                <Text
+                                    fontWeight="semibold"
+                                    fontSize={{ base: "sm", lg: "md" }}
+                                >
+                                    {t("agent.errorDetails")}
+                                </Text>
+                            </HStack>
+                            <Box
+                                bg="red.100"
+                                _dark={{ bg: "red.900/40", color: "red.200" }}
+                                p={{ base: 3, lg: 4 }}
+                                rounded="lg"
+                                fontFamily="mono"
+                                fontSize={{ base: "sm", lg: "md" }}
+                                color="red.700"
+                                wordBreak="break-word"
+                            >
+                                {error || t("agent.unknownError")}
+                            </Box>
+                        </VStack>
+                    </Card.Body>
+                </Card.Root>
+
+                <HStack justify="center" gap={{ base: 3, lg: 4 }}>
+                    <Button
+                        variant="outline"
+                        onClick={onReset}
+                        size={{ base: "lg", lg: "lg" }}
+                    >
+                        <LuArrowLeft />
+                        {t("agent.startOver")}
+                    </Button>
+                    <Button
+                        colorPalette="floorp"
+                        onClick={onRetry}
+                        size={{ base: "lg", lg: "lg" }}
+                    >
+                        <LuRefreshCw />
+                        {t("agent.retry")}
+                    </Button>
+                </HStack>
+            </VStack>
+        </Flex>
     );
 }
 
@@ -796,13 +970,14 @@ export function AgentPage() {
 
     return (
         <Flex direction="column" h="full" overflow="hidden" fontSize="md">
-            {/* ヘッダー */}
+            {/* ヘッダー - モバイルのみ表示（デスクトップはサイドバーで十分） */}
             <Box
                 borderBottomWidth="1px"
                 px={3}
                 py={2}
                 bg="bg.panel"
                 flexShrink={0}
+                display={{ base: "block", lg: "none" }}
             >
                 <HStack justify="space-between" align="center">
                     <HStack gap={2}>
@@ -830,12 +1005,13 @@ export function AgentPage() {
             </Box>
 
             {/* メインコンテンツ */}
-            <Box
+            <Flex
                 flex={1}
                 minH={0}
                 overflow={currentStep === "confirm" ? "hidden" : "auto"}
-                px={{ base: 4, md: 6, lg: 8 }}
-                py={{ base: 4, md: 6 }}
+                px={{ base: 4, md: 6, lg: 10 }}
+                py={{ base: 4, md: 6, lg: 8 }}
+                direction="column"
             >
                 {currentStep === "prompt" && (
                     <PromptStep
@@ -884,7 +1060,7 @@ export function AgentPage() {
                         onReset={reset}
                     />
                 )}
-            </Box>
+            </Flex>
         </Flex>
     );
 }
