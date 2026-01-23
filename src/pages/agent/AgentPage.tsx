@@ -39,12 +39,10 @@ import {
     LuX,
 } from "react-icons/lu";
 import { useAgentExecution } from "./useAgentExecution";
-import { PermissionList } from "@/components/workflow/PermissionList";
-import { WorkflowCanvas, WorkflowFunctionList } from "@/components/workflow";
+import { WorkflowCanvas, WorkflowFunctionList, hasHighRiskFunctions } from "@/components/workflow";
 import { TerminalConsole } from "@/components/console";
 import type { GenerationEvent } from "@/components/console/utils";
 import { useI18n } from "@/hooks/useI18n";
-import { PermissionLevel } from "@/gen/sapphillon/v1/permission_pb";
 
 /**
  * プロンプト入力ステップ
@@ -230,32 +228,8 @@ function ConfirmStep({
         }
     }, [refinePrompt]);
 
-    const latestCode = workflow?.workflowDefinition?.workflowCode?.[0];
-    const permissions = latestCode?.allowedPermissions || [];
-    const hasPermissions = permissions.length > 0;
     const hasWorkflowDefinition = !!workflow?.workflowDefinition;
-
-    // 高リスク操作の検出
-    const highRiskCount = React.useMemo(() => {
-        if (!latestCode?.pluginPackages) return 0;
-        let count = 0;
-        for (const pkg of latestCode.pluginPackages) {
-            for (const func of pkg.functions) {
-                for (const perm of func.permissions) {
-                    if (
-                        perm.permissionLevel === PermissionLevel.HIGH ||
-                        perm.permissionLevel === PermissionLevel.CRITICAL
-                    ) {
-                        count++;
-                        break; // 関数ごとに1回だけカウント
-                    }
-                }
-            }
-        }
-        return count;
-    }, [latestCode]);
-
-    const hasHighRisk = highRiskCount > 0;
+    const hasHighRisk = hasWorkflowDefinition && workflow.workflowDefinition && hasHighRiskFunctions(workflow.workflowDefinition);
     const canConfirm = !hasHighRisk || riskAcknowledged;
 
     return (
@@ -297,47 +271,7 @@ function ConfirmStep({
                     w={{ base: "full", lg: "300px" }}
                     flexShrink={0}
                 >
-                    {/* 必要な権限セクション - 権限がある場合のみ表示 */}
-                    {hasPermissions && (
-                        <Card.Root
-                            bg="orange.50"
-                            _dark={{
-                                bg: "orange.900/20",
-                                borderColor: "orange.800",
-                            }}
-                            borderWidth="1px"
-                            borderColor="orange.200"
-                        >
-                            <Card.Body p={{ base: 2, md: 3 }}>
-                                <VStack align="stretch" gap={2}>
-                                    <HStack justify="space-between">
-                                        <HStack gap={2}>
-                                            <Box color="orange.500">
-                                                <LuShield size={14} />
-                                            </Box>
-                                            <Text
-                                                fontWeight="medium"
-                                                fontSize="sm"
-                                            >
-                                                {t("agent.requiredPermissions")}
-                                            </Text>
-                                        </HStack>
-                                        <Badge
-                                            colorPalette={permissions.length > 3
-                                                ? "orange"
-                                                : "blue"}
-                                            size="xs"
-                                        >
-                                            {permissions.length}{" "}
-                                            {t("agent.permissionCount")}
-                                        </Badge>
-                                    </HStack>
-                                    <PermissionList permissions={permissions} />
-                                </VStack>
-                            </Card.Body>
-                        </Card.Root>
-                    )}
-                </VStack>
+                    </VStack>
 
                 {/* 右カラム：ワークフローステップ */}
                 {hasWorkflowDefinition && (
