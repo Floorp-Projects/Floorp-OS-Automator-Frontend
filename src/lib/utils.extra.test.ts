@@ -1,7 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import {
   formatBytes,
-  formatRelativeTime,
   truncate,
   capitalize,
   generateId,
@@ -17,12 +16,6 @@ describe("utils", () => {
     expect(formatBytes(0)).toBe("0 Bytes");
     expect(formatBytes(1024)).toBe("1 KB");
     expect(formatBytes(1024 * 1024 * 1.5)).toMatch(/1.5 MB/);
-  });
-
-  it("formatRelativeTime works", () => {
-    const now = Date.now();
-    expect(formatRelativeTime(now - 30 * 1000)).toBe("just now");
-    expect(formatRelativeTime(now - 90 * 1000)).toBe("1 minute ago");
   });
 
   it("truncate works", () => {

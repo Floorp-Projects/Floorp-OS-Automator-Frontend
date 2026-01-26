@@ -8,7 +8,6 @@ import {
   Heading,
   HStack,
   IconButton,
-  Input,
   SimpleGrid,
   Text,
   Textarea,
@@ -24,54 +23,13 @@ import {
   LuSend,
   LuSparkles,
   LuWrench,
-  LuX,
 } from "react-icons/lu";
 import { useWorkflowsList } from "@/pages/workflows/useWorkflowsList";
 import type { Workflow } from "@/gen/sapphillon/v1/workflow_pb";
 import { CardSkeleton } from "@/components/ui/skeleton";
 import { WorkflowResultType } from "@/gen/sapphillon/v1/workflow_pb";
 import { useI18n } from "@/hooks/useI18n";
-
-function formatDate(
-  timestamp?: { seconds: bigint; nanos: number },
-  locale: string = "ja-JP",
-): string {
-  if (!timestamp) return "";
-  const date = new Date(Number(timestamp.seconds) * 1000);
-  return date.toLocaleString(locale === "ja" ? "ja-JP" : "en-US", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-
-function formatRelativeTime(
-  timestamp: { seconds: bigint; nanos: number } | undefined,
-  t: (key: string, options?: { count?: number }) => string,
-  locale: string = "ja",
-): string {
-  if (!timestamp) return "";
-  const now = new Date();
-  const date = new Date(Number(timestamp.seconds) * 1000);
-  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-
-  if (diffInSeconds < 60) return t("common.time.justNow");
-  if (diffInSeconds < 3600) {
-    const minutes = Math.floor(diffInSeconds / 60);
-    return t("common.time.minutesAgo", { count: minutes });
-  }
-  if (diffInSeconds < 86400) {
-    const hours = Math.floor(diffInSeconds / 3600);
-    return t("common.time.hoursAgo", { count: hours });
-  }
-  if (diffInSeconds < 604800) {
-    const days = Math.floor(diffInSeconds / 86400);
-    return t("common.time.daysAgo", { count: days });
-  }
-  return formatDate(timestamp, locale);
-}
+import { formatRelativeTimestamp } from "@/lib/time-utils";
 
 function WorkflowCard({ workflow }: { workflow: Workflow }) {
   const { t, currentLanguage } = useI18n();
@@ -159,7 +117,7 @@ function WorkflowCard({ workflow }: { workflow: Workflow }) {
                 <LuClock size={12} />
                 <Text>
                   {t("common.updated")}:{" "}
-                  {formatRelativeTime(workflow.updatedAt, t, currentLanguage)}
+                  {formatRelativeTimestamp(workflow.updatedAt, t, currentLanguage)}
                 </Text>
               </HStack>
             )}

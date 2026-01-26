@@ -19,30 +19,10 @@ import {
 } from "react-icons/lu";
 import type { WorkflowResult } from "@/gen/sapphillon/v1/workflow_pb";
 import { EmptyState } from "@/components/ui/empty-state";
+import { formatTimestamp, formatDuration } from "@/lib/time-utils";
 
 interface WorkflowExecutionTimelineProps {
   results: WorkflowResult[];
-}
-
-function formatDate(timestamp?: { seconds: bigint; nanos: number }): string {
-  if (!timestamp) return "-";
-  const date = new Date(Number(timestamp.seconds) * 1000);
-  return date.toLocaleString("ja-JP", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
-}
-
-function formatDuration(ms: number): string {
-  if (ms < 1000) return `${ms}ms`;
-  if (ms < 60000) return `${(ms / 1000).toFixed(1)}秒`;
-  const minutes = Math.floor(ms / 60000);
-  const seconds = Math.floor((ms % 60000) / 1000);
-  return `${minutes}分 ${seconds}秒`;
 }
 
 function ExecutionResultCard({
@@ -80,7 +60,7 @@ function ExecutionResultCard({
                 {result.ranAt && (
                   <HStack gap={1} fontSize="xs" color="fg.muted">
                     <LuClock size={12} />
-                    <Text>{formatDate(result.ranAt)}</Text>
+                    <Text>{formatTimestamp(result.ranAt, "ja-JP", true)}</Text>
                   </HStack>
                 )}
               </VStack>
@@ -187,7 +167,7 @@ function ExecutionResultCard({
                     {result.ranAt && (
                       <HStack justify="space-between">
                         <Text>実行:</Text>
-                        <Text>{formatDate(result.ranAt)}</Text>
+                        <Text>{formatTimestamp(result.ranAt, "ja-JP", true)}</Text>
                       </HStack>
                     )}
                   </VStack>
