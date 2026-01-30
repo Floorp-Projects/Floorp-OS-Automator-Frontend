@@ -17,6 +17,8 @@ import { useI18n } from "@/hooks/useI18n";
 export interface TerminalConsoleProps {
     events: GenerationEvent[];
     streaming: boolean;
+    /** 簡潔モード：時刻とプレフィックスを省略し、重要な情報のみを表示 */
+    compact?: boolean;
 }
 
 /** TerminalConsole の外部公開メソッド */
@@ -62,7 +64,7 @@ function getKindColor(kind: string): string {
 export const TerminalConsole = React.forwardRef<
     TerminalConsoleHandle,
     TerminalConsoleProps
->(({ events, streaming }, ref) => {
+>(({ events, streaming, compact = false }, ref) => {
     const { t } = useI18n();
     const [autoScroll, setAutoScroll] = React.useState(true);
     const viewportRef = React.useRef<HTMLDivElement | null>(null);
@@ -85,26 +87,48 @@ export const TerminalConsole = React.forwardRef<
 
             for (const row of rows) {
                 if (row.type === "sep") {
-                    lines.push({
-                        text: `━━━ ${row.label} ━━━`,
-                        kind: "separator",
-                        isSeparator: true,
-                    });
+                    // compact モードではセパレーターを簡素化
+                    if (compact) {
+                        lines.push({
+                            text: `── ${row.label} ──`,
+                            kind: "separator",
+                            isSeparator: true,
+                        });
+                    } else {
+                        lines.push({
+                            text: `━━━ ${row.label} ━━━`,
+                            kind: "separator",
+                            isSeparator: true,
+                        });
+                    }
                 } else {
                     const e = row.event;
-                    const time = fmtTime(e.t);
-                    const prefix = getKindPrefix(e.kind);
                     const summary = summarize(e);
-                    lines.push({
-                        text: `${time} ${prefix} ${summary}`,
-                        kind: e.kind,
-                        isSeparator: false,
-                    });
+                    if (compact) {
+                        // compact モードでは時刻と [INFO] を省略
+                        const prefix = e.kind === "error" ? "❌ "
+                                     : e.kind === "done" ? "✓ "
+                                     : "";
+                        lines.push({
+                            text: `${prefix}${summary}`,
+                            kind: e.kind,
+                            isSeparator: false,
+                        });
+                    } else {
+                        // 通常モード
+                        const time = fmtTime(e.t);
+                        const prefix = getKindPrefix(e.kind);
+                        lines.push({
+                            text: `${time} ${prefix} ${summary}`,
+                            kind: e.kind,
+                            isSeparator: false,
+                        });
+                    }
                 }
             }
 
             return lines;
-        }, [rows]);
+        }, [rows, compact]);
 
     // プレーンテキストとしてのログ出力（コピー/ダウンロード用）
     const plainText = React.useMemo(() => {

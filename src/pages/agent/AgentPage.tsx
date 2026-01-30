@@ -308,6 +308,7 @@ function GeneratingStep({
                             ref={consoleRef}
                             events={events as GenerationEvent[]}
                             streaming={true}
+                            compact={true}
                         />
                     </Box>
                 </Card.Body>
@@ -661,6 +662,7 @@ function ExecutingStep({
                             ref={consoleRef}
                             events={events as GenerationEvent[]}
                             streaming={true}
+                            compact={true}
                         />
                     </Box>
                 </Card.Body>
@@ -740,6 +742,7 @@ function CompletedStep({
                                 ref={consoleRef}
                                 events={events as GenerationEvent[]}
                                 streaming={false}
+                                compact={true}
                             />
                         </Box>
                     </VStack>
