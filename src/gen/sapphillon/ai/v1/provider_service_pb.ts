@@ -134,9 +134,9 @@ export const ListProvidersResponseSchema: GenMessage<ListProvidersResponse> = /*
   messageDesc(file_sapphillon_ai_v1_provider_service, 3);
 
 /**
- * 
+ *
  * Response message for creating a provider.
- * 
+ *
  *
  * @generated from message sapphillon.ai.v1.CreateProviderResponse
  */
@@ -160,9 +160,9 @@ export const CreateProviderResponseSchema: GenMessage<CreateProviderResponse> = 
   messageDesc(file_sapphillon_ai_v1_provider_service, 4);
 
 /**
- * 
+ *
  * Response message for retrieving a provider.
- * 
+ *
  *
  * @generated from message sapphillon.ai.v1.GetProviderResponse
  */
@@ -186,9 +186,9 @@ export const GetProviderResponseSchema: GenMessage<GetProviderResponse> = /*@__P
   messageDesc(file_sapphillon_ai_v1_provider_service, 5);
 
 /**
- * 
+ *
  * Response message for updating a provider.
- * 
+ *
  *
  * @generated from message sapphillon.ai.v1.UpdateProviderResponse
  */
@@ -212,9 +212,9 @@ export const UpdateProviderResponseSchema: GenMessage<UpdateProviderResponse> = 
   messageDesc(file_sapphillon_ai_v1_provider_service, 6);
 
 /**
- * 
+ *
  * Response message for deleting a provider.
- * 
+ *
  *
  * @generated from message sapphillon.ai.v1.DeleteProviderResponse
  */

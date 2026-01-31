@@ -41,14 +41,14 @@ export const file_sapphillon_v1_permission: GenFile = /*@__PURE__*/
  * Usage:
  * - Include in APIs (e.g., workflow or plugin definitions) to declare needed permissions.
  * - Use in policy evaluation to check whether a caller is authorized.
- * 
+ *
  * Fields:
  * - display_name: Human-readable name shown in UIs (e.g., "Read File").
  * - description: Longer explanation of the permission's purpose.
  * - permission_type: Action category (read, write, execute).
  * - resource: Resource identifiers this permission applies to. Free-form in v1.
  * - permission_level: Sensitivity level to inform review and approval.
- * 
+ *
  * Example:
  *   Permission {
  *     display_name: "Execute Workflow"
@@ -57,7 +57,7 @@ export const file_sapphillon_v1_permission: GenFile = /*@__PURE__*/
  *     resource: ["workflows/etl_daily"]
  *     permission_level: PERMISSION_LEVEL_HIGH
  *   }
- * 
+ *
  * Field behavior notes:
  * - display_name: Recommended.
  * - description: Recommended.
@@ -122,7 +122,7 @@ export const PermissionSchema: GenMessage<Permission> = /*@__PURE__*/
  * Represents a set of permissions granted to a specific plugin function.
  * This message pairs a plugin function identifier with the list of permissions
  * that callers are allowed to exercise when invoking that function.
- * 
+ *
  * Fields:
  * - plugin_function_id: Identifier of the plugin function to which the permissions apply.
  *   Format: typically "package.function" or the plugin's internal function id. When used
@@ -130,7 +130,7 @@ export const PermissionSchema: GenMessage<Permission> = /*@__PURE__*/
  * - permissions: The specific Permission values that are allowed for the given function.
  *   These should be as narrow as possible to adhere to the principle of least privilege.
  *   Example: granting only Permission{ resource: "secrets/my-secret", action: READ }
- * 
+ *
  * Notes:
  * - An AllowedPermission entry grants the listed permissions to code executing that
  *   plugin function; it does not automatically grant permissions to other plugin functions.

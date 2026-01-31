@@ -96,12 +96,12 @@ export const GetVersionResponseSchema: GenMessage<GetVersionResponse> = /*@__PUR
 export const VersionService: GenService<{
   /**
    * Returns the current application version.
-   * 
+   *
    * Behavior:
    * - Unary RPC.
    * - Guaranteed to be fast and side-effect free.
    * - Suitable for health checks or compatibility gating.
-   * 
+   *
    * Errors:
    * - Typically none; may return INTERNAL if the version cannot be determined.
    *

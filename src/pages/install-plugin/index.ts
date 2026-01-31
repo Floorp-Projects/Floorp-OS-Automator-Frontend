@@ -1,0 +1,1 @@
+export { InstallPluginPage } from "./InstallPluginPage";

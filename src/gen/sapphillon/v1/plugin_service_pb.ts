@@ -28,7 +28,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file sapphillon/v1/plugin_service.proto.
  */
 export const file_sapphillon_v1_plugin_service: GenFile = /*@__PURE__*/
-  fileDesc("CiJzYXBwaGlsbG9uL3YxL3BsdWdpbl9zZXJ2aWNlLnByb3RvEg1zYXBwaGlsbG9uLnYxIjsKEkxpc3RQbHVnaW5zUmVxdWVzdBIRCglwYWdlX3NpemUYASABKAUSEgoKcGFnZV90b2tlbhgCIAEoCSKBAQoTTGlzdFBsdWdpbnNSZXNwb25zZRItCgdwbHVnaW5zGAEgAygLMhwuc2FwcGhpbGxvbi52MS5QbHVnaW5QYWNrYWdlEhcKD25leHRfcGFnZV90b2tlbhgCIAEoCRIiCgZzdGF0dXMYAyABKAsyEi5nb29nbGUucnBjLlN0YXR1czJlCg1QbHVnaW5TZXJ2aWNlElQKC0xpc3RQbHVnaW5zEiEuc2FwcGhpbGxvbi52MS5MaXN0UGx1Z2luc1JlcXVlc3QaIi5zYXBwaGlsbG9uLnYxLkxpc3RQbHVnaW5zUmVzcG9uc2ViBnByb3RvMw", [file_google_rpc_status, file_sapphillon_v1_plugin]);
+  fileDesc("CiJzYXBwaGlsbG9uL3YxL3BsdWdpbl9zZXJ2aWNlLnByb3RvEg1zYXBwaGlsbG9uLnYxIjsKEkxpc3RQbHVnaW5zUmVxdWVzdBIRCglwYWdlX3NpemUYASABKAUSEgoKcGFnZV90b2tlbhgCIAEoCSKBAQoTTGlzdFBsdWdpbnNSZXNwb25zZRItCgdwbHVnaW5zGAEgAygLMhwuc2FwcGhpbGxvbi52MS5QbHVnaW5QYWNrYWdlEhcKD25leHRfcGFnZV90b2tlbhgCIAEoCRIiCgZzdGF0dXMYAyABKAsyEi5nb29nbGUucnBjLlN0YXR1cyIjChRJbnN0YWxsUGx1Z2luUmVxdWVzdBILCgN1cmkYASABKAkiaQoVSW5zdGFsbFBsdWdpblJlc3BvbnNlEiwKBnBsdWdpbhgBIAEoCzIcLnNhcHBoaWxsb24udjEuUGx1Z2luUGFja2FnZRIiCgZzdGF0dXMYAiABKAsyEi5nb29nbGUucnBjLlN0YXR1cyIsChZVbmluc3RhbGxQbHVnaW5SZXF1ZXN0EhIKCnBhY2thZ2VfaWQYASABKAkiPQoXVW5pbnN0YWxsUGx1Z2luUmVzcG9uc2USIgoGc3RhdHVzGAEgASgLMhIuZ29vZ2xlLnJwYy5TdGF0dXMyowIKDVBsdWdpblNlcnZpY2USVAoLTGlzdFBsdWdpbnMSIS5zYXBwaGlsbG9uLnYxLkxpc3RQbHVnaW5zUmVxdWVzdBoiLnNhcHBoaWxsb24udjEuTGlzdFBsdWdpbnNSZXNwb25zZRJaCg1JbnN0YWxsUGx1Z2luEiMuc2FwcGhpbGxvbi52MS5JbnN0YWxsUGx1Z2luUmVxdWVzdBokLnNhcHBoaWxsb24udjEuSW5zdGFsbFBsdWdpblJlc3BvbnNlEmAKD1VuaW5zdGFsbFBsdWdpbhIlLnNhcHBoaWxsb24udjEuVW5pbnN0YWxsUGx1Z2luUmVxdWVzdBomLnNhcHBoaWxsb24udjEuVW5pbnN0YWxsUGx1Z2luUmVzcG9uc2ViBnByb3RvMw", [file_google_rpc_status, file_sapphillon_v1_plugin]);
 
 /**
  * Request message for listing plugins.
@@ -96,6 +96,140 @@ export const ListPluginsResponseSchema: GenMessage<ListPluginsResponse> = /*@__P
   messageDesc(file_sapphillon_v1_plugin_service, 1);
 
 /**
+ * Request message for installing a plugin.
+ *
+ * @generated from message sapphillon.v1.InstallPluginRequest
+ */
+export type InstallPluginRequest = Message<"sapphillon.v1.InstallPluginRequest"> & {
+  /**
+   * The URI of the plugin to install.
+   *
+   * Required. This field must not be empty.
+   *
+   * Security constraints:
+   * - Only HTTPS-based URIs are allowed (e.g. https://example.com/plugin.pkg).
+   *   Implementations MUST reject non-HTTPS schemes such as file://, http://,
+   *   ftp://, ssh://, and other potentially dangerous or untrusted schemes.
+   * - Servers SHOULD validate the host and path against an allowlist or
+   *   blocklist of trusted plugin sources (e.g. known repositories or domains)
+   *   before attempting to download or install the plugin.
+   * - Servers MUST enforce reasonable limits on the size of the downloaded
+   *   plugin package and on download time to mitigate resource exhaustion
+   *   (e.g. maximum bytes, timeouts, and concurrent download limits).
+   * - If a custom or repository-specific scheme is supported, its semantics
+   *   and security properties SHOULD be documented and validated similarly.
+   *
+   * If this field is empty or does not conform to the expected format/scheme,
+   * the server MUST fail the request and return an `INVALID_ARGUMENT` error
+   * in the `status` field of `InstallPluginResponse`.
+   *
+   * @generated from field: string uri = 1;
+   */
+  uri: string;
+};
+
+/**
+ * Describes the message sapphillon.v1.InstallPluginRequest.
+ * Use `create(InstallPluginRequestSchema)` to create a new message.
+ */
+export const InstallPluginRequestSchema: GenMessage<InstallPluginRequest> = /*@__PURE__*/
+  messageDesc(file_sapphillon_v1_plugin_service, 2);
+
+/**
+ * Response message for installing a plugin.
+ *
+ * @generated from message sapphillon.v1.InstallPluginResponse
+ */
+export type InstallPluginResponse = Message<"sapphillon.v1.InstallPluginResponse"> & {
+  /**
+   * The installed plugin package.
+   *
+   * On success (`status.code == google.rpc.Code.OK`), this field contains
+   * the fully installed plugin package.
+   *
+   * On failure or partial installation (`status.code != OK`), this field
+   * MUST NOT be relied upon and should be treated as unset/undefined by
+   * clients. Implementations SHOULD leave this field empty in such cases.
+   *
+   * @generated from field: sapphillon.v1.PluginPackage plugin = 1;
+   */
+  plugin?: PluginPackage;
+
+  /**
+   * Result of the install operation.
+   *
+   * - `status.code == OK`: the plugin was installed successfully and
+   *   `plugin` is populated with the installed package.
+   * - `status.code != OK`: the install failed or only partially completed.
+   *   In this case, clients MUST ignore `plugin`. Implementations MAY
+   *   use `status.details` to convey additional information about any
+   *   partial installation state (e.g., which step failed) rather than
+   *   encoding partial state in `plugin`.
+   *
+   * @generated from field: google.rpc.Status status = 2;
+   */
+  status?: Status;
+};
+
+/**
+ * Describes the message sapphillon.v1.InstallPluginResponse.
+ * Use `create(InstallPluginResponseSchema)` to create a new message.
+ */
+export const InstallPluginResponseSchema: GenMessage<InstallPluginResponse> = /*@__PURE__*/
+  messageDesc(file_sapphillon_v1_plugin_service, 3);
+
+/**
+ * Request message for uninstalling a plugin.
+ *
+ * @generated from message sapphillon.v1.UninstallPluginRequest
+ */
+export type UninstallPluginRequest = Message<"sapphillon.v1.UninstallPluginRequest"> & {
+  /**
+   * The package ID of the plugin to uninstall.
+   *
+   * Required. This must be the exact `package_id` of an installed plugin
+   * as returned by `ListPlugins` or `InstallPlugin`.
+   *
+   * If this field is empty or does not conform to the expected format, the
+   * server MUST fail the request and return an `INVALID_ARGUMENT` error in
+   * the `status` field of `UninstallPluginResponse`.
+   *
+   * If the specified package does not exist or is already uninstalled, the
+   * server MUST return a `NOT_FOUND` error in the `status` field of
+   * `UninstallPluginResponse`.
+   *
+   * @generated from field: string package_id = 1;
+   */
+  packageId: string;
+};
+
+/**
+ * Describes the message sapphillon.v1.UninstallPluginRequest.
+ * Use `create(UninstallPluginRequestSchema)` to create a new message.
+ */
+export const UninstallPluginRequestSchema: GenMessage<UninstallPluginRequest> = /*@__PURE__*/
+  messageDesc(file_sapphillon_v1_plugin_service, 4);
+
+/**
+ * Response message for uninstalling a plugin.
+ *
+ * @generated from message sapphillon.v1.UninstallPluginResponse
+ */
+export type UninstallPluginResponse = Message<"sapphillon.v1.UninstallPluginResponse"> & {
+  /**
+   * @generated from field: google.rpc.Status status = 1;
+   */
+  status?: Status;
+};
+
+/**
+ * Describes the message sapphillon.v1.UninstallPluginResponse.
+ * Use `create(UninstallPluginResponseSchema)` to create a new message.
+ */
+export const UninstallPluginResponseSchema: GenMessage<UninstallPluginResponse> = /*@__PURE__*/
+  messageDesc(file_sapphillon_v1_plugin_service, 5);
+
+/**
  * Service for managing plugins.
  * Allows clients to list and query available plugin packages
  * that can be used in workflows.
@@ -113,6 +247,70 @@ export const PluginService: GenService<{
     methodKind: "unary";
     input: typeof ListPluginsRequestSchema;
     output: typeof ListPluginsResponseSchema;
+  },
+  /**
+   * Installs a plugin from a given URI.
+   *
+   * This API is experimental and is likely to change.
+   *
+   * TODO:
+   * - Repository support
+   * - Checksum support
+   * - Certificate support
+   *
+   * Security considerations:
+   * - Authentication and authorization: Callers must be authenticated and
+   *   authorized to install plugins. This is typically an admin-only operation.
+   * - Plugin signature verification: Implementations MUST verify plugin
+   *   signatures before installation (see TODO for certificate support).
+   * - Sandboxing: Installed plugins SHOULD be isolated/sandboxed to prevent
+   *   unauthorized access to system resources.
+   *
+   * Error conditions:
+   * - INVALID_ARGUMENT: The URI is malformed, uses a disallowed scheme, or
+   *   the plugin package is invalid.
+   * - ALREADY_EXISTS: A plugin with the same package ID is already installed.
+   * - PERMISSION_DENIED: The caller does not have permission to install plugins.
+   * - FAILED_PRECONDITION: Version conflicts or dependency issues prevent
+   *   installation.
+   *
+   * On error, the `status` field of `InstallPluginResponse` is populated with
+   * a corresponding `google.rpc.Status`.
+   *
+   * @generated from rpc sapphillon.v1.PluginService.InstallPlugin
+   */
+  installPlugin: {
+    methodKind: "unary";
+    input: typeof InstallPluginRequestSchema;
+    output: typeof InstallPluginResponseSchema;
+  },
+  /**
+   * Uninstalls a plugin by its package ID.
+   *
+   * This API is experimental and is likely to change.
+   *
+   * Security considerations:
+   * - Authentication and authorization: Callers must be authenticated and
+   *   authorized to uninstall plugins. This is typically an admin-only operation.
+   *
+   * Error conditions:
+   * - NOT_FOUND: The specified `package_id` does not correspond to any
+   *   installed plugin.
+   * - FAILED_PRECONDITION: The plugin is currently in use by one or more
+   *   active workflows and cannot be uninstalled until those workflows are
+   *   updated or terminated.
+   * - PERMISSION_DENIED: The caller does not have sufficient permission to
+   *   uninstall the plugin.
+   *
+   * On error, the `status` field of `UninstallPluginResponse` is populated
+   * with a corresponding `google.rpc.Status`.
+   *
+   * @generated from rpc sapphillon.v1.PluginService.UninstallPlugin
+   */
+  uninstallPlugin: {
+    methodKind: "unary";
+    input: typeof UninstallPluginRequestSchema;
+    output: typeof UninstallPluginResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_sapphillon_v1_plugin_service, 0);
