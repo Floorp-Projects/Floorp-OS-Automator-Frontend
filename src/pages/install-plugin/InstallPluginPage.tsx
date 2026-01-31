@@ -104,7 +104,10 @@ export function InstallPluginPage() {
   useEffect(() => {
     console.log("[InstallPluginPage] Mounted");
     console.log("[InstallPluginPage] Full URL:", window.location.href);
-    console.log("[InstallPluginPage] All params:", Object.fromEntries(searchParams.entries()));
+    console.log(
+      "[InstallPluginPage] All params:",
+      Object.fromEntries(searchParams.entries()),
+    );
     const uri = searchParams.get("uri");
     console.log("[InstallPluginPage] URI from params:", uri);
 
