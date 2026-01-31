@@ -8,7 +8,10 @@ import {
   WorkflowRunPage,
   WorkflowsPage,
 } from "@/pages/workflows";
-import { PluginsPage } from "@/pages/plugins";
+import {
+  PluginDetailPage,
+  PluginsPage,
+} from "@/pages/plugins";
 import { InstallPluginPage } from "@/pages/install-plugin";
 import { SettingsPage } from "@/pages/settings";
 import { useI18n } from "@/hooks/useI18n";
@@ -29,6 +32,7 @@ function App() {
         <Route path="/fix" element={<PageBox title={t("pages.fix")} />} />
         <Route path="/run" element={<PageBox title={t("pages.run")} />} />
         <Route path="/plugins" element={<PluginsPage />} />
+        <Route path="/plugins/*" element={<PluginDetailPage />} />
         <Route path="/install-plugin" element={<InstallPluginPage />} />
         <Route path="/about" element={<PageBox title={t("pages.about")} />} />
       </Routes>

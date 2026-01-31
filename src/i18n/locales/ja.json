@@ -384,11 +384,59 @@
         "functions": "関数",
         "viewDetails": "詳細",
         "noSearchResults": "検索結果が見つかりません",
+        "uninstall": "アンインストール",
+        "uninstallSuccess": "プラグインをアンインストールしました",
+        "uninstallError": "アンインストールに失敗しました",
+        "uninstallConfirmTitle": "アンインストールの確認",
+        "uninstallConfirmMessage": "{{name}}をアンインストールしてもよろしいですか？この操作は元に戻せません。",
         "stats": {
             "total": "合計",
             "verified": "認証済み",
             "internal": "内部",
             "deprecated": "非推奨"
+        }
+    },
+    "pluginDetail": {
+        "title": "プラグイン詳細",
+        "backToPlugins": "プラグイン一覧に戻る",
+        "viewInStore": "ストアで表示",
+        "tabs": {
+            "overview": "概要",
+            "functions": "関数",
+            "permissions": "権限"
+        },
+        "overview": {
+            "description": "説明",
+            "version": "バージョン",
+            "packageId": "パッケージID",
+            "provider": "プロバイダー",
+            "installedAt": "インストール日時",
+            "updatedAt": "最終更新",
+            "noDescription": "説明がありません。",
+            "notInstalled": "未インストール"
+        },
+        "functions": {
+            "title": "利用可能な関数",
+            "noFunctions": "このプラグインは関数を公開していません。",
+            "functionName": "関数名",
+            "version": "バージョン",
+            "parameters": "パラメータ",
+            "returns": "戻り値",
+            "requiredPermissions": "必要な権限",
+            "noParameters": "パラメータなし",
+            "noReturns": "戻り値なし",
+            "noDescription": "説明がありません。"
+        },
+        "permissions": {
+            "title": "必要な権限",
+            "noPermissions": "このプラグインは特別な権限を必要としません。",
+            "functionPermissions": "関数の権限"
+        },
+        "loading": "プラグインを読み込み中...",
+        "error": {
+            "title": "プラグインの読み込みに失敗しました",
+            "notFound": "プラグインが見つかりません",
+            "description": "要求されたプラグインが見つからないか、アンインストールされた可能性があります。"
         }
     },
     "templates": {

@@ -387,11 +387,59 @@
     "functions": "Functions",
     "viewDetails": "Details",
     "noSearchResults": "No search results found",
+    "uninstall": "Uninstall",
+    "uninstallSuccess": "Plugin uninstalled successfully",
+    "uninstallError": "Failed to uninstall plugin",
+    "uninstallConfirmTitle": "Confirm Uninstall",
+    "uninstallConfirmMessage": "Are you sure you want to uninstall {{name}}? This action cannot be undone.",
     "stats": {
       "total": "Total",
       "verified": "Verified",
       "internal": "Internal",
       "deprecated": "Deprecated"
+    }
+  },
+  "pluginDetail": {
+    "title": "Plugin Details",
+    "backToPlugins": "Back to Plugins",
+    "viewInStore": "View in Store",
+    "tabs": {
+      "overview": "Overview",
+      "functions": "Functions",
+      "permissions": "Permissions"
+    },
+    "overview": {
+      "description": "Description",
+      "version": "Version",
+      "packageId": "Package ID",
+      "provider": "Provider",
+      "installedAt": "Installed",
+      "updatedAt": "Last Updated",
+      "noDescription": "No description available.",
+      "notInstalled": "Not installed"
+    },
+    "functions": {
+      "title": "Available Functions",
+      "noFunctions": "This plugin does not expose any functions.",
+      "functionName": "Function Name",
+      "version": "Version",
+      "parameters": "Parameters",
+      "returns": "Returns",
+      "requiredPermissions": "Required Permissions",
+      "noParameters": "No parameters",
+      "noReturns": "No return value",
+      "noDescription": "No description provided."
+    },
+    "permissions": {
+      "title": "Required Permissions",
+      "noPermissions": "This plugin does not require any special permissions.",
+      "functionPermissions": "Function Permissions"
+    },
+    "loading": "Loading plugin...",
+    "error": {
+      "title": "Failed to Load Plugin",
+      "notFound": "Plugin not found",
+      "description": "The requested plugin could not be found or may have been uninstalled."
     }
   },
   "templates": {

@@ -10,14 +10,21 @@ import {
   Spinner,
   Text,
   VStack,
+  useDisclosure,
+  Dialog,
+  Portal,
 } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 import { EmptyState } from "@/components/ui/empty-state";
+import { Toaster } from "@/components/ui/toaster";
+import { toaster } from "@/components/ui/toaster-instance";
 import {
   LuCircleAlert,
   LuExternalLink,
   LuPackage,
   LuRefreshCw,
   LuShield,
+  LuTrash2,
 } from "react-icons/lu";
 import { useI18n } from "@/hooks/useI18n";
 import { clients } from "@/lib/grpc-clients";
@@ -29,6 +36,9 @@ export function PluginsPage() {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
   const [searchQuery, setSearchQuery] = React.useState("");
+  const [uninstalling, setUninstalling] = React.useState<string | null>(null);
+  const [selectedPlugin, setSelectedPlugin] = React.useState<PluginPackage | null>(null);
+  const { open: isConfirmOpen, onOpen: onConfirmOpen, onClose: onConfirmClose } = useDisclosure();
 
   const fetchPlugins = React.useCallback(async () => {
     try {
@@ -47,6 +57,46 @@ export function PluginsPage() {
   React.useEffect(() => {
     fetchPlugins();
   }, [fetchPlugins]);
+
+  const handleUninstall = React.useCallback(async (plugin: PluginPackage) => {
+    setSelectedPlugin(plugin);
+    onConfirmOpen();
+  }, [onConfirmOpen]);
+
+  const confirmUninstall = React.useCallback(async () => {
+    if (!selectedPlugin) return;
+    
+    const packageId = selectedPlugin.packageId;
+    setUninstalling(packageId);
+    onConfirmClose();
+    
+    try {
+      const response = await clients.plugin.uninstallPlugin({ packageId });
+      
+      if (response.status?.code === 0) {
+        toaster.success({
+          title: t("pluginsPage.uninstallSuccess"),
+          description: selectedPlugin.packageName,
+        });
+        // Refresh plugin list
+        await fetchPlugins();
+      } else {
+        toaster.error({
+          title: t("pluginsPage.uninstallError"),
+          description: response.status?.message || t("common.unknownError"),
+        });
+      }
+    } catch (e) {
+      console.error("Failed to uninstall plugin:", e);
+      toaster.error({
+        title: t("pluginsPage.uninstallError"),
+        description: e instanceof Error ? e.message : t("common.unknownError"),
+      });
+    } finally {
+      setUninstalling(null);
+      setSelectedPlugin(null);
+    }
+  }, [selectedPlugin, onConfirmClose, fetchPlugins, t]);
 
   // 検索フィルター
   const filteredPlugins = React.useMemo(() => {
@@ -156,11 +206,51 @@ export function PluginsPage() {
           : (
             <VStack align="stretch" gap={3}>
               {filteredPlugins.map((plugin) => (
-                <PluginCard key={plugin.packageId} plugin={plugin} t={t} />
+                <PluginCard 
+                  key={plugin.packageId} 
+                  plugin={plugin} 
+                  t={t}
+                  onUninstall={handleUninstall}
+                  isUninstalling={uninstalling === plugin.packageId}
+                />
               ))}
             </VStack>
           )}
       </Box>
+
+      {/* 確認ダイアログ */}
+      <Dialog.Root open={isConfirmOpen} onOpenChange={(details) => !details.open && onConfirmClose()}>
+        <Portal>
+          <Dialog.Backdrop />
+          <Dialog.Positioner>
+            <Dialog.Content>
+              <Dialog.Header>
+                <Dialog.Title>{t("pluginsPage.uninstallConfirmTitle")}</Dialog.Title>
+              </Dialog.Header>
+              <Dialog.Body>
+                <Text>
+                  {t("pluginsPage.uninstallConfirmMessage", { name: selectedPlugin?.packageName })}
+                </Text>
+              </Dialog.Body>
+              <Dialog.Footer>
+                <Dialog.ActionTrigger asChild>
+                  <Button variant="outline">{t("common.cancel")}</Button>
+                </Dialog.ActionTrigger>
+                <Button colorPalette="red" onClick={confirmUninstall} loading={!!uninstalling}>
+                  {t("pluginsPage.uninstall")}
+                </Button>
+              </Dialog.Footer>
+              <Dialog.CloseTrigger asChild>
+                <Button variant="ghost" size="sm" position="absolute" right={2} top={2}>
+                  ✕
+                </Button>
+              </Dialog.CloseTrigger>
+            </Dialog.Content>
+          </Dialog.Positioner>
+        </Portal>
+      </Dialog.Root>
+
+      <Toaster />
     </VStack>
   );
 }
@@ -196,13 +286,31 @@ function StatCard({
 function PluginCard({
   plugin,
   t,
+  onUninstall,
+  isUninstalling,
 }: {
   plugin: PluginPackage;
   t: (key: string) => string;
+  onUninstall?: (plugin: PluginPackage) => void;
+  isUninstalling?: boolean;
 }) {
+  const navigate = useNavigate();
   const isDeprecated = plugin.deprecated;
   const isVerified = plugin.verified;
   const isInternal = plugin.internalPlugin;
+  // 外部プラグイン（internalPlugin === false）のみアンインストール可能
+  const canUninstall = !isInternal && onUninstall;
+
+  const handleClick = React.useCallback(() => {
+    navigate(`/plugins/${plugin.packageId}`, { state: { plugin } });
+  }, [navigate, plugin]);
+
+  const handleUninstallClick = React.useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (canUninstall) {
+      onUninstall(plugin);
+    }
+  }, [canUninstall, onUninstall, plugin]);
 
   return (
     <Box
@@ -211,8 +319,9 @@ function PluginCard({
       p={4}
       bg="bg"
       opacity={isDeprecated ? 0.7 : 1}
-      _hover={{ borderColor: "border.emphasized" }}
+      _hover={{ borderColor: "border.emphasized", cursor: "pointer" }}
       transition="border-color 0.2s"
+      onClick={handleClick}
     >
       <HStack justify="space-between" align="start" gap={4}>
         <VStack align="start" gap={2} flex={1}>
@@ -281,6 +390,7 @@ function PluginCard({
               size="xs"
               variant="ghost"
               asChild
+              onClick={(e) => e.stopPropagation()}
             >
               <a
                 href={plugin.pluginStoreUrl}
@@ -290,6 +400,18 @@ function PluginCard({
                 <LuExternalLink size={14} />
                 {t("pluginsPage.viewDetails")}
               </a>
+            </Button>
+          )}
+          {canUninstall && (
+            <Button
+              size="xs"
+              variant="ghost"
+              colorPalette="red"
+              onClick={handleUninstallClick}
+              loading={isUninstalling}
+            >
+              <LuTrash2 size={14} />
+              {t("pluginsPage.uninstall")}
             </Button>
           )}
         </VStack>
