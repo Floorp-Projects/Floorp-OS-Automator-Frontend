@@ -110,7 +110,7 @@ export function KeyboardShortcutsDialog({
                 </Text>
               </HStack>
               <Dialog.CloseTrigger asChild>
-                <IconButton aria-label="閉じる" variant="ghost" size="sm">
+                <IconButton aria-label="閉じる" variant="ghost" size="sm" color="fg">
                   <LuX />
                 </IconButton>
               </Dialog.CloseTrigger>

@@ -143,7 +143,7 @@ export function PromptTemplatesDialog({
                 {t("templates.title")}
               </Text>
               <Dialog.CloseTrigger asChild>
-                <IconButton aria-label={t("templates.close")} variant="ghost" size="sm">
+                <IconButton aria-label={t("templates.close")} variant="ghost" size="sm" color="fg">
                   <LuX />
                 </IconButton>
               </Dialog.CloseTrigger>
@@ -181,6 +181,7 @@ export function PromptTemplatesDialog({
                     aria-label={t("templates.clear")}
                     size="xs"
                     variant="ghost"
+                    color="fg"
                     onClick={() => setSearchQuery("")}
                   >
                     <LuX />

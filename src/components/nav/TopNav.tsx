@@ -59,6 +59,7 @@ export function TopNav(
             aria-label={t("nav.openMenu")}
             size="sm"
             variant="ghost"
+            color="fg"
             onClick={onOpenMenu}
             display={{ base: "flex", lg: "none" }}
           >

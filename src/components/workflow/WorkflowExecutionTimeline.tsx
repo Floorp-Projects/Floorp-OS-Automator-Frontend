@@ -74,6 +74,7 @@ function ExecutionResultCard({
               aria-label={expanded ? "折りたたむ" : "展開"}
               size="sm"
               variant="ghost"
+              color="fg"
               onClick={() => setExpanded(!expanded)}
             >
               {expanded ? <LuChevronDown /> : <LuChevronRight />}
