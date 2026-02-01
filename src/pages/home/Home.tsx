@@ -338,10 +338,11 @@ export function HomePage() {
               <HStack
                 justify="space-between"
                 align="center"
-                mb={4}
+                mb={2}
                 flexShrink={0}
                 flexWrap="wrap"
                 gap={4}
+                px={2}
               >
                 <Heading size={{ base: "md", lg: "lg" }} textAlign="left">
                   {t("common.recentWorkflows")}
