@@ -32,305 +32,16 @@ function createTimestamp(): { seconds: bigint; nanos: number } {
 }
 
 /**
- * 通知プラグインを作成
+ * Floorpブラウザ自動化プラグインを作成
  */
-function createNotificationPlugin() {
+function createFloorpPlugin() {
   return create(PluginPackageSchema, {
-    packageId: "com.sapphillon.notifications",
-    packageName: "通知プラグイン",
-    packageVersion: "1.2.0",
-    description: "メールやSlackなどの通知を送信するプラグイン",
-    pluginStoreUrl: "https://plugins.sapphillon.com/com.sapphillon.notifications",
-    verified: true,
-    internalPlugin: false,
-    deprecated: false,
-    installedAt: createTimestamp(),
-    updatedAt: createTimestamp(),
-    functions: [
-      create(PluginFunctionSchema, {
-        functionId: "send_email",
-        functionName: "メール送信",
-        description: "メールを送信します",
-        functionDefine: create(FunctionDefineSchema, {
-          parameters: [
-            create(FunctionParameterSchema, {
-              name: "to",
-              type: "string",
-              description: "送信先メールアドレス",
-            }),
-            create(FunctionParameterSchema, {
-              name: "subject",
-              type: "string",
-              description: "メール件名",
-            }),
-            create(FunctionParameterSchema, {
-              name: "body",
-              type: "string",
-              description: "メール本文",
-            }),
-          ],
-          returns: [
-            create(FunctionParameterSchema, {
-              name: "success",
-              type: "boolean",
-              description: "",
-            }),
-            create(FunctionParameterSchema, {
-              name: "messageId",
-              type: "string",
-              description: "",
-            }),
-          ],
-        }),
-        permissions: [
-          create(PermissionSchema, {
-            displayName: "メール送信",
-            description: "メールを送信する権限",
-            permissionType: PermissionType.EXECUTE,
-            resource: ["notifications/email"],
-            permissionLevel: PermissionLevel.MEDIUM,
-          }),
-        ],
-      }),
-      create(PluginFunctionSchema, {
-        functionId: "send_slack",
-        functionName: "Slack通知",
-        description: "Slackチャンネルにメッセージを送信します",
-        functionDefine: create(FunctionDefineSchema, {
-          parameters: [
-            create(FunctionParameterSchema, {
-              name: "channel",
-              type: "string",
-              description: "Slackチャンネル名",
-            }),
-            create(FunctionParameterSchema, {
-              name: "message",
-              type: "string",
-              description: "送信メッセージ",
-            }),
-          ],
-          returns: [
-            create(FunctionParameterSchema, {
-              name: "success",
-              type: "boolean",
-              description: "",
-            }),
-            create(FunctionParameterSchema, {
-              name: "ts",
-              type: "string",
-              description: "メッセージタイムスタンプ",
-            }),
-          ],
-        }),
-        permissions: [
-          create(PermissionSchema, {
-            displayName: "Slack通知",
-            description: "Slackにメッセージを送信する権限",
-            permissionType: PermissionType.EXECUTE,
-            resource: ["notifications/slack"],
-            permissionLevel: PermissionLevel.MEDIUM,
-          }),
-        ],
-      }),
-    ],
-  });
-}
-
-/**
- * ファイルシステムプラグインを作成
- */
-function createFilesystemPlugin() {
-  return create(PluginPackageSchema, {
-    packageId: "com.sapphillon.filesystem",
-    packageName: "ファイルシステム",
-    packageVersion: "2.0.1",
-    description: "ファイルの読み書きや操作を行うプラグイン",
-    pluginStoreUrl: "https://plugins.sapphillon.com/com.sapphillon.filesystem",
-    verified: true,
-    internalPlugin: false,
-    deprecated: false,
-    installedAt: createTimestamp(),
-    updatedAt: createTimestamp(),
-    functions: [
-      create(PluginFunctionSchema, {
-        functionId: "read_file",
-        functionName: "ファイル読み込み",
-        description: "ファイルを読み込みます",
-        functionDefine: create(FunctionDefineSchema, {
-          parameters: [
-            create(FunctionParameterSchema, {
-              name: "path",
-              type: "string",
-              description: "ファイルパス",
-            }),
-            create(FunctionParameterSchema, {
-              name: "encoding",
-              type: "string",
-              description: "エンコーディング (default: utf-8)",
-            }),
-          ],
-          returns: [
-            create(FunctionParameterSchema, {
-              name: "content",
-              type: "string",
-              description: "",
-            }),
-            create(FunctionParameterSchema, {
-              name: "size",
-              type: "number",
-              description: "",
-            }),
-          ],
-        }),
-        permissions: [
-          create(PermissionSchema, {
-            displayName: "ファイル読み込み",
-            description: "ファイルを読み込む権限",
-            permissionType: PermissionType.FILESYSTEM_READ,
-            resource: [],
-            permissionLevel: PermissionLevel.MEDIUM,
-          }),
-        ],
-      }),
-      create(PluginFunctionSchema, {
-        functionId: "write_file",
-        functionName: "ファイル書き込み",
-        description: "ファイルに書き込みます",
-        functionDefine: create(FunctionDefineSchema, {
-          parameters: [
-            create(FunctionParameterSchema, {
-              name: "path",
-              type: "string",
-              description: "ファイルパス",
-            }),
-            create(FunctionParameterSchema, {
-              name: "content",
-              type: "string",
-              description: "書き込む内容",
-            }),
-            create(FunctionParameterSchema, {
-              name: "encoding",
-              type: "string",
-              description: "エンコーディング (default: utf-8)",
-            }),
-          ],
-          returns: [
-            create(FunctionParameterSchema, {
-              name: "success",
-              type: "boolean",
-              description: "",
-            }),
-            create(FunctionParameterSchema, {
-              name: "bytesWritten",
-              type: "number",
-              description: "",
-            }),
-          ],
-        }),
-        permissions: [
-          create(PermissionSchema, {
-            displayName: "ファイル書き込み",
-            description: "ファイルに書き込む権限",
-            permissionType: PermissionType.FILESYSTEM_WRITE,
-            resource: [],
-            permissionLevel: PermissionLevel.HIGH,
-          }),
-        ],
-      }),
-    ],
-  });
-}
-
-/**
- * HTTPリクエストプラグインを作成
- */
-function createHttpPlugin() {
-  return create(PluginPackageSchema, {
-    packageId: "com.sapphillon.http",
-    packageName: "HTTPクライアント",
-    packageVersion: "1.5.0",
-    description: "HTTPリクエストを送信するプラグイン",
-    pluginStoreUrl: "https://plugins.sapphillon.com/com.sapphillon.http",
-    verified: true,
-    internalPlugin: false,
-    deprecated: false,
-    installedAt: createTimestamp(),
-    updatedAt: createTimestamp(),
-    functions: [
-      create(PluginFunctionSchema, {
-        functionId: "fetch",
-        functionName: "HTTPリクエスト",
-        description: "HTTPリクエストを送信します",
-        functionDefine: create(FunctionDefineSchema, {
-          parameters: [
-            create(FunctionParameterSchema, {
-              name: "url",
-              type: "string",
-              description: "リクエストURL",
-            }),
-            create(FunctionParameterSchema, {
-              name: "method",
-              type: "string",
-              description: "HTTPメソッド (default: GET)",
-            }),
-            create(FunctionParameterSchema, {
-              name: "headers",
-              type: "object",
-              description: "リクエストヘッダー",
-            }),
-            create(FunctionParameterSchema, {
-              name: "body",
-              type: "string",
-              description: "リクエストボディ",
-            }),
-          ],
-          returns: [
-            create(FunctionParameterSchema, {
-              name: "status",
-              type: "number",
-              description: "",
-            }),
-            create(FunctionParameterSchema, {
-              name: "statusText",
-              type: "string",
-              description: "",
-            }),
-            create(FunctionParameterSchema, {
-              name: "headers",
-              type: "object",
-              description: "",
-            }),
-            create(FunctionParameterSchema, {
-              name: "body",
-              type: "string",
-              description: "",
-            }),
-          ],
-        }),
-        permissions: [
-          create(PermissionSchema, {
-            displayName: "ネットワークアクセス",
-            description: "ネットワークリクエストを送信する権限",
-            permissionType: PermissionType.NET_ACCESS,
-            resource: [],
-            permissionLevel: PermissionLevel.MEDIUM,
-          }),
-        ],
-      }),
-    ],
-  });
-}
-
-/**
- * データベースプラグインを作成
- */
-function createDatabasePlugin() {
-  return create(PluginPackageSchema, {
-    packageId: "com.sapphillon.database",
-    packageName: "データベース",
+    packageId: "com.floorp.browser",
+    packageName: "Floorp ブラウザ自動化",
     packageVersion: "1.0.0",
-    description: "データベースクエリを実行するプラグイン",
-    pluginStoreUrl: "https://plugins.sapphillon.com/com.sapphillon.database",
+    description:
+      "Floorpブラウザのタブ操作、フォーム入力、DOM操作を行う内蔵プラグイン",
+    pluginStoreUrl: "",
     verified: true,
     internalPlugin: true,
     deprecated: false,
@@ -338,42 +49,317 @@ function createDatabasePlugin() {
     updatedAt: createTimestamp(),
     functions: [
       create(PluginFunctionSchema, {
-        functionId: "query",
-        functionName: "データベースクエリ",
-        description: "SQLクエリを実行します",
+        functionId: "createTab",
+        functionName: "タブ作成",
+        description: "新しいタブを開いてURLにナビゲート",
         functionDefine: create(FunctionDefineSchema, {
           parameters: [
             create(FunctionParameterSchema, {
-              name: "sql",
+              name: "url",
               type: "string",
-              description: "SQLクエリ",
+              description: "開くURL",
             }),
             create(FunctionParameterSchema, {
-              name: "params",
-              type: "array",
-              description: "パラメータ",
+              name: "waitForLoad",
+              type: "boolean",
+              description: "ページ読み込み完了を待つか",
             }),
           ],
           returns: [
             create(FunctionParameterSchema, {
-              name: "rows",
-              type: "array",
-              description: "",
-            }),
-            create(FunctionParameterSchema, {
-              name: "rowCount",
-              type: "number",
-              description: "",
+              name: "tabId",
+              type: "string",
+              description: "作成されたタブのID",
             }),
           ],
         }),
         permissions: [
           create(PermissionSchema, {
-            displayName: "データベース読み込み",
-            description: "データベースからデータを読み込む権限",
+            displayName: "タブ操作",
+            description: "ブラウザタブを操作する権限",
             permissionType: PermissionType.EXECUTE,
-            resource: ["database"],
+            resource: ["browser/tabs"],
+            permissionLevel: PermissionLevel.MEDIUM,
+          }),
+        ],
+      }),
+      create(PluginFunctionSchema, {
+        functionId: "tabWaitForElement",
+        functionName: "要素待機",
+        description: "指定したセレクタの要素が表示されるまで待機",
+        functionDefine: create(FunctionDefineSchema, {
+          parameters: [
+            create(FunctionParameterSchema, {
+              name: "tabId",
+              type: "string",
+              description: "タブID",
+            }),
+            create(FunctionParameterSchema, {
+              name: "selector",
+              type: "string",
+              description: "CSSセレクタ",
+            }),
+            create(FunctionParameterSchema, {
+              name: "timeout",
+              type: "number",
+              description: "タイムアウト (ms)",
+            }),
+          ],
+          returns: [],
+        }),
+        permissions: [],
+      }),
+      create(PluginFunctionSchema, {
+        functionId: "tabInput",
+        functionName: "フォーム入力",
+        description: "指定した入力フィールドにテキストを入力",
+        functionDefine: create(FunctionDefineSchema, {
+          parameters: [
+            create(FunctionParameterSchema, {
+              name: "tabId",
+              type: "string",
+              description: "タブID",
+            }),
+            create(FunctionParameterSchema, {
+              name: "selector",
+              type: "string",
+              description: "CSSセレクタ",
+            }),
+            create(FunctionParameterSchema, {
+              name: "value",
+              type: "string",
+              description: "入力するテキスト",
+            }),
+          ],
+          returns: [],
+        }),
+        permissions: [
+          create(PermissionSchema, {
+            displayName: "フォーム入力",
+            description: "フォームフィールドにデータを入力する権限",
+            permissionType: PermissionType.EXECUTE,
+            resource: ["browser/forms"],
             permissionLevel: PermissionLevel.HIGH,
+          }),
+        ],
+      }),
+      create(PluginFunctionSchema, {
+        functionId: "tabGetElements",
+        functionName: "要素取得",
+        description: "セレクタに一致する全要素のHTMLを取得",
+        functionDefine: create(FunctionDefineSchema, {
+          parameters: [
+            create(FunctionParameterSchema, {
+              name: "tabId",
+              type: "string",
+              description: "タブID",
+            }),
+            create(FunctionParameterSchema, {
+              name: "selector",
+              type: "string",
+              description: "CSSセレクタ",
+            }),
+          ],
+          returns: [
+            create(FunctionParameterSchema, {
+              name: "elements",
+              type: "array",
+              description: "要素のHTML配列 (JSON)",
+            }),
+          ],
+        }),
+        permissions: [],
+      }),
+      create(PluginFunctionSchema, {
+        functionId: "tabClick",
+        functionName: "クリック",
+        description: "指定した要素をクリック",
+        functionDefine: create(FunctionDefineSchema, {
+          parameters: [
+            create(FunctionParameterSchema, {
+              name: "tabId",
+              type: "string",
+              description: "タブID",
+            }),
+            create(FunctionParameterSchema, {
+              name: "selector",
+              type: "string",
+              description: "CSSセレクタ",
+            }),
+          ],
+          returns: [],
+        }),
+        permissions: [],
+      }),
+      create(PluginFunctionSchema, {
+        functionId: "destroyTabInstance",
+        functionName: "インスタンス解放",
+        description: "タブの制御インスタンスを解放（ユーザーに操作を返す）",
+        functionDefine: create(FunctionDefineSchema, {
+          parameters: [
+            create(FunctionParameterSchema, {
+              name: "tabId",
+              type: "string",
+              description: "タブID",
+            }),
+          ],
+          returns: [],
+        }),
+        permissions: [],
+      }),
+    ],
+  });
+}
+
+/**
+ * Thunderbird連携プラグインを作成
+ */
+function createThunderbirdPlugin() {
+  return create(PluginPackageSchema, {
+    packageId: "sapphillon.thunderbird",
+    packageName: "Thunderbird 連携",
+    packageVersion: "1.0.0",
+    description:
+      "Thunderbirdからユーザー情報やカレンダー予定を取得する外部プラグイン",
+    pluginStoreUrl: "https://plugins.sapphillon.com/sapphillon/thunderbird",
+    verified: true,
+    internalPlugin: false,
+    deprecated: false,
+    installedAt: createTimestamp(),
+    updatedAt: createTimestamp(),
+    functions: [
+      create(PluginFunctionSchema, {
+        functionId: "getIdentity",
+        functionName: "ユーザー情報取得",
+        description:
+          "Thunderbirdのデフォルトアカウントから名前とメールアドレスを取得",
+        functionDefine: create(FunctionDefineSchema, {
+          parameters: [],
+          returns: [
+            create(FunctionParameterSchema, {
+              name: "name",
+              type: "string",
+              description: "ユーザー名",
+            }),
+            create(FunctionParameterSchema, {
+              name: "email",
+              type: "string",
+              description: "メールアドレス",
+            }),
+          ],
+        }),
+        permissions: [
+          create(PermissionSchema, {
+            displayName: "Thunderbird アクセス",
+            description: "Thunderbirdのユーザー情報にアクセスする権限",
+            permissionType: PermissionType.EXECUTE,
+            resource: ["thunderbird/identity"],
+            permissionLevel: PermissionLevel.MEDIUM,
+          }),
+        ],
+      }),
+      create(PluginFunctionSchema, {
+        functionId: "getCalendarEvents",
+        functionName: "カレンダー取得",
+        description: "Thunderbirdカレンダーから指定日数分の予定を取得",
+        functionDefine: create(FunctionDefineSchema, {
+          parameters: [
+            create(FunctionParameterSchema, {
+              name: "days",
+              type: "number",
+              description: "取得する日数",
+            }),
+          ],
+          returns: [
+            create(FunctionParameterSchema, {
+              name: "events",
+              type: "array",
+              description: "カレンダー予定の配列",
+            }),
+          ],
+        }),
+        permissions: [
+          create(PermissionSchema, {
+            displayName: "カレンダー読み取り",
+            description: "Thunderbirdカレンダーの予定を読み取る権限",
+            permissionType: PermissionType.EXECUTE,
+            resource: ["thunderbird/calendar"],
+            permissionLevel: PermissionLevel.MEDIUM,
+          }),
+        ],
+      }),
+      create(PluginFunctionSchema, {
+        functionId: "activateThunderbird",
+        functionName: "Thunderbird起動",
+        description: "Thunderbirdアプリをフォアグラウンドに表示",
+        functionDefine: create(FunctionDefineSchema, {
+          parameters: [],
+          returns: [],
+        }),
+        permissions: [],
+      }),
+      create(PluginFunctionSchema, {
+        functionId: "showCalendarView",
+        functionName: "カレンダー表示",
+        description: "Thunderbirdのカレンダービューを表示",
+        functionDefine: create(FunctionDefineSchema, {
+          parameters: [],
+          returns: [],
+        }),
+        permissions: [],
+      }),
+    ],
+  });
+}
+
+/**
+ * INIAD AI MOPプラグインを作成
+ */
+function createIniadAiMopPlugin() {
+  return create(PluginPackageSchema, {
+    packageId: "iniad.ai.mop",
+    packageName: "INIAD AI MOP",
+    packageVersion: "1.0.0",
+    description: "INIAD AI MOP APIを使用してAIチャット機能を提供するプラグイン",
+    pluginStoreUrl: "",
+    verified: true,
+    internalPlugin: true,
+    deprecated: false,
+    installedAt: createTimestamp(),
+    updatedAt: createTimestamp(),
+    functions: [
+      create(PluginFunctionSchema, {
+        functionId: "chat",
+        functionName: "AIチャット",
+        description: "AIモデルにプロンプトを送信して応答を取得",
+        functionDefine: create(FunctionDefineSchema, {
+          parameters: [
+            create(FunctionParameterSchema, {
+              name: "systemPrompt",
+              type: "string",
+              description: "システムプロンプト（AIの役割設定）",
+            }),
+            create(FunctionParameterSchema, {
+              name: "userPrompt",
+              type: "string",
+              description: "ユーザーからの質問やリクエスト",
+            }),
+          ],
+          returns: [
+            create(FunctionParameterSchema, {
+              name: "response",
+              type: "string",
+              description: "AIからの応答",
+            }),
+          ],
+        }),
+        permissions: [
+          create(PermissionSchema, {
+            displayName: "AI API アクセス",
+            description: "AI APIにリクエストを送信する権限",
+            permissionType: PermissionType.NET_ACCESS,
+            resource: ["ai/chat"],
+            permissionLevel: PermissionLevel.MEDIUM,
           }),
         ],
       }),
@@ -383,13 +369,13 @@ function createDatabasePlugin() {
 
 /**
  * 利用可能なモックプラグインを作成
+ * デモワークフロー (workflow.js) で使用されるプラグインを定義
  */
 export function getMockPlugins() {
   return [
-    createNotificationPlugin(),
-    createFilesystemPlugin(),
-    createHttpPlugin(),
-    createDatabasePlugin(),
+    createFloorpPlugin(),
+    createThunderbirdPlugin(),
+    createIniadAiMopPlugin(),
   ];
 }
 
@@ -418,20 +404,37 @@ export function enhanceWorkflowWithMockData(workflow: Workflow): Workflow {
     const code = firstCode.code.toLowerCase();
     const selectedPlugins: typeof mockPlugins = [];
 
-    if (code.includes("email") || code.includes("mail") || code.includes("send")) {
-      selectedPlugins.push(mockPlugins[0]); // 通知プラグイン
-    }
-    if (code.includes("file") || code.includes("read") || code.includes("write")) {
-      selectedPlugins.push(mockPlugins[1]); // ファイルシステムプラグイン
-    }
-    if (code.includes("http") || code.includes("fetch") || code.includes("request")) {
-      selectedPlugins.push(mockPlugins[2]); // HTTPプラグイン
-    }
-    if (code.includes("database") || code.includes("sql") || code.includes("query")) {
-      selectedPlugins.push(mockPlugins[3]); // データベースプラグイン
+    // Floorp ブラウザ自動化プラグイン
+    if (
+      code.includes("floorp") ||
+      code.includes("createtab") ||
+      code.includes("tabinput") ||
+      code.includes("tabclick") ||
+      code.includes("tabgetelements") ||
+      code.includes("tabwaitforelement")
+    ) {
+      selectedPlugins.push(mockPlugins[0]); // Floorp
     }
 
-    // 何も一致しない場合は、通知プラグインをデフォルトとして追加
+    // Thunderbird 連携プラグイン
+    if (
+      code.includes("thunderbird") ||
+      code.includes("getidentity") ||
+      code.includes("getcalendarevents")
+    ) {
+      selectedPlugins.push(mockPlugins[1]); // Thunderbird
+    }
+
+    // INIAD AI MOP プラグイン
+    if (
+      code.includes("iniad_ai_mop") ||
+      code.includes("ai.chat") ||
+      code.includes(".chat(")
+    ) {
+      selectedPlugins.push(mockPlugins[2]); // INIAD AI MOP
+    }
+
+    // 何も一致しない場合は、Floorpプラグインをデフォルトとして追加
     if (selectedPlugins.length === 0) {
       selectedPlugins.push(mockPlugins[0]);
     }

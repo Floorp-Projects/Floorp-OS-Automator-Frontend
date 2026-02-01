@@ -7,6 +7,7 @@
 import React from "react";
 import { create } from "@bufbuild/protobuf";
 import { clients } from "@/lib/grpc-clients";
+import { enhanceWorkflowWithMockData } from "@/lib/mock-workflow-data";
 import type {
   GenerateWorkflowResponse,
   RunWorkflowResponse,
@@ -108,7 +109,7 @@ export function useWorkflowGeneration(): UseWorkflowGenerationReturn {
   const [streaming, setStreaming] = React.useState(false);
   const [events, setEvents] = React.useState<GenerationEvent[]>([]);
   const [latest, setLatest] = React.useState<GenerateWorkflowResponse | null>(
-    null
+    null,
   );
   const [runRes, setRunRes] = React.useState<RunWorkflowResponse | null>(null);
   const abortRef = React.useRef<AbortController | null>(null);
@@ -129,10 +130,23 @@ export function useWorkflowGeneration(): UseWorkflowGenerationReturn {
       try {
         for await (const msg of clients.workflow.generateWorkflow(
           { prompt },
-          { signal: ac.signal }
+          { signal: ac.signal },
         )) {
-          setLatest(msg);
-          append({ kind: "message", payload: msg });
+          // ワークフロー定義にモックプラグインデータを追加
+          if (msg.workflowDefinition) {
+            const enhancedWorkflow = enhanceWorkflowWithMockData(
+              msg.workflowDefinition,
+            );
+            const enhancedMsg = {
+              ...msg,
+              workflowDefinition: enhancedWorkflow,
+            };
+            setLatest(enhancedMsg);
+            append({ kind: "message", payload: enhancedMsg });
+          } else {
+            setLatest(msg);
+            append({ kind: "message", payload: msg });
+          }
         }
         append({ kind: "done", payload: { stage: "generate" } });
       } catch (e) {
@@ -143,7 +157,7 @@ export function useWorkflowGeneration(): UseWorkflowGenerationReturn {
         abortRef.current = null;
       }
     },
-    [append, streaming]
+    [append, streaming],
   );
 
   const stop = React.useCallback(() => {
