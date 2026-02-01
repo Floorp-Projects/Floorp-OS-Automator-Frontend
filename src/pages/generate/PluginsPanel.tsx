@@ -159,7 +159,13 @@ function PluginItem({
           v{plugin.packageVersion}
         </Text>
         {plugin.description && (
-          <Text fontSize="xs" color="fg.subtle" truncate>
+          <Text
+            fontSize="xs"
+            color="fg.subtle"
+            truncate
+            w="full"
+            minW={0}
+          >
             {plugin.description}
           </Text>
         )}
