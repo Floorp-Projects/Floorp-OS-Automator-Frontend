@@ -220,7 +220,7 @@ function createThunderbirdPlugin() {
     packageName: "Thunderbird 連携",
     packageVersion: "1.0.0",
     description:
-      "Thunderbirdからユーザー情報やカレンダー予定を取得する外部プラグイン",
+      "Thunderbirdからユーザー情報やカレンダー予定を取得するプラグイン",
     pluginStoreUrl: "https://plugins.sapphillon.com/sapphillon/thunderbird",
     verified: true,
     internalPlugin: false,

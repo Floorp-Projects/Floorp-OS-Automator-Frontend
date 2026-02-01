@@ -56,6 +56,7 @@ interface PluginInfo {
   functions?: PluginFunction[];
   category?: string;
   isOfficial?: boolean;
+  icon?: string;
 }
 
 interface PluginFunction {
@@ -129,6 +130,7 @@ export function InstallPluginPage() {
       description: searchParams.get("description") || undefined,
       category: searchParams.get("category") || "utilities",
       isOfficial: searchParams.get("isOfficial") === "true",
+      icon: searchParams.get("icon") || undefined,
       functions: parsedFunctions,
     });
   }, [searchParams]);
@@ -328,8 +330,31 @@ export function InstallPluginPage() {
             bg={colors.muted}
             align="center"
             justify="center"
+            overflow="hidden"
           >
-            <Icon as={LuPackage} boxSize={10} color="blue.400" />
+            {pluginInfo?.icon
+              ? (
+                <Box
+                  as="img"
+                  src={pluginInfo.icon}
+                  alt={pluginInfo.name || "Plugin"}
+                  w="40px"
+                  h="40px"
+                  objectFit="contain"
+                  filter="brightness(0) invert(1)"
+                  opacity={0.9}
+                  onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                    // Fallback to default icon on error
+                    e.currentTarget.style.display = "none";
+                    const parent = e.currentTarget.parentElement;
+                    if (parent) {
+                      parent.innerHTML =
+                        '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 16h6"/><path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l2-1.14"/><path d="m7.5 4.27 9 5.15"/><polyline points="3.29 7 12 12 20.71 7"/><line x1="12" x2="12" y1="22" y2="12"/><path d="M19 13v3a2 2 0 0 1-2 2h-4"/><path d="M16 16h6"/></svg>';
+                    }
+                  }}
+                />
+              )
+              : <Icon as={LuPackage} boxSize={10} color="blue.400" />}
           </Flex>
 
           {/* Details */}
