@@ -381,8 +381,10 @@
         "title": "プラグイン管理",
         "description": "インストール済みのプラグインを管理します",
         "refresh": "更新",
+        "openStore": "ストアを開く",
         "functions": "関数",
         "viewDetails": "詳細",
+        "viewInStore": "ストアで表示",
         "noSearchResults": "検索結果が見つかりません",
         "uninstall": "アンインストール",
         "uninstallSuccess": "プラグインをアンインストールしました",
@@ -529,7 +531,14 @@
         "refine": "修正",
         "refineHint": "ワークフローを修正したい場合は、指示を入力してください",
         "detailView": "詳細を表示",
-        "compactView": "コンパクト"
+        "compactView": "コンパクト",
+        "step": {
+            "prompt": "プロンプト",
+            "generating": "生成中",
+            "confirm": "確認",
+            "executing": "実行中",
+            "completed": "完了"
+        }
     },
     "onboarding": {
         "skipTour": "ツアーをスキップ",

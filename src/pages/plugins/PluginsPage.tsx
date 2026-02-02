@@ -3,16 +3,17 @@ import {
   Badge,
   Box,
   Button,
+  Dialog,
+  Flex,
   HStack,
   Input,
   InputGroup,
+  Portal,
   Separator,
   Spinner,
   Text,
-  VStack,
   useDisclosure,
-  Dialog,
-  Portal,
+  VStack,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -30,6 +31,11 @@ import { useI18n } from "@/hooks/useI18n";
 import { clients } from "@/lib/grpc-clients";
 import type { PluginPackage } from "@/gen/sapphillon/v1/plugin_pb";
 
+// プラグインストアのURL（環境に応じて切り替え）
+const PLUGIN_STORE_URL = import.meta.env.DEV
+  ? "http://localhost:5178/"
+  : "https://plugins.floorp.app";
+
 export function PluginsPage() {
   const { t } = useI18n();
   const [plugins, setPlugins] = React.useState<PluginPackage[]>([]);
@@ -37,8 +43,14 @@ export function PluginsPage() {
   const [error, setError] = React.useState<string | null>(null);
   const [searchQuery, setSearchQuery] = React.useState("");
   const [uninstalling, setUninstalling] = React.useState<string | null>(null);
-  const [selectedPlugin, setSelectedPlugin] = React.useState<PluginPackage | null>(null);
-  const { open: isConfirmOpen, onOpen: onConfirmOpen, onClose: onConfirmClose } = useDisclosure();
+  const [selectedPlugin, setSelectedPlugin] = React.useState<
+    PluginPackage | null
+  >(null);
+  const {
+    open: isConfirmOpen,
+    onOpen: onConfirmOpen,
+    onClose: onConfirmClose,
+  } = useDisclosure();
 
   const fetchPlugins = React.useCallback(async () => {
     try {
@@ -65,14 +77,14 @@ export function PluginsPage() {
 
   const confirmUninstall = React.useCallback(async () => {
     if (!selectedPlugin) return;
-    
+
     const packageId = selectedPlugin.packageId;
     setUninstalling(packageId);
     onConfirmClose();
-    
+
     try {
       const response = await clients.plugin.uninstallPlugin({ packageId });
-      
+
       if (response.status?.code === 0) {
         toaster.success({
           title: t("pluginsPage.uninstallSuccess"),
@@ -119,9 +131,19 @@ export function PluginsPage() {
   }, [plugins]);
 
   return (
-    <VStack align="stretch" gap={4} h="full" p={{ base: 2, md: 4 }}>
+    <VStack
+      align="stretch"
+      gap={{ base: 3, md: 4 }}
+      h="full"
+      p={{ base: 3, md: 4 }}
+    >
       {/* ヘッダー */}
-      <HStack justify="space-between" flexWrap="wrap" gap={2}>
+      <Flex
+        direction={{ base: "column", sm: "row" }}
+        justify="space-between"
+        align={{ base: "stretch", sm: "flex-start" }}
+        gap={3}
+      >
         <VStack align="start" gap={0}>
           <Text fontSize={{ base: "lg", md: "xl" }} fontWeight="bold">
             {t("pluginsPage.title")}
@@ -130,19 +152,40 @@ export function PluginsPage() {
             {t("pluginsPage.description")}
           </Text>
         </VStack>
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={fetchPlugins}
-          disabled={loading}
-        >
-          <LuRefreshCw />
-          {t("pluginsPage.refresh")}
-        </Button>
-      </HStack>
+        <HStack gap={2} flexShrink={0}>
+          <Button
+            size="sm"
+            variant="solid"
+            colorPalette="blue"
+            asChild
+          >
+            <a
+              href={PLUGIN_STORE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <LuPackage />
+              {t("pluginsPage.openStore")}
+            </a>
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={fetchPlugins}
+            disabled={loading}
+          >
+            <LuRefreshCw />
+            {t("pluginsPage.refresh")}
+          </Button>
+        </HStack>
+      </Flex>
 
       {/* 統計カード */}
-      <HStack gap={3} flexWrap="wrap">
+      <Box
+        display="grid"
+        gridTemplateColumns={{ base: "repeat(2, 1fr)", sm: "repeat(4, 1fr)" }}
+        gap={{ base: 2, md: 3 }}
+      >
         <StatCard
           label={t("pluginsPage.stats.total")}
           value={stats.total}
@@ -163,7 +206,7 @@ export function PluginsPage() {
           value={stats.deprecated}
           colorPalette="orange"
         />
-      </HStack>
+      </Box>
 
       {/* 検索 */}
       <InputGroup maxW={{ base: "full", md: "320px" }}>
@@ -206,9 +249,9 @@ export function PluginsPage() {
           : (
             <VStack align="stretch" gap={3}>
               {filteredPlugins.map((plugin) => (
-                <PluginCard 
-                  key={plugin.packageId} 
-                  plugin={plugin} 
+                <PluginCard
+                  key={plugin.packageId}
+                  plugin={plugin}
                   t={t}
                   onUninstall={handleUninstall}
                   isUninstalling={uninstalling === plugin.packageId}
@@ -219,29 +262,46 @@ export function PluginsPage() {
       </Box>
 
       {/* 確認ダイアログ */}
-      <Dialog.Root open={isConfirmOpen} onOpenChange={(details) => !details.open && onConfirmClose()}>
+      <Dialog.Root
+        open={isConfirmOpen}
+        onOpenChange={(details) => !details.open && onConfirmClose()}
+      >
         <Portal>
           <Dialog.Backdrop />
           <Dialog.Positioner>
             <Dialog.Content>
               <Dialog.Header>
-                <Dialog.Title>{t("pluginsPage.uninstallConfirmTitle")}</Dialog.Title>
+                <Dialog.Title>
+                  {t("pluginsPage.uninstallConfirmTitle")}
+                </Dialog.Title>
               </Dialog.Header>
               <Dialog.Body>
                 <Text>
-                  {t("pluginsPage.uninstallConfirmMessage", { name: selectedPlugin?.packageName })}
+                  {t("pluginsPage.uninstallConfirmMessage", {
+                    name: selectedPlugin?.packageName,
+                  })}
                 </Text>
               </Dialog.Body>
               <Dialog.Footer>
                 <Dialog.ActionTrigger asChild>
                   <Button variant="outline">{t("common.cancel")}</Button>
                 </Dialog.ActionTrigger>
-                <Button colorPalette="red" onClick={confirmUninstall} loading={!!uninstalling}>
+                <Button
+                  colorPalette="red"
+                  onClick={confirmUninstall}
+                  loading={!!uninstalling}
+                >
                   {t("pluginsPage.uninstall")}
                 </Button>
               </Dialog.Footer>
               <Dialog.CloseTrigger asChild>
-                <Button variant="ghost" size="sm" position="absolute" right={2} top={2}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  position="absolute"
+                  right={2}
+                  top={2}
+                >
                   ✕
                 </Button>
               </Dialog.CloseTrigger>
@@ -268,15 +328,19 @@ function StatCard({
     <Box
       borderWidth="1px"
       rounded="lg"
-      px={4}
-      py={3}
-      minW="120px"
+      px={3}
+      py={2}
       bg="bg"
+      textAlign="center"
     >
-      <Text fontSize="2xl" fontWeight="bold" color={`${colorPalette}.500`}>
+      <Text
+        fontSize={{ base: "lg", sm: "xl", md: "2xl" }}
+        fontWeight="bold"
+        color={`${colorPalette}.500`}
+      >
         {value}
       </Text>
-      <Text fontSize="sm" color="fg.muted">
+      <Text fontSize="xs" color="fg.muted" lineClamp={1}>
         {label}
       </Text>
     </Box>
@@ -316,36 +380,41 @@ function PluginCard({
     <Box
       borderWidth="1px"
       rounded="lg"
-      p={4}
+      p={{ base: 3, md: 4 }}
       bg="bg"
       opacity={isDeprecated ? 0.7 : 1}
       _hover={{ borderColor: "border.emphasized", cursor: "pointer" }}
       transition="border-color 0.2s"
       onClick={handleClick}
     >
-      <HStack justify="space-between" align="start" gap={4}>
-        <VStack align="start" gap={2} flex={1}>
+      <Flex
+        direction={{ base: "column", sm: "row" }}
+        justify="space-between"
+        align={{ base: "stretch", sm: "flex-start" }}
+        gap={3}
+      >
+        <VStack align="start" gap={2} flex={1} minW={0}>
           {/* ヘッダー */}
-          <HStack gap={2} flexWrap="wrap">
-            <Text fontWeight="semibold" fontSize="md">
+          <HStack gap={2} flexWrap="wrap" minW={0} w="full">
+            <Text fontWeight="semibold" fontSize="md" lineClamp={1}>
               {plugin.packageName}
             </Text>
-            <Badge variant="outline" fontSize="xs">
+            <Badge variant="outline" fontSize="xs" flexShrink={0}>
               v{plugin.packageVersion}
             </Badge>
             {isVerified && (
-              <Badge colorPalette="blue" fontSize="xs">
+              <Badge colorPalette="blue" fontSize="xs" flexShrink={0}>
                 <LuShield size={12} />
                 {t("plugins.verified")}
               </Badge>
             )}
             {isInternal && (
-              <Badge colorPalette="purple" fontSize="xs">
+              <Badge colorPalette="purple" fontSize="xs" flexShrink={0}>
                 {t("plugins.internal")}
               </Badge>
             )}
             {isDeprecated && (
-              <Badge colorPalette="orange" fontSize="xs">
+              <Badge colorPalette="orange" fontSize="xs" flexShrink={0}>
                 {t("plugins.deprecated")}
               </Badge>
             )}
@@ -353,29 +422,41 @@ function PluginCard({
 
           {/* 説明 */}
           {plugin.description && (
-            <Text fontSize="sm" color="fg.muted">
+            <Text fontSize="sm" color="fg.muted" lineClamp={2}>
               {plugin.description}
             </Text>
           )}
 
           {/* パッケージID */}
-          <Text fontSize="xs" color="fg.subtle" fontFamily="mono">
+          <Text
+            fontSize="xs"
+            color="fg.subtle"
+            fontFamily="mono"
+            lineClamp={1}
+            wordBreak="break-all"
+            w="full"
+          >
             {plugin.packageId}
           </Text>
 
           {/* 関数一覧 */}
           {plugin.functions.length > 0 && (
-            <HStack gap={1} flexWrap="wrap">
-              <Text fontSize="xs" color="fg.muted">
+            <HStack gap={1} flexWrap="wrap" minW={0} w="full">
+              <Text fontSize="xs" color="fg.muted" flexShrink={0}>
                 {t("pluginsPage.functions")}:
               </Text>
               {plugin.functions.slice(0, 3).map((fn) => (
-                <Badge key={fn.functionId} variant="subtle" size="sm">
+                <Badge
+                  key={fn.functionId}
+                  variant="subtle"
+                  size="sm"
+                  flexShrink={0}
+                >
                   {fn.functionName}
                 </Badge>
               ))}
               {plugin.functions.length > 3 && (
-                <Badge variant="subtle" size="sm">
+                <Badge variant="subtle" size="sm" flexShrink={0}>
                   +{plugin.functions.length - 3}
                 </Badge>
               )}
@@ -384,38 +465,43 @@ function PluginCard({
         </VStack>
 
         {/* アクション */}
-        <VStack gap={2}>
-          {plugin.pluginStoreUrl && (
-            <Button
-              size="xs"
-              variant="ghost"
-              asChild
-              onClick={(e) => e.stopPropagation()}
-            >
-              <a
-                href={plugin.pluginStoreUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+        {(plugin.pluginStoreUrl || canUninstall) && (
+          <VStack gap={2} flexShrink={0} w={{ base: "full", sm: "auto" }}>
+            {plugin.pluginStoreUrl && (
+              <Button
+                size="xs"
+                variant="solid"
+                colorPalette="blue"
+                asChild
+                onClick={(e) => e.stopPropagation()}
+                w={{ base: "full", sm: "auto" }}
               >
-                <LuExternalLink size={14} />
-                {t("pluginsPage.viewDetails")}
-              </a>
-            </Button>
-          )}
-          {canUninstall && (
-            <Button
-              size="xs"
-              variant="ghost"
-              colorPalette="red"
-              onClick={handleUninstallClick}
-              loading={isUninstalling}
-            >
-              <LuTrash2 size={14} />
-              {t("pluginsPage.uninstall")}
-            </Button>
-          )}
-        </VStack>
-      </HStack>
+                <a
+                  href={plugin.pluginStoreUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <LuExternalLink size={14} />
+                  {t("pluginsPage.viewInStore")}
+                </a>
+              </Button>
+            )}
+            {canUninstall && (
+              <Button
+                size="xs"
+                variant="solid"
+                colorPalette="red"
+                onClick={handleUninstallClick}
+                loading={isUninstalling}
+                w={{ base: "full", sm: "auto" }}
+              >
+                <LuTrash2 size={14} />
+                {t("pluginsPage.uninstall")}
+              </Button>
+            )}
+          </VStack>
+        )}
+      </Flex>
     </Box>
   );
 }

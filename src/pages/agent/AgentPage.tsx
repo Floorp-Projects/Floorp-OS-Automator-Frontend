@@ -19,6 +19,7 @@ import {
     HStack,
     IconButton,
     Spinner,
+    Steps,
     Text,
     Textarea,
     VStack,
@@ -51,6 +52,79 @@ import type { TerminalConsoleHandle } from "@/components/console";
 import type { GenerationEvent } from "@/components/console/utils";
 import { useI18n } from "@/hooks/useI18n";
 import { Tooltip } from "@/components/ui/tooltip";
+
+/**
+ * ステップインジケーター
+ */
+function StepIndicator({
+    currentStep,
+}: {
+    currentStep:
+        | "prompt"
+        | "generating"
+        | "confirm"
+        | "executing"
+        | "completed"
+        | "error";
+}) {
+    const { t } = useI18n();
+
+    const steps = [
+        { key: "prompt", label: t("agent.step.prompt"), icon: LuSparkles },
+        { key: "generating", label: t("agent.step.generating"), icon: Spinner },
+        { key: "confirm", label: t("agent.step.confirm"), icon: LuShield },
+        { key: "executing", label: t("agent.step.executing"), icon: LuPlay },
+        { key: "completed", label: t("agent.step.completed"), icon: LuCheck },
+    ];
+
+    const currentIndex = steps.findIndex((s) => s.key === currentStep);
+    const activeIndex = currentStep === "error" ? -1 : currentIndex;
+
+    return (
+        <Box
+            w="full"
+            maxW="4xl"
+            mx="auto"
+            px={{ base: 4, md: 6 }}
+            py={{ base: 3, md: 4 }}
+            display={{ base: "none", sm: "block" }}
+        >
+            <Steps.Root
+                count={steps.length}
+                step={activeIndex}
+                colorPalette="floorp"
+                size={{ base: "sm", md: "md" }}
+            >
+                <Steps.List>
+                    {steps.map((step, index) => (
+                        <Steps.Item key={step.key} index={index}>
+                            <Steps.Trigger>
+                                <Steps.Indicator>
+                                    {index < activeIndex
+                                        ? <LuCheck />
+                                        : index === activeIndex
+                                        ? (
+                                            step.key === "generating"
+                                                ? <Spinner size="sm" />
+                                                : <step.icon />
+                                        )
+                                        : <Box fontSize="xs">{index + 1}</Box>}
+                                </Steps.Indicator>
+                                <Steps.Title
+                                    display={{ base: "none", md: "block" }}
+                                    fontSize="xs"
+                                >
+                                    {step.label}
+                                </Steps.Title>
+                            </Steps.Trigger>
+                            <Steps.Separator />
+                        </Steps.Item>
+                    ))}
+                </Steps.List>
+            </Steps.Root>
+        </Box>
+    );
+}
 
 /**
  * プロンプト入力ステップ
@@ -1006,6 +1080,11 @@ export function AgentPage() {
                     )}
                 </HStack>
             </Box>
+
+            {/* ステップインジケーター */}
+            {currentStep !== "error" && (
+                <StepIndicator currentStep={currentStep} />
+            )}
 
             {/* メインコンテンツ */}
             <Flex

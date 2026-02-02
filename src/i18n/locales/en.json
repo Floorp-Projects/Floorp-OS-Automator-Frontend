@@ -384,8 +384,10 @@
     "title": "Plugin Management",
     "description": "Manage installed plugins",
     "refresh": "Refresh",
+    "openStore": "Open Store",
     "functions": "Functions",
     "viewDetails": "Details",
+    "viewInStore": "View in Store",
     "noSearchResults": "No search results found",
     "uninstall": "Uninstall",
     "uninstallSuccess": "Plugin uninstalled successfully",
@@ -532,7 +534,14 @@
     "refine": "Refine",
     "refineHint": "Enter instructions to modify the workflow",
     "detailView": "Details",
-    "compactView": "Compact"
+    "compactView": "Compact",
+    "step": {
+      "prompt": "Prompt",
+      "generating": "Generating",
+      "confirm": "Confirm",
+      "executing": "Executing",
+      "completed": "Completed"
+    }
   },
   "onboarding": {
     "skipTour": "Skip tour",
