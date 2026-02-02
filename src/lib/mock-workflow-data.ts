@@ -37,7 +37,7 @@ function createTimestamp(): { seconds: bigint; nanos: number } {
 function createFloorpPlugin() {
   return create(PluginPackageSchema, {
     packageId: "com.floorp.browser",
-    packageName: "Floorp ブラウザ自動化",
+    packageName: "Floorp",
     packageVersion: "1.0.0",
     description:
       "Floorpブラウザのタブ操作、フォーム入力、DOM操作を行う内蔵プラグイン",
@@ -217,7 +217,7 @@ function createFloorpPlugin() {
 function createThunderbirdPlugin() {
   return create(PluginPackageSchema, {
     packageId: "sapphillon.thunderbird",
-    packageName: "Thunderbird 連携",
+    packageName: "Thunderbird",
     packageVersion: "1.0.0",
     description:
       "Thunderbirdからユーザー情報やカレンダー予定を取得するプラグイン",
