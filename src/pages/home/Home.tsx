@@ -114,8 +114,7 @@ export function HomePage() {
   }, [prompt, generate]);
 
   // idle/prompt以外のステップでリセットボタンを表示
-  const showResetButton =
-    currentStep !== "idle" &&
+  const showResetButton = currentStep !== "idle" &&
     currentStep !== "prompt" &&
     currentStep !== "error";
 

@@ -92,7 +92,11 @@ export function GeneratingStep({ events, onStop }: GeneratingStepProps) {
                                 },
                             }}
                         />
-                        <Text fontWeight="medium" fontSize="sm" color="fg.muted">
+                        <Text
+                            fontWeight="medium"
+                            fontSize="sm"
+                            color="fg.muted"
+                        >
                             {t("agent.generationLog")}
                         </Text>
                     </HStack>

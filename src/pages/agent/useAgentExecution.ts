@@ -147,7 +147,7 @@ export function useAgentExecution(): UseAgentExecutionReturn {
             enhancedMsg = {
               ...msg,
               workflowDefinition: enhanceWorkflowWithMockData(
-                msg.workflowDefinition
+                msg.workflowDefinition,
               ),
             };
           }
@@ -200,7 +200,7 @@ export function useAgentExecution(): UseAgentExecutionReturn {
             enhancedMsg = {
               ...msg,
               workflowDefinition: enhanceWorkflowWithMockData(
-                msg.workflowDefinition
+                msg.workflowDefinition,
               ),
             };
           }

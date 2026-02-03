@@ -2,7 +2,6 @@ import {
   Button,
   Card,
   Flex,
-  SimpleGrid,
   Spinner,
   Text,
   VStack,
@@ -101,7 +100,7 @@ export function WorkflowGrid({
 
   // Grid of workflows
   return (
-    <SimpleGrid columns={{ base: 1, sm: 2, lg: 3, xl: 4 }} gap={3}>
+    <VStack gap={3} align="stretch" w="full">
       {workflows.map((workflow) => (
         <WorkflowCard
           key={workflow.id}
@@ -112,6 +111,6 @@ export function WorkflowGrid({
           activeWorkflowId={activeWorkflowId}
         />
       ))}
-    </SimpleGrid>
+    </VStack>
   );
 }

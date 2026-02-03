@@ -7,10 +7,7 @@ import {
   WorkflowRunPage,
   WorkflowsPage,
 } from "@/pages/workflows";
-import {
-  PluginDetailPage,
-  PluginsPage,
-} from "@/pages/plugins";
+import { PluginDetailPage, PluginsPage } from "@/pages/plugins";
 import { InstallPluginPage } from "@/pages/install-plugin";
 import { SettingsPage } from "@/pages/settings";
 import { useI18n } from "@/hooks/useI18n";
