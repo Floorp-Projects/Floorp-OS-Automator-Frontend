@@ -2,7 +2,6 @@ import { AppShell } from "@/components/layout/AppShell";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { HomePage } from "@/pages/home/Home";
 import { GeneratePage } from "@/pages/generate/GeneratePage";
-import { AgentPage } from "@/pages/agent";
 import {
   WorkflowParserTest,
   WorkflowRunPage,
@@ -23,7 +22,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/home" replace />} />
         <Route path="/home" element={<HomePage />} />
-        <Route path="/agent" element={<AgentPage />} />
+        {/* /agent は /home に統合されたためリダイレクト */}
+        <Route path="/agent" element={<Navigate to="/home" replace />} />
         <Route path="/generate" element={<GeneratePage />} />
         <Route path="/workflows" element={<WorkflowsPage />} />
         <Route path="/workflows/:id" element={<WorkflowRunPage />} />

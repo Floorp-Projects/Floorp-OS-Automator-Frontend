@@ -10,7 +10,9 @@
     "generate": "Generate",
     "workflows": "Workflows",
     "plugins": "Plugins",
+    "settings": "Settings",
     "recentWorkflows": "Recent Workflows",
+    "similarWorkflows": "Similar Workflows",
     "untitledWorkflow": "Untitled Workflow",
     "send": "Send",
     "search": "Search",
@@ -37,7 +39,7 @@
   },
   "home": {
     "title": "Integrated platform that executes what you want to do",
-    "subtitle": "Floorp OS safely executes commands like you would and reports the results.",
+    "subtitle": "Extend functionality with plugins and automate tasks with workflows. AI works on your behalf.",
     "placeholder": "Example: Download the latest report and email it to the team",
     "sendHint": "Press ⌘ + Enter to send",
     "promptLabel": "Give instructions to AI",

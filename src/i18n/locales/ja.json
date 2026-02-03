@@ -10,7 +10,9 @@
         "generate": "生成",
         "workflows": "ワークフロー",
         "plugins": "プラグイン",
+        "settings": "設定",
         "recentWorkflows": "最近のワークフロー",
+        "similarWorkflows": "類似するワークフロー",
         "untitledWorkflow": "無題のワークフロー",
         "send": "送信",
         "search": "検索",
@@ -34,7 +36,7 @@
     },
     "home": {
         "title": "お手伝いできることはありますか？",
-        "subtitle": "Floorp OS はあなたの代わりに調査をしたり、作業を代行したり質問などに対して回答することができます。",
+        "subtitle": "プラグインで機能を拡張し、ワークフローで作業を自動化。AI があなたの代わりに作業を代行します。",
         "placeholder": "例: 最新のレポートをダウンロードして、チームにメールで送信する",
         "sendHint": "⌘ + Enter で送信",
         "promptLabel": "AI に指示を出す",

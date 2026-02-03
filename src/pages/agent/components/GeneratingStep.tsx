@@ -118,7 +118,7 @@ export function GeneratingStep({ events, onStop }: GeneratingStepProps) {
                     h="calc(100% - 52px)"
                     overflow="hidden"
                     bg="gray.950"
-                    _light={{ bg: "gray.900" }}
+                    _light={{ bg: "gray.50" }}
                 >
                     <TerminalConsole
                         ref={consoleRef}

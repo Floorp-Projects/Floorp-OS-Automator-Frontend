@@ -20,6 +20,7 @@ import { enhanceWorkflowWithMockData } from "@/lib/mock-workflow-data";
  * エージェント実行のステップ
  */
 export type AgentStep =
+  | "idle"
   | "prompt"
   | "generating"
   | "confirm"
@@ -90,7 +91,7 @@ export interface UseAgentExecutionReturn {
  * プロンプトからワークフローを生成し、権限確認後に実行するフロー全体を管理します。
  */
 export function useAgentExecution(): UseAgentExecutionReturn {
-  const [currentStep, setCurrentStep] = React.useState<AgentStep>("prompt");
+  const [currentStep, setCurrentStep] = React.useState<AgentStep>("idle");
   const [generating, setGenerating] = React.useState(false);
   const [executing, setExecuting] = React.useState(false);
   const [events, setEvents] = React.useState<AgentEvent[]>([]);
@@ -231,7 +232,7 @@ export function useAgentExecution(): UseAgentExecutionReturn {
     abortRef.current?.abort();
     setGenerating(false);
     setRefining(false);
-    setCurrentStep("prompt");
+    setCurrentStep("idle");
   }, []);
 
   // 保存中フラグ
@@ -354,7 +355,7 @@ export function useAgentExecution(): UseAgentExecutionReturn {
     // 同期フラグもリセット
     savingRef.current = false;
     executingRef.current = false;
-    setCurrentStep("prompt");
+    setCurrentStep("idle");
     setGenerating(false);
     setExecuting(false);
     setRefining(false);

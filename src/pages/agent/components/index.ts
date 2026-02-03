@@ -6,6 +6,7 @@
 
 export { StepIndicator } from "./StepIndicator";
 export { ConsoleToolbar } from "./ConsoleToolbar";
+export { IdleStep } from "./IdleStep";
 export { PromptStep } from "./PromptStep";
 export { GeneratingStep } from "./GeneratingStep";
 export { ConfirmStep } from "./ConfirmStep";

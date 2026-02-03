@@ -125,7 +125,7 @@ export function PromptPanel({
             pt={3}
             pb={2}
           />
-          
+
           {/* 入力バー下部のアクションエリア */}
           <HStack
             px={3}
@@ -141,14 +141,18 @@ export function PromptPanel({
                 onClick={() => setTemplatesDialogOpen(true)}
               >
                 <LuFileText size={14} />
-                <Text fontSize="xs" display={{ base: "none", md: "block" }}>{t("generate.template")}</Text>
+                <Text fontSize="xs" display={{ base: "none", md: "block" }}>
+                  {t("generate.template")}
+                </Text>
               </Button>
 
               <MenuRoot positioning={{ placement: "top-end" }}>
                 <MenuTrigger asChild>
                   <Button size="xs" variant="ghost">
                     <LuClock size={14} />
-                    <Text fontSize="xs" display={{ base: "none", md: "block" }}>{t("generate.history")}</Text>
+                    <Text fontSize="xs" display={{ base: "none", md: "block" }}>
+                      {t("generate.history")}
+                    </Text>
                     {history.length > 0 && (
                       <Badge ml={0.5} size="xs" colorPalette="blue">
                         {history.length}
@@ -204,11 +208,18 @@ export function PromptPanel({
                 disabled={streaming || !prompt}
               >
                 <LuEraser size={14} />
-                <Text fontSize="xs" display={{ base: "none", md: "block" }}>{t("generate.clear")}</Text>
+                <Text fontSize="xs" display={{ base: "none", md: "block" }}>
+                  {t("generate.clear")}
+                </Text>
               </Button>
 
               {characterCount > 0 && (
-                <Text fontSize="xs" color="fg.muted" ml={2} display={{ base: "none", md: "block" }}>
+                <Text
+                  fontSize="xs"
+                  color="fg.muted"
+                  ml={2}
+                  display={{ base: "none", md: "block" }}
+                >
                   {characterCount} {t("generate.characters")}
                 </Text>
               )}
@@ -250,7 +261,10 @@ export function PromptPanel({
                   : (
                     <>
                       <LuSparkles size={14} />
-                      <Text fontSize="xs" display={{ base: "none", sm: "block" }}>
+                      <Text
+                        fontSize="xs"
+                        display={{ base: "none", sm: "block" }}
+                      >
                         {t("common.generate")}
                       </Text>
                     </>
@@ -259,7 +273,6 @@ export function PromptPanel({
             </HStack>
           </HStack>
         </Box>
-
       </VStack>
 
       {/* 履歴ダイアログ */}

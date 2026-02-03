@@ -14,7 +14,13 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { LuClock, LuCopy, LuEllipsisVertical, LuPlay, LuTrash2 } from "react-icons/lu";
+import {
+  LuClock,
+  LuCopy,
+  LuEllipsisVertical,
+  LuPlay,
+  LuTrash2,
+} from "react-icons/lu";
 import { useNavigate } from "react-router-dom";
 import { useI18n } from "@/hooks/useI18n";
 import { formatRelativeTimestamp } from "@/lib/time-utils";
@@ -91,9 +97,7 @@ export const WorkflowCard = React.memo<WorkflowCardProps>(
                   }}
                   disabled={isRunning || !latestCode}
                 >
-                  {isRunning
-                    ? <Spinner size="xs" />
-                    : <LuPlay size={14} />}
+                  {isRunning ? <Spinner size="xs" /> : <LuPlay size={14} />}
                 </IconButton>
                 <MenuRoot>
                   <MenuTrigger asChild>
@@ -160,9 +164,7 @@ export const WorkflowCard = React.memo<WorkflowCardProps>(
                   size="xs"
                   fontSize="2xs"
                 >
-                  {isSuccess
-                    ? t("common.success")
-                    : t("common.failure")}
+                  {isSuccess ? t("common.success") : t("common.failure")}
                 </Badge>
               )}
               {!hasResult && latestCode && (
@@ -180,7 +182,8 @@ export const WorkflowCard = React.memo<WorkflowCardProps>(
     // Custom comparison to prevent unnecessary re-renders
     return (
       prevProps.workflow.id === nextProps.workflow.id &&
-      prevProps.workflow.updatedAt?.seconds === nextProps.workflow.updatedAt?.seconds &&
+      prevProps.workflow.updatedAt?.seconds ===
+        nextProps.workflow.updatedAt?.seconds &&
       prevProps.workflow.displayName === nextProps.workflow.displayName &&
       prevProps.activeWorkflowId === nextProps.activeWorkflowId
     );

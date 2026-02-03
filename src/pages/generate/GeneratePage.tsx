@@ -224,7 +224,12 @@ function MobileLayout({
                 <Box flex={1} minH={0} overflow="auto" p={1}>
                   {events.length === 0 && !streaming && !runRes
                     ? (
-                      <VStack gap={1} py={2} color="fg.muted" textAlign="center">
+                      <VStack
+                        gap={1}
+                        py={2}
+                        color="fg.muted"
+                        textAlign="center"
+                      >
                         <LuPlay size={20} />
                         <Text fontSize="xs">{t("run.notExecuted")}</Text>
                       </VStack>
