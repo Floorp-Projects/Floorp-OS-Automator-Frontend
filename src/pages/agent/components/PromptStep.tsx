@@ -100,7 +100,9 @@ export function PromptStep({
     // カテゴリーごとにテンプレートをグループ化
     const templatesByCategory = React.useMemo(() => {
         return CATEGORIES.reduce((acc, category) => {
-            acc[category.id] = templates.filter((t) => t.category === category.id);
+            acc[category.id] = templates.filter((t) =>
+                t.category === category.id
+            );
             return acc;
         }, {} as Record<string, PromptTemplate[]>);
     }, [templates]);
@@ -198,7 +200,9 @@ export function PromptStep({
                                     cursor: "not-allowed",
                                 }}
                             >
-                                {generating ? <Spinner size="sm" /> : <LuArrowUp />}
+                                {generating
+                                    ? <Spinner size="sm" />
+                                    : <LuArrowUp />}
                             </IconButton>
                         </Flex>
                     </Box>
@@ -213,12 +217,13 @@ export function PromptStep({
                 >
                     {CATEGORIES.map((category) => {
                         const Icon = category.icon;
-                        const categoryTemplates = templatesByCategory[category.id] || [];
-                        
+                        const categoryTemplates =
+                            templatesByCategory[category.id] || [];
+
                         return (
-                            <MenuRoot 
-                                key={category.id} 
-                                positioning={{ 
+                            <MenuRoot
+                                key={category.id}
+                                positioning={{
                                     placement: "bottom",
                                     flip: true,
                                     overflowPadding: 16,
@@ -243,7 +248,9 @@ export function PromptStep({
                                     >
                                         <HStack gap={2}>
                                             <Icon size={16} />
-                                            <Text>{CATEGORY_LABELS[category.id]}</Text>
+                                            <Text>
+                                                {CATEGORY_LABELS[category.id]}
+                                            </Text>
                                         </HStack>
                                     </Button>
                                 </MenuTrigger>
@@ -262,44 +269,60 @@ export function PromptStep({
                                             boxShadow="lg"
                                             zIndex="popover"
                                         >
-                                    {categoryTemplates.length > 0 ? (
-                                        categoryTemplates.map((template) => (
-                                            <MenuItem
-                                                key={template.id}
-                                                value={template.id}
-                                                onClick={() => handleSelectTemplate(template)}
-                                                borderRadius="lg"
-                                                px={3}
-                                                py={2}
-                                                _hover={{
-                                                    bg: "bg.muted",
-                                                }}
-                                            >
-                                                <VStack align="start" gap={0.5} w="full">
-                                                    <Text
-                                                        fontWeight="medium"
-                                                        fontSize="sm"
-                                                        color="fg"
-                                                    >
-                                                        {template.title}
-                                                    </Text>
-                                                    <Text
-                                                        fontSize="xs"
-                                                        color="fg.muted"
-                                                        lineClamp={2}
-                                                    >
-                                                        {template.description}
-                                                    </Text>
-                                                </VStack>
-                                            </MenuItem>
-                                        ))
-                                    ) : (
-                                        <Box px={3} py={2}>
-                                            <Text fontSize="sm" color="fg.muted">
-                                                {t("agent.noTemplates")}
-                                            </Text>
-                                        </Box>
-                                    )}
+                                            {categoryTemplates.length > 0
+                                                ? (
+                                                    categoryTemplates.map((
+                                                        template,
+                                                    ) => (
+                                                        <MenuItem
+                                                            key={template.id}
+                                                            value={template.id}
+                                                            onClick={() =>
+                                                                handleSelectTemplate(
+                                                                    template,
+                                                                )}
+                                                            borderRadius="lg"
+                                                            px={3}
+                                                            py={2}
+                                                            _hover={{
+                                                                bg: "bg.muted",
+                                                            }}
+                                                        >
+                                                            <VStack
+                                                                align="start"
+                                                                gap={0.5}
+                                                                w="full"
+                                                            >
+                                                                <Text
+                                                                    fontWeight="medium"
+                                                                    fontSize="sm"
+                                                                    color="fg"
+                                                                >
+                                                                    {template
+                                                                        .title}
+                                                                </Text>
+                                                                <Text
+                                                                    fontSize="xs"
+                                                                    color="fg.muted"
+                                                                    lineClamp={2}
+                                                                >
+                                                                    {template
+                                                                        .description}
+                                                                </Text>
+                                                            </VStack>
+                                                        </MenuItem>
+                                                    ))
+                                                )
+                                                : (
+                                                    <Box px={3} py={2}>
+                                                        <Text
+                                                            fontSize="sm"
+                                                            color="fg.muted"
+                                                        >
+                                                            {t("agent.noTemplates")}
+                                                        </Text>
+                                                    </Box>
+                                                )}
                                         </MenuContent>
                                     </MenuPositioner>
                                 </Portal>
@@ -315,7 +338,8 @@ export function PromptStep({
                     textAlign="center"
                     maxW="md"
                 >
-                    {t("agent.disclaimer") || "Sapphillon AI は間違いを起こすことがあります。重要な情報は確認してください。"}
+                    {t("agent.disclaimer") ||
+                        "Sapphillon AI は間違いを起こすことがあります。重要な情報は確認してください。"}
                 </Text>
             </VStack>
         </Flex>

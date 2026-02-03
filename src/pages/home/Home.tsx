@@ -125,7 +125,11 @@ function WorkflowCard({ workflow }: { workflow: Workflow }) {
                 <LuClock size={12} />
                 <Text>
                   {t("common.updated")}:{" "}
-                  {formatRelativeTimestamp(workflow.updatedAt, t, currentLanguage)}
+                  {formatRelativeTimestamp(
+                    workflow.updatedAt,
+                    t,
+                    currentLanguage,
+                  )}
                 </Text>
               </HStack>
             )}
@@ -140,7 +144,12 @@ function WorkflowCard({ workflow }: { workflow: Workflow }) {
               </Badge>
             )}
             {!hasResult && latestCode && (
-              <Badge colorPalette="gray" size="sm" fontSize="2xs" borderRadius="full">
+              <Badge
+                colorPalette="gray"
+                size="sm"
+                fontSize="2xs"
+                borderRadius="full"
+              >
                 {t("common.neverRun")}
               </Badge>
             )}
@@ -509,7 +518,11 @@ export function HomePage() {
               px={{ base: 3, md: 4 }}
               py={2}
             >
-              <Text fontSize="xs" color="fg.muted" display={{ base: "none", md: "block" }}>
+              <Text
+                fontSize="xs"
+                color="fg.muted"
+                display={{ base: "none", md: "block" }}
+              >
                 {t("home.sendHint")}
               </Text>
               <IconButton

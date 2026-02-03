@@ -104,7 +104,11 @@ export function ConfirmStep({
                     >
                         <HStack gap={2}>
                             <LuZap size={14} />
-                            <Text fontWeight="medium" fontSize="xs" color="fg.muted">
+                            <Text
+                                fontWeight="medium"
+                                fontSize="xs"
+                                color="fg.muted"
+                            >
                                 {t("agent.workflowSteps")}
                             </Text>
                         </HStack>
@@ -121,7 +125,12 @@ export function ConfirmStep({
                                 : t("agent.detailView")}
                         </Button>
                     </Flex>
-                    <Box overflow="auto" flex={1} minH="0" maxH={{ base: "calc(100vh - 480px)", md: "400px" }}>
+                    <Box
+                        overflow="auto"
+                        flex={1}
+                        minH="0"
+                        maxH={{ base: "calc(100vh - 480px)", md: "400px" }}
+                    >
                         {workflow?.workflowDefinition &&
                             (showDetailView
                                 ? (
@@ -133,7 +142,8 @@ export function ConfirmStep({
                                 : (
                                     <Box p={4}>
                                         <WorkflowFunctionList
-                                            workflow={workflow.workflowDefinition}
+                                            workflow={workflow
+                                                .workflowDefinition}
                                         />
                                     </Box>
                                 ))}
@@ -176,7 +186,10 @@ export function ConfirmStep({
                                     <Checkbox.HiddenInput />
                                     <Checkbox.Control />
                                 </Checkbox.Root>
-                                <Text fontSize={{ base: "xs", md: "sm" }} color="fg.muted">
+                                <Text
+                                    fontSize={{ base: "xs", md: "sm" }}
+                                    color="fg.muted"
+                                >
                                     {t("agent.highRiskAcknowledge")}
                                 </Text>
                             </HStack>
@@ -198,7 +211,9 @@ export function ConfirmStep({
                             {saving ? <Spinner size="sm" /> : (
                                 <>
                                     <LuPlay size={16} />
-                                    <Text ml={1}>{t("agent.confirmAndRun")}</Text>
+                                    <Text ml={1}>
+                                        {t("agent.confirmAndRun")}
+                                    </Text>
                                 </>
                             )}
                         </Button>
@@ -242,7 +257,10 @@ export function ConfirmStep({
                             }}
                             onKeyDown={(e) => {
                                 if (e.nativeEvent.isComposing) return;
-                                if (e.key === "Enter" && !e.shiftKey && refinePrompt.trim()) {
+                                if (
+                                    e.key === "Enter" && !e.shiftKey &&
+                                    refinePrompt.trim()
+                                ) {
                                     e.preventDefault();
                                     onRefine(refinePrompt.trim());
                                     setRefinePrompt("");
@@ -253,7 +271,8 @@ export function ConfirmStep({
                             aria-label={t("agent.refine")}
                             size="sm"
                             borderRadius="lg"
-                            disabled={!refinePrompt.trim() || saving || refining}
+                            disabled={!refinePrompt.trim() || saving ||
+                                refining}
                             onClick={() => {
                                 if (refinePrompt.trim()) {
                                     onRefine(refinePrompt.trim());
@@ -263,7 +282,9 @@ export function ConfirmStep({
                             bg={refinePrompt.trim() ? "fg" : "bg.muted"}
                             color={refinePrompt.trim() ? "bg" : "fg.muted"}
                             _hover={{
-                                bg: refinePrompt.trim() ? "fg.muted" : "bg.muted",
+                                bg: refinePrompt.trim()
+                                    ? "fg.muted"
+                                    : "bg.muted",
                             }}
                             _disabled={{
                                 bg: "bg.muted",
@@ -272,7 +293,9 @@ export function ConfirmStep({
                                 opacity: 0.5,
                             }}
                         >
-                            {refining ? <Spinner size="sm" /> : <LuArrowUp size={16} />}
+                            {refining
+                                ? <Spinner size="sm" />
+                                : <LuArrowUp size={16} />}
                         </IconButton>
                     </Flex>
                 </VStack>
