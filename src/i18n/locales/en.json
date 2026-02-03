@@ -291,6 +291,7 @@
     "emptyAction": "Add Model"
   },
   "settings": {
+    "title": "Settings",
     "providers": "Providers",
     "models": "Models"
   },
@@ -412,6 +413,7 @@
       "functions": "Functions",
       "permissions": "Permissions"
     },
+    "status": "Status",
     "overview": {
       "description": "Description",
       "version": "Version",
@@ -736,6 +738,31 @@
   },
   "colorMode": {
     "toggle": "Toggle color mode"
+  },
+  "installPlugin": {
+    "title": "Install Plugin",
+    "installing": "Installing...",
+    "successTitle": "Installation Complete",
+    "successDescription": "{{name}} has been installed",
+    "errorTitle": "Installation Failed",
+    "unknownError": "An unknown error occurred",
+    "goToPlugins": "Go to Plugins",
+    "retry": "Retry",
+    "warning": "This plugin extends Floorp OS functionality. Only install from trusted sources.",
+    "install": "Install",
+    "details": "Details",
+    "functions": "Provided Functions",
+    "author": "Author",
+    "official": "Official",
+    "category": {
+      "browser": "Browser",
+      "system": "System",
+      "productivity": "Productivity",
+      "developer": "Developer Tools",
+      "communication": "Communication",
+      "media": "Media",
+      "utilities": "Utilities"
+    }
   },
   "pages": {
     "fix": "Fix",

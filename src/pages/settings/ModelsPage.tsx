@@ -5,7 +5,6 @@ import {
   Card,
   createListCollection,
   Flex,
-  Heading,
   HStack,
   IconButton,
   Input,
@@ -296,20 +295,20 @@ export function ModelsPage() {
   });
 
   return (
-    <Box p={6}>
-      <VStack align="stretch" gap={6}>
-        <Flex justify="space-between" align="center">
-          <Heading size="xl">{t("models.title")}</Heading>
-          {!isCreating && (
+    <Box p={4}>
+      <VStack align="stretch" gap={4}>
+        {!isCreating && (
+          <Flex justify="flex-end">
             <Button
               colorPalette="floorp"
+              size="sm"
               onClick={startCreate}
             >
               <LuPlus />
               {t("models.new")}
             </Button>
-          )}
-        </Flex>
+          </Flex>
+        )}
 
         {/* 検索フィルター */}
         {!isCreating && (
@@ -377,13 +376,13 @@ export function ModelsPage() {
 
         {/* 作成フォーム */}
         {isCreating && (
-          <Card.Root>
-            <Card.Header>
+          <Card.Root borderRadius="xl">
+            <Card.Header py={3} px={4}>
               <Flex justify="space-between" align="center">
-                <Heading size="md">{t("models.createNew")}</Heading>
+                <Text fontWeight="semibold" fontSize="sm">{t("models.createNew")}</Text>
                 <IconButton
                   aria-label={t("models.cancel")}
-                  size="sm"
+                  size="xs"
                   variant="ghost"
                   onClick={() => {
                     setIsCreating(false);
@@ -394,7 +393,7 @@ export function ModelsPage() {
                 </IconButton>
               </Flex>
             </Card.Header>
-            <Card.Body>
+            <Card.Body pt={0}>
               <form onSubmit={handleSubmit(onCreateModel)}>
                 <Stack gap={4}>
                   <Field
@@ -478,9 +477,9 @@ export function ModelsPage() {
         )}
 
         {/* モデル一覧 */}
-        <Card.Root>
-          <Card.Header>
-            <Heading size="md">{t("models.list")}</Heading>
+        <Card.Root borderRadius="xl">
+          <Card.Header py={3} px={4}>
+            <Text fontWeight="semibold" fontSize="sm">{t("models.list")}</Text>
           </Card.Header>
           <Card.Body p={0}>
             {loading
@@ -499,22 +498,22 @@ export function ModelsPage() {
                 />
               )
               : (
-                <Table.Root>
+                <Table.Root size="sm" variant="line">
                   <Table.Header>
-                    <Table.Row>
-                      <Table.ColumnHeader>
+                    <Table.Row bg="bg.subtle">
+                      <Table.ColumnHeader fontSize="xs" color="fg.muted">
                         {t("models.displayName")}
                       </Table.ColumnHeader>
-                      <Table.ColumnHeader>
+                      <Table.ColumnHeader fontSize="xs" color="fg.muted">
                         {t("models.description")}
                       </Table.ColumnHeader>
-                      <Table.ColumnHeader>
+                      <Table.ColumnHeader fontSize="xs" color="fg.muted">
                         {t("models.provider")}
                       </Table.ColumnHeader>
-                      <Table.ColumnHeader>
+                      <Table.ColumnHeader fontSize="xs" color="fg.muted">
                         {t("models.resourceName")}
                       </Table.ColumnHeader>
-                      <Table.ColumnHeader textAlign="right">
+                      <Table.ColumnHeader fontSize="xs" color="fg.muted" textAlign="right">
                         {t("models.operations")}
                       </Table.ColumnHeader>
                     </Table.Row>

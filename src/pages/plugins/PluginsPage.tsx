@@ -5,11 +5,11 @@ import {
   Button,
   Dialog,
   Flex,
+  Heading,
   HStack,
+  IconButton,
   Input,
-  InputGroup,
   Portal,
-  Separator,
   Spinner,
   Text,
   useDisclosure,
@@ -20,6 +20,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Toaster } from "@/components/ui/toaster";
 import { toaster } from "@/components/ui/toaster-instance";
 import {
+  LuArrowLeft,
   LuCircleAlert,
   LuExternalLink,
   LuPackage,
@@ -38,6 +39,7 @@ const PLUGIN_STORE_URL = import.meta.env.DEV
 
 export function PluginsPage() {
   const { t } = useI18n();
+  const navigate = useNavigate();
   const [plugins, setPlugins] = React.useState<PluginPackage[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
@@ -122,143 +124,113 @@ export function PluginsPage() {
     );
   }, [plugins, searchQuery]);
 
-  // 統計情報
-  const stats = React.useMemo(() => {
-    const verified = plugins.filter((p) => p.verified).length;
-    const internal = plugins.filter((p) => p.internalPlugin).length;
-    const deprecated = plugins.filter((p) => p.deprecated).length;
-    return { total: plugins.length, verified, internal, deprecated };
-  }, [plugins]);
-
   return (
-    <VStack
-      align="stretch"
-      gap={{ base: 3, md: 4 }}
-      h="full"
-      p={{ base: 3, md: 4 }}
-    >
-      {/* ヘッダー */}
-      <Flex
-        direction={{ base: "column", sm: "row" }}
-        justify="space-between"
-        align={{ base: "stretch", sm: "flex-start" }}
-        gap={3}
-      >
-        <VStack align="start" gap={0}>
-          <Text fontSize={{ base: "lg", md: "xl" }} fontWeight="bold">
-            {t("pluginsPage.title")}
-          </Text>
-          <Text fontSize="sm" color="fg.muted">
-            {t("pluginsPage.description")}
-          </Text>
-        </VStack>
-        <HStack gap={2} flexShrink={0}>
-          <Button
-            size="sm"
-            variant="solid"
-            colorPalette="blue"
-            asChild
-          >
-            <a
-              href={PLUGIN_STORE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <LuPackage />
-              {t("pluginsPage.openStore")}
-            </a>
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={fetchPlugins}
-            disabled={loading}
-          >
-            <LuRefreshCw />
-            {t("pluginsPage.refresh")}
-          </Button>
-        </HStack>
-      </Flex>
-
-      {/* 統計カード */}
+    <Flex direction="column" h="full" overflow="hidden" fontSize="md">
+      {/* Header - WorkflowsPageスタイルに統一 */}
       <Box
-        display="grid"
-        gridTemplateColumns={{ base: "repeat(2, 1fr)", sm: "repeat(4, 1fr)" }}
-        gap={{ base: 2, md: 3 }}
+        borderBottomWidth="1px"
+        px={3}
+        py={2}
+        bg="bg.panel"
+        flexShrink={0}
       >
-        <StatCard
-          label={t("pluginsPage.stats.total")}
-          value={stats.total}
-          colorPalette="gray"
-        />
-        <StatCard
-          label={t("pluginsPage.stats.verified")}
-          value={stats.verified}
-          colorPalette="blue"
-        />
-        <StatCard
-          label={t("pluginsPage.stats.internal")}
-          value={stats.internal}
-          colorPalette="purple"
-        />
-        <StatCard
-          label={t("pluginsPage.stats.deprecated")}
-          value={stats.deprecated}
-          colorPalette="orange"
-        />
+        <HStack justify="space-between" align="center">
+          <HStack gap={2}>
+            <IconButton
+              aria-label={t("common.back")}
+              variant="ghost"
+              size="xs"
+              onClick={() => navigate("/home")}
+            >
+              <LuArrowLeft />
+            </IconButton>
+            <Heading size="sm">{t("pluginsPage.title")}</Heading>
+          </HStack>
+          <HStack gap={1}>
+            <IconButton
+              aria-label={t("pluginsPage.refresh")}
+              variant="ghost"
+              size="xs"
+              onClick={fetchPlugins}
+              disabled={loading}
+            >
+              <LuRefreshCw />
+            </IconButton>
+            <Button
+              colorPalette="floorp"
+              size="xs"
+              asChild
+            >
+              <a
+                href={PLUGIN_STORE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <LuPackage />
+                <Text>{t("pluginsPage.openStore")}</Text>
+              </a>
+            </Button>
+          </HStack>
+        </HStack>
       </Box>
 
-      {/* 検索 */}
-      <InputGroup maxW={{ base: "full", md: "320px" }}>
-        <Input
-          placeholder={t("plugins.searchPlaceholder")}
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-      </InputGroup>
+      {/* Content */}
+      <Box
+        flex="1"
+        overflowY="auto"
+        px={{ base: 3, md: 4 }}
+        py={{ base: 3, md: 4 }}
+      >
+        <VStack align="stretch" gap={4}>
+          {/* 検索 */}
+          <Input
+            placeholder={t("plugins.searchPlaceholder")}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            maxW={{ base: "full", md: "320px" }}
+            borderRadius="lg"
+          />
 
-      <Separator />
-
-      {/* プラグインリスト */}
-      <Box flex={1} minH={0} overflowY="auto">
-        {loading
-          ? (
-            <HStack justify="center" py={8}>
-              <Spinner size="md" />
-              <Text color="fg.muted">{t("common.loading")}</Text>
-            </HStack>
-          )
-          : error
-          ? (
-            <EmptyState
-              icon={<LuCircleAlert size={40} />}
-              title={t("plugins.fetchErrorTitle")}
-              description={error}
-            />
-          )
-          : filteredPlugins.length === 0
-          ? (
-            <EmptyState
-              icon={<LuPackage size={40} />}
-              title={t("plugins.emptyTitle")}
-              description={searchQuery
-                ? t("pluginsPage.noSearchResults")
-                : t("plugins.emptyDescription")}
-            />
-          )
-          : (
-            <VStack align="stretch" gap={3}>
-              {filteredPlugins.map((plugin) => (
-                <PluginCard
-                  key={plugin.packageId}
-                  plugin={plugin}
-                  t={t}
-                  onUninstall={handleUninstall}
-                  isUninstalling={uninstalling === plugin.packageId}
-                />
-              ))}
-            </VStack>
-          )}
+          {/* プラグインリスト */}
+          {loading
+            ? (
+              <HStack justify="center" py={8}>
+                <Spinner size="md" />
+                <Text color="fg.muted">{t("common.loading")}</Text>
+              </HStack>
+            )
+            : error
+            ? (
+              <EmptyState
+                icon={<LuCircleAlert size={40} />}
+                title={t("plugins.fetchErrorTitle")}
+                description={error}
+              />
+            )
+            : filteredPlugins.length === 0
+            ? (
+              <EmptyState
+                icon={<LuPackage size={40} />}
+                title={t("plugins.emptyTitle")}
+                description={searchQuery
+                  ? t("pluginsPage.noSearchResults")
+                  : t("plugins.emptyDescription")}
+              />
+            )
+            : (
+              <VStack align="stretch" gap={3}>
+                {filteredPlugins.map((plugin) => (
+                  <PluginCard
+                    key={plugin.packageId}
+                    plugin={plugin}
+                    t={t}
+                    onUninstall={handleUninstall}
+                    isUninstalling={uninstalling === plugin.packageId}
+                  />
+                ))}
+              </VStack>
+            )}
+        </VStack>
       </Box>
 
       {/* 確認ダイアログ */}
@@ -311,39 +283,7 @@ export function PluginsPage() {
       </Dialog.Root>
 
       <Toaster />
-    </VStack>
-  );
-}
-
-function StatCard({
-  label,
-  value,
-  colorPalette,
-}: {
-  label: string;
-  value: number;
-  colorPalette: string;
-}) {
-  return (
-    <Box
-      borderWidth="1px"
-      rounded="lg"
-      px={3}
-      py={2}
-      bg="bg"
-      textAlign="center"
-    >
-      <Text
-        fontSize={{ base: "lg", sm: "xl", md: "2xl" }}
-        fontWeight="bold"
-        color={`${colorPalette}.500`}
-      >
-        {value}
-      </Text>
-      <Text fontSize="xs" color="fg.muted" lineClamp={1}>
-        {label}
-      </Text>
-    </Box>
+    </Flex>
   );
 }
 

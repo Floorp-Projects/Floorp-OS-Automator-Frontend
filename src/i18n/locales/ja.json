@@ -35,8 +35,8 @@
         }
     },
     "home": {
-        "title": "質問したり、作業を依頼してみましょう",
-        "subtitle": "プラグインで機能を拡張し、ワークフローで作業を自動化。AI があなたの代わりに作業を代行します。",
+        "title": "何かお手伝いできることはありますか？",
+        "subtitle": "プラグインで機能を拡張し、ワークフローを実行することで安全にあなたに代って作業を行います。",
         "placeholder": "例: 最新のレポートをダウンロードして、チームにメールで送信する",
         "sendHint": "⌘ + Enter で送信",
         "promptLabel": "AI に指示を出す",
@@ -288,6 +288,7 @@
         "emptyAction": "モデルを追加"
     },
     "settings": {
+        "title": "設定",
         "providers": "プロバイダ",
         "models": "モデル"
     },
@@ -409,6 +410,7 @@
             "functions": "関数",
             "permissions": "権限"
         },
+        "status": "ステータス",
         "overview": {
             "description": "説明",
             "version": "バージョン",
@@ -733,6 +735,31 @@
     },
     "colorMode": {
         "toggle": "カラーモードを切り替え"
+    },
+    "installPlugin": {
+        "title": "プラグインをインストール",
+        "installing": "インストール中...",
+        "successTitle": "インストール完了",
+        "successDescription": "{{name}} がインストールされました",
+        "errorTitle": "インストール失敗",
+        "unknownError": "不明なエラーが発生しました",
+        "goToPlugins": "プラグイン一覧へ",
+        "retry": "再試行",
+        "warning": "このプラグインは Floorp OS の機能を拡張します。信頼できる提供元からのみインストールしてください。",
+        "install": "インストール",
+        "details": "詳細情報",
+        "functions": "提供される機能",
+        "author": "作成者",
+        "official": "公式",
+        "category": {
+            "browser": "ブラウザ",
+            "system": "システム",
+            "productivity": "生産性",
+            "developer": "開発ツール",
+            "communication": "通信",
+            "media": "メディア",
+            "utilities": "ユーティリティ"
+        }
     },
     "pages": {
         "fix": "修正",

@@ -1,11 +1,4 @@
-import {
-  Button,
-  Card,
-  Flex,
-  Spinner,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
+import { Button, Card, Flex, Spinner, Text, VStack } from "@chakra-ui/react";
 import { LuFileText, LuPlus } from "react-icons/lu";
 import { WorkflowCard } from "./WorkflowCard";
 import type { Workflow } from "@/gen/sapphillon/v1/workflow_pb";

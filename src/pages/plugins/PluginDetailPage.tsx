@@ -2,12 +2,12 @@ import React from "react";
 import {
   Badge,
   Box,
+  Button,
   Card,
   Flex,
   Heading,
   HStack,
   IconButton,
-  Separator,
   Spinner,
   Tabs,
   Text,
@@ -84,7 +84,7 @@ export function PluginDetailPage() {
       const date = new Date(Number(timestamp.seconds) * 1000);
       return date.toLocaleString();
     },
-    [t],
+    [],
   );
 
   if (loading) {
@@ -137,42 +137,43 @@ export function PluginDetailPage() {
         bg="bg.panel"
         flexShrink={0}
       >
-        <HStack justify="space-between" align="center">
-          <HStack gap={2}>
+        <HStack justify="space-between" align="start" gap={2}>
+          <HStack gap={2} minW={0} flex={1}>
             <IconButton
               aria-label={t("common.back")}
               variant="ghost"
               size="xs"
               onClick={() => navigate("/plugins")}
+              flexShrink={0}
             >
               <LuArrowLeft />
             </IconButton>
-            <VStack align="start" gap={0}>
-              <HStack gap={2}>
+            <VStack align="start" gap={1} minW={0} flex={1}>
+              <HStack gap={2} flexWrap="wrap">
                 <Heading size="sm" lineClamp={1}>
                   {plugin.packageName}
                 </Heading>
-                <Badge variant="outline" fontSize="xs">
+                <Badge variant="outline" fontSize="xs" flexShrink={0}>
                   v{plugin.packageVersion}
                 </Badge>
                 {isExternal && (
-                  <Badge colorPalette="gray" fontSize="xs">
+                  <Badge colorPalette="gray" fontSize="xs" flexShrink={0}>
                     外部プラグイン
                   </Badge>
                 )}
                 {isVerified && (
-                  <Badge colorPalette="blue" fontSize="xs">
+                  <Badge colorPalette="blue" fontSize="xs" flexShrink={0}>
                     <LuShield size={12} />
                     {t("plugins.verified")}
                   </Badge>
                 )}
                 {isInternal && (
-                  <Badge colorPalette="purple" fontSize="xs">
+                  <Badge colorPalette="purple" fontSize="xs" flexShrink={0}>
                     {t("plugins.internal")}
                   </Badge>
                 )}
                 {isDeprecated && (
-                  <Badge colorPalette="orange" fontSize="xs">
+                  <Badge colorPalette="orange" fontSize="xs" flexShrink={0}>
                     {t("plugins.deprecated")}
                   </Badge>
                 )}
@@ -190,6 +191,7 @@ export function PluginDetailPage() {
               variant="solid"
               colorPalette="blue"
               asChild
+              flexShrink={0}
             >
               <a
                 href={plugin.pluginStoreUrl}
@@ -205,246 +207,211 @@ export function PluginDetailPage() {
       </Box>
 
       {/* Main Content */}
-      <Flex flex="1" overflow="hidden">
-        <Box flex="1" overflow="hidden" position="relative">
-          <Tabs.Root
-            value={activeTab}
-            onValueChange={(details) =>
-              setActiveTab(
-                details.value as "overview" | "functions" | "permissions",
-              )}
-            h="full"
-            display="flex"
-            flexDirection="column"
-          >
-            <Tabs.List borderBottomWidth="1px" flexShrink={0} px={2}>
-              <Tabs.Trigger value="overview" px={3} py={1.5}>
-                <Text fontSize="xs">{t("pluginDetail.tabs.overview")}</Text>
-              </Tabs.Trigger>
-              <Tabs.Trigger value="functions" px={3} py={1.5}>
-                <Text fontSize="xs">{t("pluginDetail.tabs.functions")}</Text>
-              </Tabs.Trigger>
-              <Tabs.Trigger value="permissions" px={3} py={1.5}>
-                <Text fontSize="xs">
-                  {t("pluginDetail.tabs.permissions")}
-                </Text>
-              </Tabs.Trigger>
-            </Tabs.List>
+      <Box
+        flex="1"
+        overflow="auto"
+        px={{ base: 3, md: 4 }}
+        py={{ base: 3, md: 4 }}
+      >
+        <Tabs.Root
+          value={activeTab}
+          onValueChange={(details) =>
+            setActiveTab(
+              details.value as "overview" | "functions" | "permissions",
+            )}
+        >
+          <Tabs.List borderBottomWidth="1px" mb={4}>
+            <Tabs.Trigger value="overview" px={4} py={2}>
+              <Text fontSize="sm">{t("pluginDetail.tabs.overview")}</Text>
+            </Tabs.Trigger>
+            <Tabs.Trigger value="functions" px={4} py={2}>
+              <Text fontSize="sm">{t("pluginDetail.tabs.functions")}</Text>
+            </Tabs.Trigger>
+            <Tabs.Trigger value="permissions" px={4} py={2}>
+              <Text fontSize="sm">
+                {t("pluginDetail.tabs.permissions")}
+              </Text>
+            </Tabs.Trigger>
+          </Tabs.List>
 
-            {/* Overview Tab */}
-            <Tabs.Content value="overview" flex="1" overflow="auto" p={4}>
-              <VStack align="stretch" gap={4} maxW="800px">
-                {/* Description */}
-                {!isExternal && (
-                  <Box>
-                    <Text fontSize="sm" fontWeight="medium" mb={2}>
-                      {t("pluginDetail.overview.description")}
-                    </Text>
-                    <Text fontSize="sm" color="fg.muted">
-                      {plugin.description ||
-                        t("pluginDetail.overview.noDescription")}
-                    </Text>
-                  </Box>
-                )}
-
-                {!isExternal && <Separator />}
-
-                <Separator />
-
-                {/* Metadata */}
-                <VStack align="stretch" gap={3}>
-                  <MetadataRow
-                    label={t("pluginDetail.overview.packageId")}
-                    value={
-                      <Text
-                        fontSize="sm"
-                        fontFamily="mono"
-                        bg="bg.subtle"
-                        px={2}
-                        py={1}
-                        rounded="md"
-                        wordBreak="break-all"
-                        maxW="full"
-                      >
-                        {plugin.packageId}
-                      </Text>
-                    }
-                  />
-                  <MetadataRow
-                    label={t("pluginDetail.overview.version")}
-                    value={<Text fontSize="sm">v{plugin.packageVersion}</Text>}
-                  />
-                  <MetadataRow
-                    label={t("pluginDetail.overview.provider")}
-                    value={<Text fontSize="sm">{plugin.providerId}</Text>}
-                  />
-                  <MetadataRow
-                    label={t("pluginDetail.overview.installedAt")}
-                    value={
-                      <Text fontSize="sm">
-                        {formatDate(plugin.installedAt)}
-                      </Text>
-                    }
-                  />
-                  <MetadataRow
-                    label={t("pluginDetail.overview.updatedAt")}
-                    value={
-                      <Text fontSize="sm">{formatDate(plugin.updatedAt)}</Text>
-                    }
-                  />
-                </VStack>
-
-                {/* Status badges summary */}
+          {/* Overview Tab */}
+          <Tabs.Content value="overview">
+            <VStack align="stretch" gap={4} maxW="800px">
+              {/* Description */}
+              {!isExternal && plugin.description && (
                 <Box>
                   <Text fontSize="sm" fontWeight="medium" mb={2}>
-                    {t("workflows.status")}
+                    {t("pluginDetail.overview.description")}
                   </Text>
-                  <HStack gap={2} flexWrap="wrap">
-                    {isVerified && (
-                      <Badge colorPalette="blue" fontSize="xs">
-                        <LuShield size={12} />
-                        {t("plugins.verified")}
-                      </Badge>
-                    )}
-                    {isInternal && (
-                      <Badge colorPalette="purple" fontSize="xs">
-                        {t("plugins.internal")}
-                      </Badge>
-                    )}
-                    {isDeprecated && (
-                      <Badge colorPalette="orange" fontSize="xs">
-                        {t("plugins.deprecated")}
-                      </Badge>
-                    )}
-                    {!isVerified && !isInternal && !isDeprecated && (
-                      <Text fontSize="xs" color="fg.muted">
-                        {t("common.plugins")}
-                      </Text>
-                    )}
-                  </HStack>
+                  <Text fontSize="sm" color="fg.muted">
+                    {plugin.description}
+                  </Text>
                 </Box>
-              </VStack>
-            </Tabs.Content>
+              )}
 
-            {/* Functions Tab */}
-            <Tabs.Content value="functions" flex="1" overflow="auto" p={4}>
-              <VStack align="stretch" gap={4} maxW="900px">
-                {isExternal
-                  ? (
-                    <Box
-                      borderWidth="1px"
-                      rounded="lg"
-                      p={8}
-                      textAlign="center"
-                      bg="bg"
+              {/* Metadata */}
+              <VStack align="stretch" gap={3}>
+                <MetadataRow
+                  label={t("pluginDetail.overview.packageId")}
+                  value={
+                    <Text
+                      fontSize="sm"
+                      fontFamily="mono"
+                      bg="bg.subtle"
+                      px={2}
+                      py={1}
+                      rounded="md"
+                      wordBreak="break-all"
+                      maxW="full"
                     >
-                      <VStack gap={3}>
-                        <Text color="fg.muted" fontSize="sm">
-                          外部プラグインの関数情報は表示できません
-                        </Text>
-                        <Text fontSize="xs" color="fg.subtle">
-                          プラグインをインストールして使用すると、関数情報が表示されます
-                        </Text>
-                      </VStack>
-                    </Box>
-                  )
-                  : plugin.functions.length === 0
-                  ? (
-                    <Box
-                      borderWidth="1px"
-                      rounded="lg"
-                      p={8}
-                      textAlign="center"
-                      bg="bg"
-                    >
-                      <Text color="fg.muted">
-                        {t("pluginDetail.functions.noFunctions")}
-                      </Text>
-                    </Box>
-                  )
-                  : (
-                    plugin.functions.map((fn) => (
-                      <FunctionCard key={fn.functionId} fn={fn} t={t} />
-                    ))
-                  )}
+                      {plugin.packageId}
+                    </Text>
+                  }
+                />
+                <MetadataRow
+                  label={t("pluginDetail.overview.version")}
+                  value={<Text fontSize="sm">v{plugin.packageVersion}</Text>}
+                />
+                <MetadataRow
+                  label={t("pluginDetail.overview.provider")}
+                  value={<Text fontSize="sm">{plugin.providerId}</Text>}
+                />
+                <MetadataRow
+                  label={t("pluginDetail.overview.installedAt")}
+                  value={
+                    <Text fontSize="sm">
+                      {formatDate(plugin.installedAt)}
+                    </Text>
+                  }
+                />
+                <MetadataRow
+                  label={t("pluginDetail.overview.updatedAt")}
+                  value={
+                    <Text fontSize="sm">{formatDate(plugin.updatedAt)}</Text>
+                  }
+                />
               </VStack>
-            </Tabs.Content>
+            </VStack>
+          </Tabs.Content>
 
-            {/* Permissions Tab */}
-            <Tabs.Content value="permissions" flex="1" overflow="auto" p={4}>
-              <VStack align="stretch" gap={4} maxW="800px">
-                {isExternal
-                  ? (
-                    <Box
-                      borderWidth="1px"
-                      rounded="lg"
-                      p={8}
-                      textAlign="center"
-                      bg="bg"
-                    >
-                      <VStack gap={3}>
-                        <Text color="fg.muted" fontSize="sm">
-                          外部プラグインの権限情報は表示できません
-                        </Text>
-                        <Text fontSize="xs" color="fg.subtle">
-                          プラグインをインストールして使用すると、権限情報が表示されます
-                        </Text>
-                      </VStack>
-                    </Box>
-                  )
-                  : plugin.functions.length === 0 ||
-                      plugin.functions.every(
-                        (fn) => !fn.permissions || fn.permissions.length === 0,
-                      )
-                  ? (
-                    <Box
-                      borderWidth="1px"
-                      rounded="lg"
-                      p={8}
-                      textAlign="center"
-                      bg="bg"
-                    >
-                      <Text color="fg.muted">
-                        {t("pluginDetail.permissions.noPermissions")}
+          {/* Functions Tab */}
+          <Tabs.Content value="functions">
+            <VStack align="stretch" gap={3} maxW="900px">
+              {isExternal
+                ? (
+                  <Box
+                    borderWidth="1px"
+                    rounded="lg"
+                    p={8}
+                    textAlign="center"
+                    bg="bg"
+                  >
+                    <VStack gap={3}>
+                      <Text color="fg.muted" fontSize="sm">
+                        外部プラグインの関数情報は表示できません
                       </Text>
-                    </Box>
-                  )
-                  : (
-                    plugin.functions.map((fn) =>
-                      fn.permissions && fn.permissions.length > 0
-                        ? (
-                          <Box
-                            key={fn.functionId}
-                            borderWidth="1px"
-                            rounded="lg"
-                            p={4}
-                            bg="bg"
-                          >
-                            <Text fontSize="sm" fontWeight="medium" mb={2}>
-                              {fn.functionName}
-                            </Text>
-                            <Text fontSize="xs" color="fg.muted" mb={3}>
-                              {fn.description ||
-                                t("pluginDetail.functions.noDescription")}
-                            </Text>
-                            <HStack gap={1} flexWrap="wrap">
-                              {fn.permissions.map((perm, idx) => (
-                                <Badge key={idx} variant="subtle" size="sm">
-                                  {perm.displayName || perm.permissionType ||
-                                    String(perm)}
-                                </Badge>
-                              ))}
-                            </HStack>
-                          </Box>
-                        )
-                        : null
+                      <Text fontSize="xs" color="fg.subtle">
+                        プラグインをインストールして使用すると、関数情報が表示されます
+                      </Text>
+                    </VStack>
+                  </Box>
+                )
+                : plugin.functions.length === 0
+                ? (
+                  <Box
+                    borderWidth="1px"
+                    rounded="lg"
+                    p={8}
+                    textAlign="center"
+                    bg="bg"
+                  >
+                    <Text color="fg.muted">
+                      {t("pluginDetail.functions.noFunctions")}
+                    </Text>
+                  </Box>
+                )
+                : (
+                  plugin.functions.map((fn) => (
+                    <FunctionCard key={fn.functionId} fn={fn} />
+                  ))
+                )}
+            </VStack>
+          </Tabs.Content>
+
+          {/* Permissions Tab */}
+          <Tabs.Content value="permissions">
+            <VStack align="stretch" gap={3} maxW="800px">
+              {isExternal
+                ? (
+                  <Box
+                    borderWidth="1px"
+                    rounded="lg"
+                    p={8}
+                    textAlign="center"
+                    bg="bg"
+                  >
+                    <VStack gap={3}>
+                      <Text color="fg.muted" fontSize="sm">
+                        外部プラグインの権限情報は表示できません
+                      </Text>
+                      <Text fontSize="xs" color="fg.subtle">
+                        プラグインをインストールして使用すると、権限情報が表示されます
+                      </Text>
+                    </VStack>
+                  </Box>
+                )
+                : plugin.functions.length === 0 ||
+                    plugin.functions.every(
+                      (fn) => !fn.permissions || fn.permissions.length === 0,
                     )
-                  )}
-              </VStack>
-            </Tabs.Content>
-          </Tabs.Root>
-        </Box>
-      </Flex>
+                ? (
+                  <Box
+                    borderWidth="1px"
+                    rounded="lg"
+                    p={8}
+                    textAlign="center"
+                    bg="bg"
+                  >
+                    <Text color="fg.muted">
+                      {t("pluginDetail.permissions.noPermissions")}
+                    </Text>
+                  </Box>
+                )
+                : (
+                  plugin.functions.map((fn) =>
+                    fn.permissions && fn.permissions.length > 0
+                      ? (
+                        <Box
+                          key={fn.functionId}
+                          borderWidth="1px"
+                          rounded="lg"
+                          p={4}
+                          bg="bg"
+                        >
+                          <Text fontSize="sm" fontWeight="medium" mb={2}>
+                            {fn.functionName}
+                          </Text>
+                          <Text fontSize="xs" color="fg.muted" mb={3}>
+                            {fn.description ||
+                              t("pluginDetail.functions.noDescription")}
+                          </Text>
+                          <HStack gap={1} flexWrap="wrap">
+                            {fn.permissions.map((perm, idx) => (
+                              <Badge key={idx} variant="subtle" size="sm">
+                                {perm.displayName || perm.permissionType ||
+                                  String(perm)}
+                              </Badge>
+                            ))}
+                          </HStack>
+                        </Box>
+                      )
+                      : null
+                  )
+                )}
+            </VStack>
+          </Tabs.Content>
+        </Tabs.Root>
+      </Box>
     </Flex>
   );
 }
@@ -482,58 +449,55 @@ function MetadataRow({
 
 function FunctionCard({
   fn,
-  t,
 }: {
   fn: PluginFunction;
-  t: (key: string) => string;
 }) {
   return (
-    <Box borderWidth="1px" rounded="lg" p={4} bg="bg">
-      <VStack align="stretch" gap={3}>
-        {/* Header */}
-        <HStack justify="space-between" align="start">
-          <VStack align="start" gap={1} flex={1}>
-            <Text fontWeight="medium">{fn.functionName}</Text>
-            {fn.description && (
-              <Text fontSize="sm" color="fg.muted">
-                {fn.description}
-              </Text>
-            )}
-          </VStack>
-          <Badge variant="outline" fontSize="xs">
-            v{fn.version}
-          </Badge>
-        </HStack>
+    <Card.Root borderRadius="xl">
+      <Card.Body p={4}>
+        <VStack align="stretch" gap={3}>
+          {/* Header */}
+          <HStack justify="space-between" align="start">
+            <VStack align="start" gap={1} flex={1}>
+              <Text fontWeight="semibold" fontSize="sm">{fn.functionName}</Text>
+              {fn.description && (
+                <Text fontSize="xs" color="fg.muted">
+                  {fn.description}
+                </Text>
+              )}
+            </VStack>
+            <Badge variant="outline" fontSize="xs">
+              v{fn.version}
+            </Badge>
+          </HStack>
 
-        <Separator />
+          {/* Function ID */}
+          <Text
+            fontSize="xs"
+            fontFamily="mono"
+            color="fg.muted"
+            bg="bg.subtle"
+            px={2}
+            py={1}
+            rounded="md"
+          >
+            {fn.functionId}
+          </Text>
 
-        {/* Metadata */}
-        <VStack align="stretch" gap={2} fontSize="sm">
-          <MetadataRow
-            label={t("pluginDetail.functions.functionName")}
-            value={<Text fontFamily="mono">{fn.functionId}</Text>}
-          />
+          {/* Permissions */}
           {fn.permissions && fn.permissions.length > 0 && (
-            <MetadataRow
-              label={t("pluginDetail.functions.requiredPermissions")}
-              value={
-                <HStack gap={1} flexWrap="wrap">
-                  {fn.permissions.map((perm, idx) => (
-                    <Badge key={idx} variant="subtle" size="sm">
-                      {perm.displayName || perm.permissionType || String(perm)}
-                    </Badge>
-                  ))}
-                </HStack>
-              }
-            />
+            <HStack gap={1} flexWrap="wrap">
+              {fn.permissions.map((perm, idx) => (
+                <Badge key={idx} variant="subtle" size="sm">
+                  {perm.displayName || perm.permissionType || String(perm)}
+                </Badge>
+              ))}
+            </HStack>
           )}
         </VStack>
-      </VStack>
-    </Box>
+      </Card.Body>
+    </Card.Root>
   );
 }
 
 export default PluginDetailPage;
-
-// Import Button for usage in error state
-import { Button } from "@chakra-ui/react";
