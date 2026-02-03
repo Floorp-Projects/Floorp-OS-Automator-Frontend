@@ -379,7 +379,9 @@ export function ModelsPage() {
           <Card.Root borderRadius="xl">
             <Card.Header py={3} px={4}>
               <Flex justify="space-between" align="center">
-                <Text fontWeight="semibold" fontSize="sm">{t("models.createNew")}</Text>
+                <Text fontWeight="semibold" fontSize="sm">
+                  {t("models.createNew")}
+                </Text>
                 <IconButton
                   aria-label={t("models.cancel")}
                   size="xs"
@@ -513,7 +515,11 @@ export function ModelsPage() {
                       <Table.ColumnHeader fontSize="xs" color="fg.muted">
                         {t("models.resourceName")}
                       </Table.ColumnHeader>
-                      <Table.ColumnHeader fontSize="xs" color="fg.muted" textAlign="right">
+                      <Table.ColumnHeader
+                        fontSize="xs"
+                        color="fg.muted"
+                        textAlign="right"
+                      >
                         {t("models.operations")}
                       </Table.ColumnHeader>
                     </Table.Row>

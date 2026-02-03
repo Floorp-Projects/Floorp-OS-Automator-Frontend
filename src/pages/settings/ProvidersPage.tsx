@@ -327,7 +327,9 @@ export function ProvidersPage() {
                 {/* プロバイダ一覧 */}
                 <Card.Root borderRadius="xl">
                     <Card.Header py={3} px={4}>
-                        <Text fontWeight="semibold" fontSize="sm">{t("providers.list")}</Text>
+                        <Text fontWeight="semibold" fontSize="sm">
+                            {t("providers.list")}
+                        </Text>
                     </Card.Header>
                     <Card.Body p={0}>
                         {loading
@@ -351,16 +353,29 @@ export function ProvidersPage() {
                                 <Table.Root size="sm" variant="line">
                                     <Table.Header>
                                         <Table.Row bg="bg.subtle">
-                                            <Table.ColumnHeader fontSize="xs" color="fg.muted">
+                                            <Table.ColumnHeader
+                                                fontSize="xs"
+                                                color="fg.muted"
+                                            >
                                                 {t("providers.displayName")}
                                             </Table.ColumnHeader>
-                                            <Table.ColumnHeader fontSize="xs" color="fg.muted">
+                                            <Table.ColumnHeader
+                                                fontSize="xs"
+                                                color="fg.muted"
+                                            >
                                                 {t("providers.apiEndpoint")}
                                             </Table.ColumnHeader>
-                                            <Table.ColumnHeader fontSize="xs" color="fg.muted">
+                                            <Table.ColumnHeader
+                                                fontSize="xs"
+                                                color="fg.muted"
+                                            >
                                                 {t("providers.resourceName")}
                                             </Table.ColumnHeader>
-                                            <Table.ColumnHeader fontSize="xs" color="fg.muted" textAlign="right">
+                                            <Table.ColumnHeader
+                                                fontSize="xs"
+                                                color="fg.muted"
+                                                textAlign="right"
+                                            >
                                                 {t("providers.operations")}
                                             </Table.ColumnHeader>
                                         </Table.Row>
