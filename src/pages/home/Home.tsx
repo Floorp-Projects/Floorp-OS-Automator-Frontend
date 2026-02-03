@@ -5,7 +5,6 @@ import {
   Button,
   Card,
   Flex,
-  Heading,
   HStack,
   IconButton,
   SimpleGrid,
@@ -58,26 +57,32 @@ function WorkflowCard({ workflow }: { workflow: Workflow }) {
   return (
     <Card.Root
       cursor="pointer"
+      borderRadius="xl"
+      borderWidth="1px"
+      borderColor="border"
+      bg="bg"
+      transition="all 0.15s"
       _hover={{
-        borderColor: "border.emphasized",
-        shadow: "md",
+        borderColor: "fg.muted",
+        transform: "translateY(-1px)",
       }}
       onClick={handleView}
     >
-      <Card.Body p={4}>
-        <VStack align="stretch" gap={3}>
-          <HStack justify="space-between" align="start">
-            <VStack align="start" gap={1} flex="1">
+      <Card.Body p={{ base: 3, md: 4 }}>
+        <VStack align="stretch" gap={2}>
+          <HStack justify="space-between" align="start" gap={2}>
+            <VStack align="start" gap={0.5} flex="1" minW={0}>
               <Tooltip
                 content={workflow.displayName || t("common.untitledWorkflow")}
                 openDelay={500}
               >
                 <Text
-                  fontWeight="semibold"
-                  fontSize="md"
+                  fontWeight="medium"
+                  fontSize="sm"
+                  color="fg"
                   css={{
                     display: "-webkit-box",
-                    WebkitLineClamp: 2,
+                    WebkitLineClamp: 1,
                     WebkitBoxOrient: "vertical",
                     overflow: "hidden",
                   }}
@@ -87,11 +92,11 @@ function WorkflowCard({ workflow }: { workflow: Workflow }) {
               </Tooltip>
               {workflow.description && (
                 <Text
-                  fontSize="sm"
+                  fontSize="xs"
                   color="fg.muted"
                   css={{
                     display: "-webkit-box",
-                    WebkitLineClamp: 2,
+                    WebkitLineClamp: 1,
                     WebkitBoxOrient: "vertical",
                     overflow: "hidden",
                   }}
@@ -100,14 +105,17 @@ function WorkflowCard({ workflow }: { workflow: Workflow }) {
                 </Text>
               )}
             </VStack>
-            <Button
-              size="sm"
-              colorPalette="floorp"
+            <IconButton
+              aria-label={t("common.run")}
+              size="xs"
+              borderRadius="lg"
               onClick={handleRun}
               disabled={!latestCode}
+              colorPalette="floorp"
+              _disabled={{ opacity: 0.5 }}
             >
-              <LuPlay />
-            </Button>
+              <LuPlay size={12} />
+            </IconButton>
           </HStack>
 
           {/* Metadata */}
@@ -125,13 +133,14 @@ function WorkflowCard({ workflow }: { workflow: Workflow }) {
               <Badge
                 colorPalette={isSuccess ? "green" : "red"}
                 size="sm"
-                fontSize="xs"
+                fontSize="2xs"
+                borderRadius="full"
               >
                 {isSuccess ? t("common.success") : t("common.failure")}
               </Badge>
             )}
             {!hasResult && latestCode && (
-              <Badge colorPalette="gray" size="sm" fontSize="xs">
+              <Badge colorPalette="gray" size="sm" fontSize="2xs" borderRadius="full">
                 {t("common.neverRun")}
               </Badge>
             )}
@@ -227,37 +236,30 @@ export function HomePage() {
               pb={{ base: 4, md: 6 }}
             >
               <VStack
-                gap={{ base: 2, sm: 2.5, md: 3 }}
+                gap={2}
                 textAlign="center"
                 align="center"
                 my="auto"
-                pt={{ base: 4, md: 8 }}
               >
-                <Box
-                  fontSize={{ base: "4xl", sm: "5xl", md: "6xl" }}
-                  mb={2}
-                  color="fg.muted"
-                >
-                  <LuSparkles />
-                </Box>
-                <Heading
-                  size={{ base: "xl", sm: "2xl", md: "3xl" }}
-                  lineHeight="1.2"
+                <Text
+                  fontSize={{ base: "2xl", md: "3xl", lg: "4xl" }}
+                  fontWeight="normal"
+                  color="fg"
+                  letterSpacing="-0.02em"
                 >
                   {t("home.title")}
-                </Heading>
+                </Text>
                 <Text
                   color="fg.muted"
-                  fontSize={{ base: "sm", sm: "md", md: "lg" }}
-                  px={{ base: 2, md: 0 }}
+                  fontSize={{ base: "sm", md: "md" }}
                 >
                   {t("home.subtitle")}
                 </Text>
               </VStack>
 
-              {/* Quick actions */}
+              {/* Quick actions - シンプルなボタン */}
               <HStack
-                gap={{ base: 2, md: 3 }}
+                gap={2}
                 justify="center"
                 flexWrap="wrap"
                 w="full"
@@ -272,44 +274,46 @@ export function HomePage() {
                       navigate("/agent");
                     }
                   }}
+                  size="sm"
+                  borderRadius="lg"
                   colorPalette="floorp"
-                  size={{ base: "sm", md: "md" }}
                   disabled={!prompt.trim()}
                 >
-                  <LuPlay />
-                  <Text fontSize={{ base: "sm", md: "md" }}>
-                    {t("common.execute")}
-                  </Text>
+                  <LuPlay size={14} />
+                  <Text fontSize="sm">{t("common.execute")}</Text>
                 </Button>
                 <Button
                   onClick={() => navigate("/generate")}
-                  variant="surface"
-                  size={{ base: "sm", md: "md" }}
+                  variant="ghost"
+                  size="sm"
+                  borderRadius="lg"
+                  color="fg.muted"
+                  _hover={{ bg: "bg.muted" }}
                 >
-                  <LuSparkles />
-                  <Text fontSize={{ base: "sm", md: "md" }}>
-                    {t("common.generate")}
-                  </Text>
+                  <LuSparkles size={14} />
+                  <Text fontSize="sm">{t("common.generate")}</Text>
                 </Button>
                 <Button
                   onClick={() => navigate("/workflows")}
-                  variant="surface"
-                  size={{ base: "sm", md: "md" }}
+                  variant="ghost"
+                  size="sm"
+                  borderRadius="lg"
+                  color="fg.muted"
+                  _hover={{ bg: "bg.muted" }}
                 >
-                  <LuWrench />
-                  <Text fontSize={{ base: "sm", md: "md" }}>
-                    {t("common.workflows")}
-                  </Text>
+                  <LuWrench size={14} />
+                  <Text fontSize="sm">{t("common.workflows")}</Text>
                 </Button>
                 <Button
                   onClick={() => navigate("/plugins")}
-                  variant="surface"
-                  size={{ base: "sm", md: "md" }}
+                  variant="ghost"
+                  size="sm"
+                  borderRadius="lg"
+                  color="fg.muted"
+                  _hover={{ bg: "bg.muted" }}
                 >
-                  <LuPackage />
-                  <Text fontSize={{ base: "sm", md: "md" }}>
-                    {t("common.plugins")}
-                  </Text>
+                  <LuPackage size={14} />
+                  <Text fontSize="sm">{t("common.plugins")}</Text>
                 </Button>
               </HStack>
             </VStack>
@@ -322,12 +326,12 @@ export function HomePage() {
             display="flex"
             flexDirection="column"
             overflow="hidden"
-            px={{ base: 3, sm: 4, md: 6, lg: 8, xl: 12 }}
-            py={{ base: 3, sm: 4, md: 6, lg: 8 }}
+            px={{ base: 4, md: 6, lg: 8 }}
+            py={{ base: 4, md: 6 }}
           >
             <Box
               w="full"
-              maxW={{ base: "full", lg: "full" }}
+              maxW="7xl"
               mx="auto"
               h="full"
               minH={0}
@@ -335,28 +339,31 @@ export function HomePage() {
               flexDirection="column"
               overflow="hidden"
             >
-              <HStack
+              <Flex
                 justify="space-between"
                 align="center"
-                mb={2}
+                mb={{ base: 3, md: 4 }}
                 flexShrink={0}
-                flexWrap="wrap"
-                gap={4}
-                px={2}
               >
-                <Heading size={{ base: "md", lg: "lg" }} textAlign="left">
+                <Text
+                  fontSize={{ base: "sm", md: "md" }}
+                  fontWeight="medium"
+                  color="fg.muted"
+                >
                   {t("common.recentWorkflows")}
-                </Heading>
+                </Text>
                 {workflows.length > 0 && (
                   <Button
-                    size="sm"
+                    size="xs"
                     variant="ghost"
+                    color="fg.muted"
+                    borderRadius="lg"
                     onClick={() => navigate("/workflows")}
                   >
                     {t("common.viewAll")}
                   </Button>
                 )}
-              </HStack>
+              </Flex>
 
               <Box
                 flex="1"
@@ -445,100 +452,82 @@ export function HomePage() {
           </Box>
         )}
 
-      {/* Fixed bottom input bar - ChatGPT mobile style */}
+      {/* Fixed bottom input bar - Claude風 */}
       <Box
         w="full"
         flexShrink={0}
-        borderTopWidth="1px"
-        borderTopColor="border"
         px={{ base: 3, sm: 4, md: 6, lg: 8, xl: 12 }}
-        py={{ base: 3, md: 4, lg: 6 }}
-        css={{
-          "@media (max-height: 600px) and (orientation: landscape)": {
-            paddingTop: "0.5rem",
-            paddingBottom: "0.5rem",
-          },
-        }}
+        py={{ base: 3, md: 4 }}
       >
         <Box
-          maxW={{ base: "full", lg: "full", xl: "7xl", "2xl": "8xl" }}
+          maxW="3xl"
           mx="auto"
-          borderWidth="1px"
-          rounded="xl"
-          p={{ base: 2, md: 3, lg: 4 }}
-          bg="bg"
-          shadow="sm"
         >
-          {/* Prompt label */}
-          <HStack mb={2} color="fg.muted" gap={1.5}>
-            <LuSparkles size={14} />
-            <Text fontSize="sm" fontWeight="medium">
-              {t("home.promptLabel")}
-            </Text>
-          </HStack>
-          <HStack gap={2} align="flex-end">
+          <Flex
+            borderWidth="1px"
+            borderColor="border"
+            borderRadius="2xl"
+            bg="bg"
+            overflow="hidden"
+            direction="column"
+            _focusWithin={{
+              borderColor: "fg.muted",
+            }}
+          >
             <Textarea
               ref={textareaRef}
               placeholder={t("home.placeholder")}
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               onKeyDown={(e) => {
-                // IME変換中は無視（日本語入力の確定Enterで送信しない）
-                if (e.nativeEvent.isComposing) {
-                  return;
-                }
-                // Cmd/Ctrl+Enter で送信（デスクトップ）
+                if (e.nativeEvent.isComposing) return;
                 if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
                   e.preventDefault();
                   handleSubmit();
-                } // Enter キーで送信（モバイル、またはデスクトップで Shift なしの場合）
-                // Shift+Enter は改行を許可
-                else if (e.key === "Enter" && !e.shiftKey) {
-                  // モバイルデバイスでは Enter で送信
-                  // デスクトップでは Cmd+Enter を使うことを推奨
-                  const isMobile = window.innerWidth < 768;
-                  if (isMobile) {
-                    e.preventDefault();
-                    handleSubmit();
-                  }
                 }
               }}
               rows={2}
-              minH="120px"
-              fontSize="md"
+              minH="60px"
+              maxH="120px"
+              fontSize={{ base: "sm", md: "md" }}
               resize="none"
-              css={{
-                "&": {
-                  maxHeight: "240px",
-                  overflowY: "auto",
-                  lineHeight: "1.6",
-                },
+              border="none"
+              px={{ base: 4, md: 5 }}
+              pt={{ base: 3, md: 4 }}
+              pb={2}
+              _focus={{
+                boxShadow: "none",
+                outline: "none",
               }}
-              flex="1"
+              _placeholder={{
+                color: "fg.muted",
+              }}
             />
-            <IconButton
-              aria-label={t("common.send")}
-              onClick={handleSubmit}
-              disabled={!prompt.trim()}
-              colorPalette="floorp"
-              size={{ base: "md", md: "lg" }}
-              flexShrink={0}
-              minH={{ base: "36px", md: "44px" }}
-              minW={{ base: "36px", md: "44px" }}
+            <Flex
+              justify={{ base: "flex-end", md: "space-between" }}
+              align="center"
+              px={{ base: 3, md: 4 }}
+              py={2}
             >
-              <LuSend />
-            </IconButton>
-          </HStack>
-          <HStack
-            justify="space-between"
-            mt={2}
-            color="fg.muted"
-            display={{ base: "none", sm: "flex" }}
-          >
-            <Text fontSize={{ base: "xs", md: "sm" }}>
-              {t("home.sendHint")}
-            </Text>
-          </HStack>
+              <Text fontSize="xs" color="fg.muted" display={{ base: "none", md: "block" }}>
+                {t("home.sendHint")}
+              </Text>
+              <IconButton
+                aria-label={t("common.send")}
+                onClick={handleSubmit}
+                disabled={!prompt.trim()}
+                size="sm"
+                borderRadius="lg"
+                colorPalette="floorp"
+                _disabled={{
+                  opacity: 0.5,
+                  cursor: "not-allowed",
+                }}
+              >
+                <LuSend size={16} />
+              </IconButton>
+            </Flex>
+          </Flex>
         </Box>
       </Box>
     </Flex>

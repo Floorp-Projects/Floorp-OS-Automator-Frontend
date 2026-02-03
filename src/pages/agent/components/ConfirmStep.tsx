@@ -188,11 +188,8 @@ export function ConfirmStep({
                             px={{ base: 4, md: 6 }}
                             flexShrink={0}
                             borderRadius="lg"
-                            bg={canConfirm ? "fg" : "bg.muted"}
-                            color={canConfirm ? "bg" : "fg.muted"}
-                            opacity={canConfirm ? 1 : 0.6}
+                            colorPalette="floorp"
                             ml={hasHighRisk ? 0 : "auto"}
-                            _hover={canConfirm ? { bg: "fg.muted" } : {}}
                             _disabled={{
                                 opacity: 0.5,
                                 cursor: "not-allowed",

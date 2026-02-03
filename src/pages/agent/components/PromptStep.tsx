@@ -185,23 +185,17 @@ export function PromptStep({
                                 {t("agent.sendHint")}
                             </Text>
 
-                            {/* 送信ボタン - Claude風 */}
+                            {/* 送信ボタン */}
                             <IconButton
                                 aria-label={t("agent.generateWorkflow")}
                                 onClick={onSubmit}
                                 disabled={!prompt.trim() || generating}
                                 size="sm"
                                 borderRadius="lg"
-                                bg={prompt.trim() ? "fg" : "bg.muted"}
-                                color={prompt.trim() ? "bg" : "fg.muted"}
-                                _hover={{
-                                    bg: prompt.trim() ? "fg.muted" : "bg.muted",
-                                }}
+                                colorPalette="floorp"
                                 _disabled={{
-                                    bg: "bg.muted",
-                                    color: "fg.muted",
-                                    cursor: "not-allowed",
                                     opacity: 0.5,
+                                    cursor: "not-allowed",
                                 }}
                             >
                                 {generating ? <Spinner size="sm" /> : <LuArrowUp />}
