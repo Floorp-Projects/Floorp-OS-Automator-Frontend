@@ -48,15 +48,14 @@ export const WorkflowCard = React.memo<WorkflowCardProps>(
     return (
       <Card.Root
         cursor="pointer"
+        borderRadius="xl"
         _hover={{
           borderColor: "floorp.300",
-          shadow: "md",
           _dark: {
             borderColor: "floorp.700",
           },
         }}
         onClick={handleView}
-        transition="all 0.2s"
       >
         <Card.Body p={3}>
           <VStack align="stretch" gap={2}>

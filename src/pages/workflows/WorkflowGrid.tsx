@@ -53,7 +53,7 @@ export function WorkflowGrid({
   // Error state
   if (error) {
     return (
-      <Card.Root>
+      <Card.Root borderRadius="xl">
         <Card.Body>
           <VStack gap={2}>
             <Text color="red.500" fontWeight="medium">
@@ -74,7 +74,7 @@ export function WorkflowGrid({
   // Empty state
   if (workflows.length === 0) {
     return (
-      <Card.Root>
+      <Card.Root borderRadius="xl">
         <Card.Body>
           <VStack gap={4} py={8}>
             <LuFileText

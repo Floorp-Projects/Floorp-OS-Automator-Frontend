@@ -60,188 +60,186 @@ function MobileLayout({
   return (
     <VStack
       align="stretch"
-      gap={2}
+      gap={3}
       h="full"
       minH={0}
-      css={{
-        "@media (max-height: 600px) and (orientation: landscape)": {
-          gap: "0.5rem",
-        },
-      }}
+      px={{ base: 4, md: 0 }}
+      py={{ base: 2, md: 0 }}
     >
-      <Box
-        p={{ base: 2, md: 3 }}
-        borderWidth="1px"
-        bg="bg"
-        rounded="md"
-        css={{
-          "@media (max-height: 600px) and (orientation: landscape)": {
-            padding: "0.5rem",
-          },
-        }}
-      >
-        <PromptPanel
-          prompt={prompt}
-          onChange={onPromptChange}
-          onStart={onStart}
-          onStop={onStop}
-          streaming={streaming}
-        />
-      </Box>
+      <PromptPanel
+        prompt={prompt}
+        onChange={onPromptChange}
+        onStart={onStart}
+        onStop={onStop}
+        streaming={streaming}
+      />
 
-      <Tabs.Root
-        defaultValue="workflowRun"
+      {/* タブ全体をカードでラップして依存範囲を明示 */}
+      <Box
         flex={1}
         minH={0}
+        borderWidth="1px"
+        borderRadius="xl"
+        bg="bg"
+        overflow="hidden"
         display="flex"
         flexDirection="column"
       >
-        <Tabs.List bg="bg" borderWidth="1px" borderRadius="md" p={1}>
-          <Tabs.Trigger value="workflowRun" flex={1}>
-            <Text fontSize={{ base: "xs", sm: "sm" }}>
-              {t("generate.workflowAndRun")}
-            </Text>
-          </Tabs.Trigger>
-          <Tabs.Trigger value="plugins" flex={1}>
-            <Text fontSize={{ base: "xs", sm: "sm" }}>
-              {t("common.plugins")}
-            </Text>
-          </Tabs.Trigger>
-        </Tabs.List>
-
-        {/* Combined Workflow + Run Tab */}
-        <Tabs.Content
-          value="workflowRun"
-          p={0}
-          mt={2}
+        <Tabs.Root
+          defaultValue="workflowRun"
           flex={1}
           minH={0}
-          overflow="hidden"
           display="flex"
           flexDirection="column"
         >
-          <VStack align="stretch" gap={2} h="full" minH={0} flex={1}>
-            {/* Workflow Section - Top half */}
-            <Box
-              flex={1}
-              minH={0}
-              borderWidth="1px"
-              rounded="md"
-              bg="bg"
-              overflow="hidden"
-              display="flex"
-              flexDirection="column"
-            >
-              <HStack
-                justify="space-between"
-                px={2}
-                py={1.5}
-                borderBottomWidth="1px"
-              >
-                <Text fontWeight="medium" fontSize="xs">
-                  {t("generate.workflowSteps")}
-                </Text>
-                <IconButton
-                  aria-label={t("generate.expandWorkflow")}
-                  size="xs"
-                  variant="ghost"
-                  onClick={onOpenWorkflowDialog}
-                  disabled={!latestDefinition}
-                >
-                  <LuExpand size={14} />
-                </IconButton>
-              </HStack>
+          <Tabs.List bg="bg.subtle" p={1} borderBottomWidth="1px">
+            <Tabs.Trigger value="workflowRun" flex={1}>
+              <Text fontSize={{ base: "xs", sm: "sm" }}>
+                {t("generate.workflowAndRun")}
+              </Text>
+            </Tabs.Trigger>
+            <Tabs.Trigger value="plugins" flex={1}>
+              <Text fontSize={{ base: "xs", sm: "sm" }}>
+                {t("common.plugins")}
+              </Text>
+            </Tabs.Trigger>
+          </Tabs.List>
+
+          {/* Combined Workflow + Run Tab */}
+          <Tabs.Content
+            value="workflowRun"
+            p={3}
+            flex={1}
+            minH={0}
+            overflow="hidden"
+            display="flex"
+            flexDirection="column"
+          >
+            <VStack align="stretch" gap={3} h="full" minH={0} flex={1}>
+              {/* Workflow Section - Top half */}
               <Box
                 flex={1}
                 minH={0}
-                overflow="auto"
-                px={2}
-                py={1}
-                bg="bg.subtle"
+                borderWidth="1px"
+                borderRadius="lg"
+                bg="bg"
+                overflow="hidden"
+                display="flex"
+                flexDirection="column"
               >
-                {latestDefinition
-                  ? (
-                    <WorkflowFunctionList
-                      workflow={latestDefinition}
-                    />
-                  )
-                  : (
-                    <VStack gap={1} py={2} color="fg.muted">
-                      <Text fontSize="xs">
-                        {t("generate.noFunctionsGuide")}
-                      </Text>
-                    </VStack>
-                  )}
-              </Box>
-            </Box>
-
-            {/* Run Section - Bottom half */}
-            <Box
-              flex={1}
-              minH={0}
-              borderWidth="1px"
-              rounded="md"
-              bg="bg"
-              overflow="hidden"
-              display="flex"
-              flexDirection="column"
-            >
-              <HStack
-                justify="space-between"
-                px={2}
-                py={1.5}
-                borderBottomWidth="1px"
-                flexWrap="wrap"
-                gap={1}
-              >
-                <Text fontWeight="medium" fontSize="xs">
-                  {t("run.runStatus")}
-                </Text>
-                <HStack gap={1}>
-                  <Badge
-                    colorPalette={streaming
-                      ? "blue"
-                      : runRes
-                      ? "green"
-                      : "gray"}
-                    fontSize="2xs"
-                    px={1.5}
-                    py={0.5}
-                  >
-                    {streaming
-                      ? t("run.running")
-                      : runRes
-                      ? t("run.completed")
-                      : t("run.waiting")}
-                  </Badge>
-                  <Button
+                <HStack
+                  justify="space-between"
+                  px={3}
+                  py={2}
+                  borderBottomWidth="1px"
+                  bg="bg.subtle"
+                >
+                  <Text fontWeight="medium" fontSize="xs">
+                    {t("generate.workflowSteps")}
+                  </Text>
+                  <IconButton
+                    aria-label={t("generate.expandWorkflow")}
                     size="xs"
-                    onClick={runLatest}
+                    variant="ghost"
+                    onClick={onOpenWorkflowDialog}
                     disabled={!latestDefinition}
-                    colorPalette="floorp"
                   >
-                    <LuPlay size={12} />
-                  </Button>
+                    <LuExpand size={14} />
+                  </IconButton>
                 </HStack>
-              </HStack>
-              <Box flex={1} minH={0} overflow="auto" p={1}>
-                {events.length === 0 && !streaming && !runRes
-                  ? (
-                    <VStack gap={1} py={2} color="fg.muted" textAlign="center">
-                      <LuPlay size={20} />
-                      <Text fontSize="xs">{t("run.notExecuted")}</Text>
-                    </VStack>
-                  )
-                  : <StreamConsole events={events} streaming={streaming} />}
+                <Box
+                  flex={1}
+                  minH={0}
+                  overflow="auto"
+                  px={2}
+                  py={1}
+                >
+                  {latestDefinition
+                    ? (
+                      <WorkflowFunctionList
+                        workflow={latestDefinition}
+                      />
+                    )
+                    : (
+                      <VStack gap={1} py={2} color="fg.muted">
+                        <Text fontSize="xs">
+                          {t("generate.noFunctionsGuide")}
+                        </Text>
+                      </VStack>
+                    )}
+                </Box>
               </Box>
-            </Box>
-          </VStack>
-        </Tabs.Content>
 
-        <Tabs.Content value="plugins" p={0} mt={2} flex={1} minH={0}>
-          <PluginsPanel />
-        </Tabs.Content>
-      </Tabs.Root>
+              {/* Run Section - Bottom half */}
+              <Box
+                flex={1}
+                minH={0}
+                borderWidth="1px"
+                borderRadius="lg"
+                bg="bg"
+                overflow="hidden"
+                display="flex"
+                flexDirection="column"
+              >
+                <HStack
+                  justify="space-between"
+                  px={3}
+                  py={2}
+                  borderBottomWidth="1px"
+                  bg="bg.subtle"
+                  flexWrap="wrap"
+                  gap={1}
+                >
+                  <Text fontWeight="medium" fontSize="xs">
+                    {t("run.runStatus")}
+                  </Text>
+                  <HStack gap={1}>
+                    <Badge
+                      colorPalette={streaming
+                        ? "blue"
+                        : runRes
+                        ? "green"
+                        : "gray"}
+                      fontSize="2xs"
+                      px={1.5}
+                      py={0.5}
+                    >
+                      {streaming
+                        ? t("run.running")
+                        : runRes
+                        ? t("run.completed")
+                        : t("run.waiting")}
+                    </Badge>
+                    <Button
+                      size="xs"
+                      onClick={runLatest}
+                      disabled={!latestDefinition}
+                      colorPalette="floorp"
+                      borderRadius="lg"
+                    >
+                      <LuPlay size={12} />
+                    </Button>
+                  </HStack>
+                </HStack>
+                <Box flex={1} minH={0} overflow="auto" p={1}>
+                  {events.length === 0 && !streaming && !runRes
+                    ? (
+                      <VStack gap={1} py={2} color="fg.muted" textAlign="center">
+                        <LuPlay size={20} />
+                        <Text fontSize="xs">{t("run.notExecuted")}</Text>
+                      </VStack>
+                    )
+                    : <StreamConsole events={events} streaming={streaming} />}
+                </Box>
+              </Box>
+            </VStack>
+          </Tabs.Content>
+
+          <Tabs.Content value="plugins" p={3} flex={1} minH={0} overflow="auto">
+            <PluginsPanel />
+          </Tabs.Content>
+        </Tabs.Root>
+      </Box>
     </VStack>
   );
 }

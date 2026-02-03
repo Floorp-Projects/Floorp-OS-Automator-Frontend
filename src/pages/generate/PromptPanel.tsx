@@ -1,5 +1,6 @@
 import {
   Badge,
+  Box,
   Button,
   HStack,
   MenuContent,
@@ -9,7 +10,6 @@ import {
   MenuTrigger,
   Portal,
   Separator,
-  Spacer,
   Spinner,
   Text,
   Textarea,
@@ -101,170 +101,165 @@ export function PromptPanel({
 
   return (
     <>
-      <VStack align="stretch" gap={2}>
-        <HStack gap={2} flexWrap="wrap" alignItems="center">
-          <Text fontWeight="medium" fontSize={{ base: "sm", md: "md" }}>
-            {t("generate.prompt")}
-          </Text>
-          {characterCount > 0 && (
-            <Badge colorPalette="gray" fontSize="xs">
-              {characterCount} {t("generate.characters")}
-            </Badge>
-          )}
-          <Spacer minW={2} />
-
-          {/* 生成・停止ボタンのみ */}
-          <HStack gap={1.5} alignItems="center">
-            {/* 生成ボタン */}
-            <Button
-              size="sm"
-              colorPalette="floorp"
-              onClick={handleStart}
-              disabled={!prompt.trim() || streaming}
-              minH={{ base: "36px", md: "auto" }}
-              flexShrink={0}
-            >
-              {streaming
-                ? (
-                  <HStack gap={1}>
-                    <Spinner size="xs" />
-                    <Text fontSize={{ base: "xs", sm: "sm" }}>
-                      {t("generate.generating")}
-                    </Text>
-                  </HStack>
-                )
-                : (
-                  <>
-                    <LuSparkles size={14} />
-                    <Text fontSize={{ base: "xs", sm: "sm" }}>
-                      {t("common.generate")}
-                    </Text>
-                  </>
-                )}
-            </Button>
-
-            {/* 停止ボタン */}
-            <Button
-              size="sm"
-              variant="outline"
-              colorPalette="red"
-              onClick={onStop}
-              disabled={!streaming}
-              minH={{ base: "36px", md: "auto" }}
-              flexShrink={0}
-            >
-              <LuSquare size={14} />
-              <Text fontSize={{ base: "xs", sm: "sm" }}>
-                {t("generate.stop")}
-              </Text>
-            </Button>
-          </HStack>
-        </HStack>
-
-        <Textarea
-          rows={2}
-          resize="none"
-          placeholder={t("home.placeholder")}
-          value={prompt}
-          onChange={(e) => onChange(e.target.value)}
-          onKeyDown={handleKeyDown}
-          fontSize={{ base: "sm", md: "md" }}
-          minH={{ base: "60px", md: "100px" }}
-          css={{
-            "@media (min-width: 1024px)": {
-              minHeight: "100px",
-            },
-          }}
-        />
-
-        {/* テンプレート・履歴・クリアボタン + ショートカットヒント */}
-        <HStack justify="space-between" gap={2} flexWrap="wrap">
-          <HStack gap={1} flexWrap="wrap">
-            {/* テンプレートボタン */}
-            <Button
-              size="xs"
-              variant="ghost"
-              onClick={() => setTemplatesDialogOpen(true)}
-            >
-              <LuFileText size={12} />
-              <Text fontSize="xs">{t("generate.template")}</Text>
-            </Button>
-
-            {/* 履歴ボタン（メニュー付き） */}
-            <MenuRoot positioning={{ placement: "top-end" }}>
-              <MenuTrigger asChild>
-                <Button size="xs" variant="ghost">
-                  <LuClock size={12} />
-                  <Text fontSize="xs">{t("generate.history")}</Text>
-                  {history.length > 0 && (
-                    <Badge ml={0.5} size="xs" colorPalette="blue">
-                      {history.length}
-                    </Badge>
-                  )}
-                </Button>
-              </MenuTrigger>
-              <Portal>
-                <MenuPositioner>
-                  <MenuContent zIndex={1500}>
-                    {recentHistory.length > 0
-                      ? (
-                        <>
-                          {recentHistory.map((item) => (
-                            <MenuItem
-                              key={item.id}
-                              value={item.id}
-                              onClick={() =>
-                                handleSelectHistoryPrompt(item.prompt)}
-                              fontSize="xs"
-                              css={{
-                                maxWidth: "300px",
-                                whiteSpace: "nowrap",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                              }}
-                            >
-                              {item.prompt}
-                            </MenuItem>
-                          ))}
-                          <Separator />
-                        </>
-                      )
-                      : null}
-                    <MenuItem
-                      value="view-all"
-                      onClick={() => setHistoryDialogOpen(true)}
-                      fontWeight="medium"
-                      fontSize="xs"
-                    >
-                      <LuClock size={14} />
-                      {t("generate.viewAllHistory")}
-                    </MenuItem>
-                  </MenuContent>
-                </MenuPositioner>
-              </Portal>
-            </MenuRoot>
-
-            {/* クリアボタン */}
-            <Button
-              size="xs"
-              variant="ghost"
-              onClick={() => onChange("")}
-              disabled={streaming || !prompt}
-            >
-              <LuEraser size={12} />
-              <Text fontSize="xs">{t("generate.clear")}</Text>
-            </Button>
-          </HStack>
-
-          {/* ショートカットヒント（デスクトップのみ） */}
-          <Text
-            fontSize="xs"
-            color="fg.muted"
-            display={{ base: "none", lg: "block" }}
+      <VStack align="stretch" gap={3}>
+        {/* Claude.ai風の入力エリア */}
+        <Box
+          borderWidth="1px"
+          borderColor="border"
+          borderRadius="2xl"
+          bg="bg"
+          overflow="hidden"
+          _focusWithin={{ borderColor: "fg.muted" }}
+        >
+          <Textarea
+            rows={3}
+            resize="none"
+            placeholder={t("home.placeholder")}
+            value={prompt}
+            onChange={(e) => onChange(e.target.value)}
+            onKeyDown={handleKeyDown}
+            fontSize={{ base: "sm", md: "md" }}
+            border="none"
+            _focus={{ boxShadow: "none", outline: "none" }}
+            px={4}
+            pt={3}
+            pb={2}
+          />
+          
+          {/* 入力バー下部のアクションエリア */}
+          <HStack
+            px={3}
+            py={2}
+            justify="space-between"
+            bg="bg.subtle"
           >
-            {t("generate.executeHint")}
-          </Text>
-        </HStack>
+            {/* 左側: テンプレート・履歴・クリア */}
+            <HStack gap={1}>
+              <Button
+                size="xs"
+                variant="ghost"
+                onClick={() => setTemplatesDialogOpen(true)}
+              >
+                <LuFileText size={14} />
+                <Text fontSize="xs" display={{ base: "none", md: "block" }}>{t("generate.template")}</Text>
+              </Button>
+
+              <MenuRoot positioning={{ placement: "top-end" }}>
+                <MenuTrigger asChild>
+                  <Button size="xs" variant="ghost">
+                    <LuClock size={14} />
+                    <Text fontSize="xs" display={{ base: "none", md: "block" }}>{t("generate.history")}</Text>
+                    {history.length > 0 && (
+                      <Badge ml={0.5} size="xs" colorPalette="blue">
+                        {history.length}
+                      </Badge>
+                    )}
+                  </Button>
+                </MenuTrigger>
+                <Portal>
+                  <MenuPositioner>
+                    <MenuContent zIndex={1500}>
+                      {recentHistory.length > 0
+                        ? (
+                          <>
+                            {recentHistory.map((item) => (
+                              <MenuItem
+                                key={item.id}
+                                value={item.id}
+                                onClick={() =>
+                                  handleSelectHistoryPrompt(item.prompt)}
+                                fontSize="xs"
+                                css={{
+                                  maxWidth: "300px",
+                                  whiteSpace: "nowrap",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                }}
+                              >
+                                {item.prompt}
+                              </MenuItem>
+                            ))}
+                            <Separator />
+                          </>
+                        )
+                        : null}
+                      <MenuItem
+                        value="view-all"
+                        onClick={() => setHistoryDialogOpen(true)}
+                        fontWeight="medium"
+                        fontSize="xs"
+                      >
+                        <LuClock size={14} />
+                        {t("generate.viewAllHistory")}
+                      </MenuItem>
+                    </MenuContent>
+                  </MenuPositioner>
+                </Portal>
+              </MenuRoot>
+
+              <Button
+                size="xs"
+                variant="ghost"
+                onClick={() => onChange("")}
+                disabled={streaming || !prompt}
+              >
+                <LuEraser size={14} />
+                <Text fontSize="xs" display={{ base: "none", md: "block" }}>{t("generate.clear")}</Text>
+              </Button>
+
+              {characterCount > 0 && (
+                <Text fontSize="xs" color="fg.muted" ml={2} display={{ base: "none", md: "block" }}>
+                  {characterCount} {t("generate.characters")}
+                </Text>
+              )}
+            </HStack>
+
+            {/* 右側: 生成・停止ボタン */}
+            <HStack gap={2}>
+              {streaming && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  colorPalette="red"
+                  onClick={onStop}
+                  borderRadius="xl"
+                >
+                  <LuSquare size={14} />
+                  <Text fontSize="xs" display={{ base: "none", sm: "block" }}>
+                    {t("generate.stop")}
+                  </Text>
+                </Button>
+              )}
+              <Button
+                size="sm"
+                colorPalette="floorp"
+                onClick={handleStart}
+                disabled={!prompt.trim() || streaming}
+                borderRadius="xl"
+                px={4}
+              >
+                {streaming
+                  ? (
+                    <HStack gap={1}>
+                      <Spinner size="xs" />
+                      <Text fontSize="xs">
+                        {t("generate.generating")}
+                      </Text>
+                    </HStack>
+                  )
+                  : (
+                    <>
+                      <LuSparkles size={14} />
+                      <Text fontSize="xs" display={{ base: "none", sm: "block" }}>
+                        {t("common.generate")}
+                      </Text>
+                    </>
+                  )}
+              </Button>
+            </HStack>
+          </HStack>
+        </Box>
+
       </VStack>
 
       {/* 履歴ダイアログ */}
