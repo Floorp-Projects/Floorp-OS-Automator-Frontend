@@ -1,5 +1,5 @@
 import {
-  LuBot,
+  LuHouse,
   LuInfo,
   LuPlugZap,
   LuSettings,
@@ -15,8 +15,7 @@ export type AppRoute = {
 };
 
 export const getRoutes = (t: (key: string) => string): AppRoute[] => [
-  // Home は Agent 機能を統合したためLuBotアイコンを使用
-  { path: "/home", key: "home", label: t("nav.home"), icon: LuBot },
+  { path: "/home", key: "home", label: t("nav.home"), icon: LuHouse },
   {
     path: "/generate",
     key: "generate",
@@ -46,7 +45,7 @@ export const getRoutes = (t: (key: string) => string): AppRoute[] => [
 
 // 後方互換性のため、デフォルトのルートも提供（英語）
 export const routes: AppRoute[] = [
-  { path: "/home", key: "home", label: "Home", icon: LuBot },
+  { path: "/home", key: "home", label: "Home", icon: LuHouse },
   { path: "/generate", key: "generate", label: "Generate", icon: LuSparkles },
   { path: "/workflows", key: "workflows", label: "Workflows", icon: LuWrench },
   { path: "/plugins", key: "plugins", label: "Plugins", icon: LuPlugZap },

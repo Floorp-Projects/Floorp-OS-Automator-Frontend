@@ -313,14 +313,14 @@ function createThunderbirdPlugin() {
 }
 
 /**
- * INIAD AI MOPプラグインを作成
+ * LLM Chatプラグインを作成
  */
-function createIniadAiMopPlugin() {
+function createLlmChatPlugin() {
   return create(PluginPackageSchema, {
-    packageId: "iniad.ai.mop",
-    packageName: "INIAD AI MOP",
+    packageId: "app.sapphillon.core.llm_chat",
+    packageName: "LLM Chat",
     packageVersion: "1.0.0",
-    description: "INIAD AI MOP APIを使用してAIチャット機能を提供するプラグイン",
+    description: "LLM APIを使用してAIチャット機能を提供するプラグイン",
     pluginStoreUrl: "",
     verified: true,
     internalPlugin: true,
@@ -375,7 +375,7 @@ export function getMockPlugins() {
   return [
     createFloorpPlugin(),
     createThunderbirdPlugin(),
-    createIniadAiMopPlugin(),
+    createLlmChatPlugin(),
   ];
 }
 
@@ -425,13 +425,13 @@ export function enhanceWorkflowWithMockData(workflow: Workflow): Workflow {
       selectedPlugins.push(mockPlugins[1]); // Thunderbird
     }
 
-    // INIAD AI MOP プラグイン
+    // LLM Chat プラグイン
     if (
-      code.includes("iniad_ai_mop") ||
+      code.includes("llm_chat") ||
       code.includes("ai.chat") ||
       code.includes(".chat(")
     ) {
-      selectedPlugins.push(mockPlugins[2]); // INIAD AI MOP
+      selectedPlugins.push(mockPlugins[2]); // LLM Chat
     }
 
     // 何も一致しない場合は、Floorpプラグインをデフォルトとして追加
