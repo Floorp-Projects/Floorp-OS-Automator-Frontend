@@ -121,14 +121,21 @@ export function CompletedStep({
             </Box>
 
             {/* アクションボタン - シンプル */}
-            <HStack justify="center" gap={3} pt={2}>
+            <Flex
+                justify="center"
+                gap={2}
+                pt={2}
+                wrap="wrap"
+            >
                 <Button
                     variant="ghost"
-                    size="md"
+                    size={{ base: "sm", md: "md" }}
                     onClick={() => navigate("/home")}
                     borderRadius="lg"
                     color="fg.muted"
                     _hover={{ bg: "bg.muted" }}
+                    flex="1"
+                    minW={{ base: "calc(50% - 4px)", md: "auto" }}
                 >
                     <LuHouse size={16} />
                     <Text ml={1}>{t("agent.backToHome")}</Text>
@@ -136,28 +143,32 @@ export function CompletedStep({
                 {workflowId && (
                     <Button
                         variant="ghost"
-                        size="md"
+                        size={{ base: "sm", md: "md" }}
                         onClick={onViewWorkflow}
                         borderRadius="lg"
                         color="fg.muted"
                         _hover={{ bg: "bg.muted" }}
+                        flex="1"
+                        minW={{ base: "calc(50% - 4px)", md: "auto" }}
                     >
                         <LuArrowRight size={16} />
                         <Text ml={1}>{t("agent.viewWorkflow")}</Text>
                     </Button>
                 )}
                 <Button
-                    size="md"
+                    size={{ base: "sm", md: "md" }}
                     onClick={onReset}
                     borderRadius="lg"
                     bg="fg"
                     color="bg"
                     _hover={{ bg: "fg.muted" }}
+                    flex="1"
+                    minW={{ base: "calc(50% - 4px)", md: "auto" }}
                 >
                     <LuRefreshCw size={16} />
                     <Text ml={1}>{t("agent.createAnother")}</Text>
                 </Button>
-            </HStack>
+            </Flex>
         </VStack>
     );
 }
