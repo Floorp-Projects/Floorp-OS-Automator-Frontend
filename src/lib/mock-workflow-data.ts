@@ -492,7 +492,8 @@ function createExcelPlugin() {
       create(PluginFunctionSchema, {
         functionId: "writeRangeWithImages",
         functionName: "画像付きデータ書き込み",
-        description: "スプレッドシートにデータと画像を書き込み（サムネイル埋め込み対応）",
+        description:
+          "スプレッドシートにデータと画像を書き込み（サムネイル埋め込み対応）",
         functionDefine: create(FunctionDefineSchema, {
           parameters: [
             create(FunctionParameterSchema, {
