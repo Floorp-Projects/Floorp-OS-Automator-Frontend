@@ -122,12 +122,16 @@ export function useWorkflowRun(): UseWorkflowRunReturn {
           kind: "message",
           payload: { stage: "run", status: "start" },
         });
-        const res = await clients.workflow.runWorkflow({
-          byId: create(WorkflowSourceByIdSchema, {
-            workflowId,
-            workflowCodeId: workflowCodeId || "",
-          }) as WorkflowSourceById,
-        });
+        const res = await clients.workflow.runWorkflow(
+          {
+            byId: create(WorkflowSourceByIdSchema, {
+              workflowId,
+              workflowCodeId: workflowCodeId || "",
+            }) as WorkflowSourceById,
+          },
+          // OCR等の重い処理でバックエンドが長時間ブロックするため、タイムアウトを30分に延長
+          { timeoutMs: 30 * 60 * 1000 },
+        );
         setRunRes(res);
         appendEvent({ kind: "message", payload: res });
         appendEvent({ kind: "done", payload: { stage: "run" } });
@@ -239,12 +243,16 @@ export function useWorkflowRun(): UseWorkflowRunReturn {
           payload: { stage: "run", status: "start" },
         });
 
-        const res = await clients.workflow.runWorkflow({
-          byId: create(WorkflowSourceByIdSchema, {
-            workflowId,
-            workflowCodeId,
-          }) as WorkflowSourceById,
-        });
+        const res = await clients.workflow.runWorkflow(
+          {
+            byId: create(WorkflowSourceByIdSchema, {
+              workflowId,
+              workflowCodeId,
+            }) as WorkflowSourceById,
+          },
+          // OCR等の重い処理でバックエンドが長時間ブロックするため、タイムアウトを30分に延長
+          { timeoutMs: 30 * 60 * 1000 },
+        );
 
         setRunRes(res);
         appendEvent({ kind: "message", payload: res });
