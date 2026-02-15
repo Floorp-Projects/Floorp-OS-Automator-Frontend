@@ -4,7 +4,7 @@
  * 本番環境でもバックエンドから十分なデータが返ってこない場合に、
  * デモ用にモックデータを提供するためのユーティリティです。
  *
- * このモックデータは demo_workflows/workflow.js (Video Site Comparison) で
+ * このモックデータは demo_workflows/workflow.js (Subscription Optimization Deep Research) で
  * 実際に使用されているプラグインと関数を正確に反映しています。
  *
  * @module lib/mock-workflow-data
@@ -14,14 +14,20 @@
  * ============================================================================
  *
  * 1. floorp (com.floorp.browser) - ブラウザ自動化
- *    - createTab, destroyTabInstance, closeTab, tabWaitForElement
- *    - tabWaitForNetworkIdle, tabScrollTo, tabElementText, tabAttribute
- *    - tabElementScreenshot, browserTabs, attachToTab, tabUploadFile
- *    - tabSetInnerHTML, tabClick
+ *    - createTab, closeTab, attachToTab, browserTabs
+ *    - tabWaitForElement, tabWaitForNetworkIdle
+ *    - tabElementText, tabAttribute, tabClick
  *
- * 2. excel (app.sapphillon.core.excel) - Excel操作
- *    - writeRangeWithImages, openInApp, saveBase64Image
+ * 2. llm_chat - LLMチャット
+ *    - chat(systemPrompt, userPrompt)
  *
+ * 3. app.sapphillon.core.exec - コマンド実行
+ *    - exec(cmd)
+ *
+ * 4. app.sapphillon.core.filesystem - ファイルシステム操作
+ *    - write(path, content)
+ *
+ * Optional: ocr (PDF請求書用 - オプション)
  * ============================================================================
  */
 
@@ -52,20 +58,15 @@ function createTimestamp(): { seconds: bigint; nanos: number } {
 /**
  * Floorpブラウザ自動化プラグインを作成
  *
- * workflow.js (Video Site Comparison) で使用されている関数:
+ * workflow.js (Subscription Optimization Deep Research) で使用されている関数:
+ * - floorp.browserTabs() - 全タブ取得
  * - floorp.createTab(url, waitForLoad) - タブ作成
- * - floorp.destroyTabInstance(tabId) - インスタンス解放
  * - floorp.closeTab(tabId) - タブを閉じる
+ * - floorp.attachToTab(tabId) - タブにアタッチ
  * - floorp.tabWaitForElement(tabId, selector, timeout) - 要素待機
- * - floorp.tabWaitForNetworkIdle(tabId, timeout) - ネットワーク待機
- * - floorp.tabScrollTo(tabId, selector) - スクロール
+ * - floorp.tabWaitForNetworkIdle(tabId) - ネットワーク待機
  * - floorp.tabElementText(tabId, selector) - テキスト取得
  * - floorp.tabAttribute(tabId, selector, attribute) - 属性取得
- * - floorp.tabElementScreenshot(tabId, selector) - 要素スクリーンショット
- * - floorp.browserTabs() - 全タブ取得
- * - floorp.attachToTab(tabId) - タブにアタッチ
- * - floorp.tabUploadFile(tabId, selector, filePath) - ファイルアップロード
- * - floorp.tabSetInnerHTML(tabId, selector, html) - innerHTML設定
  * - floorp.tabClick(tabId, selector) - クリック
  */
 function createFloorpPlugin() {
@@ -74,7 +75,7 @@ function createFloorpPlugin() {
     packageName: "Floorp",
     packageVersion: "1.0.0",
     description:
-      "Floorpブラウザのタブ操作、スクレイピング、DOM操作を行う内蔵プラグイン（Video Site Comparison対応）",
+      "Floorpブラウザのタブ操作、スクレイピング、DOM操作を行う内蔵プラグイン（Subscription Optimization対応）",
     pluginStoreUrl: "",
     verified: true,
     internalPlugin: true,
@@ -82,7 +83,24 @@ function createFloorpPlugin() {
     installedAt: createTimestamp(),
     updatedAt: createTimestamp(),
     functions: [
-      // createTab - workflow.js: floorp.createTab(ytUrl, false)
+      // browserTabs - workflow.js: floorp.browserTabs()
+      create(PluginFunctionSchema, {
+        functionId: "browserTabs",
+        functionName: "全タブ取得",
+        description: "現在開いている全タブの情報を取得",
+        functionDefine: create(FunctionDefineSchema, {
+          parameters: [],
+          returns: [
+            create(FunctionParameterSchema, {
+              name: "tabs",
+              type: "array",
+              description: "タブ情報の配列 (JSON形式)",
+            }),
+          ],
+        }),
+        permissions: [],
+      }),
+      // createTab - workflow.js: floorp.createTab(url, false)
       create(PluginFunctionSchema, {
         functionId: "createTab",
         functionName: "タブ作成",
@@ -118,23 +136,6 @@ function createFloorpPlugin() {
           }),
         ],
       }),
-      // destroyTabInstance - workflow.js: floorp.destroyTabInstance(ytTab)
-      create(PluginFunctionSchema, {
-        functionId: "destroyTabInstance",
-        functionName: "インスタンス解放",
-        description: "タブの制御インスタンスを解放（ユーザーに操作を返す）",
-        functionDefine: create(FunctionDefineSchema, {
-          parameters: [
-            create(FunctionParameterSchema, {
-              name: "tabId",
-              type: "string",
-              description: "タブID",
-            }),
-          ],
-          returns: [],
-        }),
-        permissions: [],
-      }),
       // closeTab - workflow.js: floorp.closeTab(tabId)
       create(PluginFunctionSchema, {
         functionId: "closeTab",
@@ -160,7 +161,30 @@ function createFloorpPlugin() {
           }),
         ],
       }),
-      // tabWaitForElement - workflow.js: floorp.tabWaitForElement(ytTab, "ytd-video-renderer #video-title", 10000)
+      // attachToTab - workflow.js: floorp.attachToTab(tabId)
+      create(PluginFunctionSchema, {
+        functionId: "attachToTab",
+        functionName: "タブにアタッチ",
+        description: "既存のタブに制御をアタッチ",
+        functionDefine: create(FunctionDefineSchema, {
+          parameters: [
+            create(FunctionParameterSchema, {
+              name: "tabId",
+              type: "string",
+              description: "タブID",
+            }),
+          ],
+          returns: [
+            create(FunctionParameterSchema, {
+              name: "instanceId",
+              type: "string",
+              description: "制御インスタンスID",
+            }),
+          ],
+        }),
+        permissions: [],
+      }),
+      // tabWaitForElement - workflow.js: floorp.tabWaitForElement(tabId, selector, 15000)
       create(PluginFunctionSchema, {
         functionId: "tabWaitForElement",
         functionName: "要素待機",
@@ -187,7 +211,7 @@ function createFloorpPlugin() {
         }),
         permissions: [],
       }),
-      // tabWaitForNetworkIdle - workflow.js: floorp.tabWaitForNetworkIdle(ytTab, 3000)
+      // tabWaitForNetworkIdle - workflow.js: floorp.tabWaitForNetworkIdle(tabId)
       create(PluginFunctionSchema, {
         functionId: "tabWaitForNetworkIdle",
         functionName: "ネットワーク待機",
@@ -209,29 +233,7 @@ function createFloorpPlugin() {
         }),
         permissions: [],
       }),
-      // tabScrollTo - workflow.js: floorp.tabScrollTo(ytTab, "ytd-continuation-item-renderer")
-      create(PluginFunctionSchema, {
-        functionId: "tabScrollTo",
-        functionName: "スクロール",
-        description: "指定した要素までページをスクロール（Lazy Loading対応）",
-        functionDefine: create(FunctionDefineSchema, {
-          parameters: [
-            create(FunctionParameterSchema, {
-              name: "tabId",
-              type: "string",
-              description: "タブID",
-            }),
-            create(FunctionParameterSchema, {
-              name: "selector",
-              type: "string",
-              description: "CSSセレクタ",
-            }),
-          ],
-          returns: [],
-        }),
-        permissions: [],
-      }),
-      // tabElementText - workflow.js: floorp.tabElementText(tab, sel)
+      // tabElementText - workflow.js: floorp.tabElementText(tabId, selector)
       create(PluginFunctionSchema, {
         functionId: "tabElementText",
         functionName: "テキスト取得",
@@ -259,7 +261,7 @@ function createFloorpPlugin() {
         }),
         permissions: [],
       }),
-      // tabAttribute - workflow.js: floorp.tabAttribute(ytTab, titleSel, "href")
+      // tabAttribute - workflow.js: floorp.tabAttribute(tabId, selector, "href")
       create(PluginFunctionSchema, {
         functionId: "tabAttribute",
         functionName: "属性取得",
@@ -292,147 +294,7 @@ function createFloorpPlugin() {
         }),
         permissions: [],
       }),
-      // tabElementScreenshot - workflow.js: floorp.tabElementScreenshot(tab, sel)
-      create(PluginFunctionSchema, {
-        functionId: "tabElementScreenshot",
-        functionName: "要素スクリーンショット",
-        description: "指定した要素のスクリーンショットをBase64で取得",
-        functionDefine: create(FunctionDefineSchema, {
-          parameters: [
-            create(FunctionParameterSchema, {
-              name: "tabId",
-              type: "string",
-              description: "タブID",
-            }),
-            create(FunctionParameterSchema, {
-              name: "selector",
-              type: "string",
-              description: "CSSセレクタ",
-            }),
-          ],
-          returns: [
-            create(FunctionParameterSchema, {
-              name: "image",
-              type: "string",
-              description: "Base64エンコードされた画像 (JSON形式)",
-            }),
-          ],
-        }),
-        permissions: [
-          create(PermissionSchema, {
-            displayName: "スクリーンショット",
-            description: "ページ要素のスクリーンショットを撮影する権限",
-            permissionType: PermissionType.EXECUTE,
-            resource: ["browser/screenshot"],
-            permissionLevel: PermissionLevel.MEDIUM,
-          }),
-        ],
-      }),
-      // browserTabs - workflow.js: floorp.browserTabs()
-      create(PluginFunctionSchema, {
-        functionId: "browserTabs",
-        functionName: "全タブ取得",
-        description: "現在開いている全タブの情報を取得",
-        functionDefine: create(FunctionDefineSchema, {
-          parameters: [],
-          returns: [
-            create(FunctionParameterSchema, {
-              name: "tabs",
-              type: "array",
-              description: "タブ情報の配列 (JSON形式)",
-            }),
-          ],
-        }),
-        permissions: [],
-      }),
-      // attachToTab - workflow.js: floorp.attachToTab(tabId)
-      create(PluginFunctionSchema, {
-        functionId: "attachToTab",
-        functionName: "タブにアタッチ",
-        description: "既存のタブに制御をアタッチ",
-        functionDefine: create(FunctionDefineSchema, {
-          parameters: [
-            create(FunctionParameterSchema, {
-              name: "tabId",
-              type: "string",
-              description: "タブID",
-            }),
-          ],
-          returns: [],
-        }),
-        permissions: [],
-      }),
-      // tabUploadFile - workflow.js: floorp.tabUploadFile(tabId, fileInputSelector, filePath)
-      create(PluginFunctionSchema, {
-        functionId: "tabUploadFile",
-        functionName: "ファイルアップロード",
-        description: "ファイル入力要素にファイルを設定",
-        functionDefine: create(FunctionDefineSchema, {
-          parameters: [
-            create(FunctionParameterSchema, {
-              name: "tabId",
-              type: "string",
-              description: "タブID",
-            }),
-            create(FunctionParameterSchema, {
-              name: "selector",
-              type: "string",
-              description: "ファイル入力のCSSセレクタ",
-            }),
-            create(FunctionParameterSchema, {
-              name: "filePath",
-              type: "string",
-              description: "アップロードするファイルのパス",
-            }),
-          ],
-          returns: [],
-        }),
-        permissions: [
-          create(PermissionSchema, {
-            displayName: "ファイルアップロード",
-            description: "Webページにファイルをアップロードする権限",
-            permissionType: PermissionType.EXECUTE,
-            resource: ["browser/upload"],
-            permissionLevel: PermissionLevel.HIGH,
-          }),
-        ],
-      }),
-      // tabSetInnerHTML - workflow.js: floorp.tabSetInnerHTML(tabId, inputSelector, message)
-      create(PluginFunctionSchema, {
-        functionId: "tabSetInnerHTML",
-        functionName: "innerHTML設定",
-        description: "指定した要素のinnerHTMLを設定",
-        functionDefine: create(FunctionDefineSchema, {
-          parameters: [
-            create(FunctionParameterSchema, {
-              name: "tabId",
-              type: "string",
-              description: "タブID",
-            }),
-            create(FunctionParameterSchema, {
-              name: "selector",
-              type: "string",
-              description: "CSSセレクタ",
-            }),
-            create(FunctionParameterSchema, {
-              name: "html",
-              type: "string",
-              description: "設定するHTML/テキスト",
-            }),
-          ],
-          returns: [],
-        }),
-        permissions: [
-          create(PermissionSchema, {
-            displayName: "DOM操作",
-            description: "ページのDOM要素を変更する権限",
-            permissionType: PermissionType.EXECUTE,
-            resource: ["browser/dom"],
-            permissionLevel: PermissionLevel.HIGH,
-          }),
-        ],
-      }),
-      // tabClick - workflow.js: floorp.tabClick(tabId, sendButtonSelector)
+      // tabClick - workflow.js: floorp.tabClick(tabId, selector)
       create(PluginFunctionSchema, {
         functionId: "tabClick",
         functionName: "クリック",
@@ -467,20 +329,18 @@ function createFloorpPlugin() {
 }
 
 /**
- * Excelスプレッドシート操作プラグインを作成
+ * LLM Chat プラグインを作成
  *
- * workflow.js (Video Site Comparison) で使用されている関数:
- * - excel.writeRangeWithImages(filePath, sheetName, data, images) - 画像付きデータ書き込み
- * - excel.openInApp(filePath) - アプリで開く
- * - excel.saveBase64Image(base64, filePath) - Base64画像を保存
+ * workflow.js (Subscription Optimization Deep Research) で使用されている関数:
+ * - llm_chat.chat(systemPrompt, userPrompt) - LLMチャット
  */
-function createExcelPlugin() {
+function createLlmChatPlugin() {
   return create(PluginPackageSchema, {
-    packageId: "app.sapphillon.core.excel",
-    packageName: "Excel",
+    packageId: "llm_chat",
+    packageName: "LLM Chat",
     packageVersion: "1.0.0",
     description:
-      "Excelファイルの作成・編集、画像挿入、グラフ作成を行うプラグイン（Video Site Comparison対応）",
+      "大規模言語モデル(LLM)とのチャット機能を提供するプラグイン（サブスクリプション分析・レポート生成用）",
     pluginStoreUrl: "",
     verified: true,
     internalPlugin: true,
@@ -488,94 +348,137 @@ function createExcelPlugin() {
     installedAt: createTimestamp(),
     updatedAt: createTimestamp(),
     functions: [
-      // writeRangeWithImages - workflow.js: excel.writeRangeWithImages(excelPath, "動画比較", rowData, images)
+      // chat - workflow.js: llm_chat.chat(systemPrompt, userPrompt)
       create(PluginFunctionSchema, {
-        functionId: "writeRangeWithImages",
-        functionName: "画像付きデータ書き込み",
-        description:
-          "スプレッドシートにデータと画像を書き込み（サムネイル埋め込み対応）",
+        functionId: "chat",
+        functionName: "チャット",
+        description: "LLMにプロンプトを送信してレスポンスを取得",
         functionDefine: create(FunctionDefineSchema, {
           parameters: [
             create(FunctionParameterSchema, {
-              name: "filePath",
+              name: "systemPrompt",
               type: "string",
-              description: "Excelファイルパス",
+              description: "システムプロンプト (LLMの役割定義)",
             }),
             create(FunctionParameterSchema, {
-              name: "sheetName",
+              name: "userPrompt",
               type: "string",
-              description: "シート名",
-            }),
-            create(FunctionParameterSchema, {
-              name: "data",
-              type: "array",
-              description: "書き込むデータの2次元配列",
-            }),
-            create(FunctionParameterSchema, {
-              name: "images",
-              type: "array",
-              description: "挿入する画像の配列 [{cell, path}]",
+              description: "ユーザープロンプト (質問やタスク)",
             }),
           ],
           returns: [
             create(FunctionParameterSchema, {
-              name: "success",
-              type: "boolean",
-              description: "成功フラグ",
-            }),
-          ],
-        }),
-        permissions: [
-          create(PermissionSchema, {
-            displayName: "ファイル書き込み",
-            description: "Excelファイルにデータと画像を書き込む権限",
-            permissionType: PermissionType.FILESYSTEM_WRITE,
-            resource: ["filesystem/write", "excel/write"],
-            permissionLevel: PermissionLevel.HIGH,
-          }),
-        ],
-      }),
-      // openInApp - workflow.js: excel.openInApp(excelPath)
-      create(PluginFunctionSchema, {
-        functionId: "openInApp",
-        functionName: "アプリで開く",
-        description: "ExcelファイルをExcelアプリケーションで開く",
-        functionDefine: create(FunctionDefineSchema, {
-          parameters: [
-            create(FunctionParameterSchema, {
-              name: "filePath",
+              name: "response",
               type: "string",
-              description: "Excelファイルパス",
+              description: "LLMからのレスポンス",
             }),
           ],
-          returns: [],
         }),
         permissions: [
           create(PermissionSchema, {
-            displayName: "アプリケーション起動",
-            description: "外部アプリケーションを起動する権限",
-            permissionType: PermissionType.EXECUTE,
-            resource: ["system/app"],
+            displayName: "LLMアクセス",
+            description: "外部LLMサービスにアクセスする権限",
+            permissionType: PermissionType.NET_ACCESS,
+            resource: ["llm/chat"],
             permissionLevel: PermissionLevel.MEDIUM,
           }),
         ],
       }),
-      // saveBase64Image - workflow.js: excel.saveBase64Image(base64Data, imgPath)
+    ],
+  });
+}
+
+/**
+ * Exec プラグインを作成
+ *
+ * workflow.js (Subscription Optimization Deep Research) で使用されている関数:
+ * - app.sapphillon.core.exec.exec(cmd) - シェルコマンド実行
+ */
+function createExecPlugin() {
+  return create(PluginPackageSchema, {
+    packageId: "app.sapphillon.core.exec",
+    packageName: "Exec",
+    packageVersion: "1.0.0",
+    description:
+      "シェルコマンドを実行するプラグイン（アプリ検索、ディレクトリ作成など）",
+    pluginStoreUrl: "",
+    verified: true,
+    internalPlugin: true,
+    deprecated: false,
+    installedAt: createTimestamp(),
+    updatedAt: createTimestamp(),
+    functions: [
+      // exec - workflow.js: app.sapphillon.core.exec.exec(cmd)
       create(PluginFunctionSchema, {
-        functionId: "saveBase64Image",
-        functionName: "Base64画像保存",
-        description: "Base64エンコードされた画像データをファイルに保存",
+        functionId: "exec",
+        functionName: "コマンド実行",
+        description: "シェルコマンドを実行して結果を取得",
         functionDefine: create(FunctionDefineSchema, {
           parameters: [
             create(FunctionParameterSchema, {
-              name: "base64Data",
+              name: "cmd",
               type: "string",
-              description: "Base64エンコードされた画像データ",
+              description: "実行するシェルコマンド",
+            }),
+          ],
+          returns: [
+            create(FunctionParameterSchema, {
+              name: "stdout",
+              type: "string",
+              description: "標準出力",
+            }),
+          ],
+        }),
+        permissions: [
+          create(PermissionSchema, {
+            displayName: "コマンド実行",
+            description: "システムコマンドを実行する権限",
+            permissionType: PermissionType.EXECUTE,
+            resource: ["system/exec"],
+            permissionLevel: PermissionLevel.HIGH,
+          }),
+        ],
+      }),
+    ],
+  });
+}
+
+/**
+ * Filesystem プラグインを作成
+ *
+ * workflow.js (Subscription Optimization Deep Research) で使用されている関数:
+ * - app.sapphillon.core.filesystem.write(path, content) - ファイル書き込み
+ */
+function createFilesystemPlugin() {
+  return create(PluginPackageSchema, {
+    packageId: "app.sapphillon.core.filesystem",
+    packageName: "Filesystem",
+    packageVersion: "1.0.0",
+    description:
+      "ファイルシステム操作を行うプラグイン（レポートファイル出力用）",
+    pluginStoreUrl: "",
+    verified: true,
+    internalPlugin: true,
+    deprecated: false,
+    installedAt: createTimestamp(),
+    updatedAt: createTimestamp(),
+    functions: [
+      // write - workflow.js: app.sapphillon.core.filesystem.write(path, content)
+      create(PluginFunctionSchema, {
+        functionId: "write",
+        functionName: "ファイル書き込み",
+        description: "ファイルにコンテンツを書き込む",
+        functionDefine: create(FunctionDefineSchema, {
+          parameters: [
+            create(FunctionParameterSchema, {
+              name: "path",
+              type: "string",
+              description: "ファイルパス",
             }),
             create(FunctionParameterSchema, {
-              name: "filePath",
+              name: "content",
               type: "string",
-              description: "保存先ファイルパス",
+              description: "書き込む内容",
             }),
           ],
           returns: [
@@ -589,7 +492,7 @@ function createExcelPlugin() {
         permissions: [
           create(PermissionSchema, {
             displayName: "ファイル書き込み",
-            description: "画像ファイルを書き込む権限",
+            description: "ファイルに書き込む権限",
             permissionType: PermissionType.FILESYSTEM_WRITE,
             resource: ["filesystem/write"],
             permissionLevel: PermissionLevel.HIGH,
@@ -603,14 +506,21 @@ function createExcelPlugin() {
 /**
  * 利用可能なモックプラグインを作成
  *
- * デモワークフロー (workflow.js - Video Site Comparison) で使用されるプラグインを定義
+ * デモワークフロー (workflow.js - Subscription Optimization Deep Research) で使用されるプラグインを定義
  *
  * 使用プラグイン:
- * 1. Floorp - ブラウザ自動化 (createTab, closeTab, tabElementScreenshot, browserTabs, etc.)
- * 2. Excel - スプレッドシート操作 (writeRangeWithImages, openInApp, saveBase64Image)
+ * 1. Floorp - ブラウザ自動化 (browserTabs, createTab, closeTab, attachToTab, etc.)
+ * 2. LLM Chat - LLMチャット (chat)
+ * 3. Exec - コマンド実行 (exec)
+ * 4. Filesystem - ファイル操作 (write)
  */
 export function getMockPlugins() {
-  return [createFloorpPlugin(), createExcelPlugin()];
+  return [
+    createFloorpPlugin(),
+    createLlmChatPlugin(),
+    createExecPlugin(),
+    createFilesystemPlugin(),
+  ];
 }
 
 /**
@@ -619,9 +529,11 @@ export function getMockPlugins() {
  * バックエンドから返されたワークフローにpluginPackagesが含まれていない場合、
  * デモ用にモックデータを追加します。
  *
- * workflow.js (Video Site Comparison) で使用されるプラグインに基づいて検出:
+ * workflow.js (Subscription Optimization Deep Research) で使用されるプラグインに基づいて検出:
  * - floorp.* → Floorp プラグイン
- * - excel.* → Excel プラグイン
+ * - llm_chat.* → LLM Chat プラグイン
+ * - app.sapphillon.core.exec.* → Exec プラグイン
+ * - app.sapphillon.core.filesystem.* → Filesystem プラグイン
  *
  * @param workflow - バックエンドから返されたワークフロー
  * @returns プラグインデータが追加されたワークフロー
@@ -643,42 +555,57 @@ export function enhanceWorkflowWithMockData(workflow: Workflow): Workflow {
     const selectedPlugins: typeof mockPlugins = [];
 
     // Floorp ブラウザ自動化プラグイン
-    // workflow.js: floorp.createTab, floorp.tabElementScreenshot, floorp.browserTabs, etc.
+    // workflow.js: floorp.browserTabs, floorp.createTab, floorp.closeTab, etc.
     if (
       code.includes("floorp") ||
+      code.includes("browsertabs") ||
       code.includes("createtab") ||
       code.includes("closetab") ||
-      code.includes("destroytabinstance") ||
+      code.includes("attachtotab") ||
       code.includes("tabwaitforelement") ||
       code.includes("tabwaitfornetworkidle") ||
-      code.includes("tabscrollto") ||
       code.includes("tabelementtext") ||
       code.includes("tabattribute") ||
-      code.includes("tabelementscreenshot") ||
-      code.includes("browsertabs") ||
-      code.includes("attachtotab") ||
-      code.includes("tabuploadfile") ||
-      code.includes("tabsetinnerhtml") ||
       code.includes("tabclick")
     ) {
       selectedPlugins.push(mockPlugins[0]); // Floorp
     }
 
-    // Excel スプレッドシート操作プラグイン
-    // workflow.js: excel.writeRangeWithImages, excel.openInApp, excel.saveBase64Image
+    // LLM Chat プラグイン
+    // workflow.js: llm_chat.chat()
     if (
-      code.includes("excel") ||
-      code.includes("writerangewithimages") ||
-      code.includes("openinapp") ||
-      code.includes("savebase64image") ||
-      code.includes("spreadsheet") ||
-      code.includes(".xlsx")
+      code.includes("llm_chat") ||
+      code.includes("llmchat") ||
+      code.includes("llm.chat") ||
+      code.includes("subscription") ||
+      code.includes("optimization")
     ) {
-      selectedPlugins.push(mockPlugins[1]); // Excel
+      selectedPlugins.push(mockPlugins[1]); // LLM Chat
+    }
+
+    // Exec プラグイン
+    // workflow.js: app.sapphillon.core.exec.exec()
+    if (
+      code.includes("app.sapphillon.core.exec") ||
+      code.includes("exec.exec") ||
+      code.includes("execsafe") ||
+      code.includes("shellescape")
+    ) {
+      selectedPlugins.push(mockPlugins[2]); // Exec
+    }
+
+    // Filesystem プラグイン
+    // workflow.js: app.sapphillon.core.filesystem.write()
+    if (
+      code.includes("app.sapphillon.core.filesystem") ||
+      code.includes("filesystem.write") ||
+      code.includes("writefile")
+    ) {
+      selectedPlugins.push(mockPlugins[3]); // Filesystem
     }
 
     // 何も一致しない場合は、全プラグインをデフォルトとして追加
-    // (Video Site Comparison ワークフローは全プラグインを使用するため)
+    // (Subscription Optimization ワークフローは全プラグインを使用するため)
     if (selectedPlugins.length === 0) {
       selectedPlugins.push(...mockPlugins);
     }

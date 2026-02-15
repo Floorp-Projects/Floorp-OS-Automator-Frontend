@@ -126,9 +126,8 @@ export function LogRow({ e, index }: LogRowProps) {
                   <Text
                     fontSize={{ base: "xs", md: "sm" }}
                     css={{
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
+                      whiteSpace: "pre-wrap",
+                      overflowWrap: "anywhere",
                     }}
                   >
                     {summary}
@@ -163,9 +162,8 @@ export function LogRow({ e, index }: LogRowProps) {
               <Text
                 fontSize={{ base: "xs", md: "sm" }}
                 css={{
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
+                  whiteSpace: "pre-wrap",
+                  overflowWrap: "anywhere",
                 }}
               >
                 {summary}

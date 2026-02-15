@@ -160,8 +160,7 @@ export function summarize(e: GenerationEvent): string {
           ? (r as Record<string, unknown>).result
           : undefined;
       if (typeof resultStr === "string" && resultStr.trim()) {
-        const txt = resultStr.trim();
-        return txt.length > 160 ? txt.slice(0, 160) + "…" : txt;
+        return resultStr.trim();
       }
       return `${name}: ${type}${exit}`;
     }
@@ -172,8 +171,7 @@ export function summarize(e: GenerationEvent): string {
       return i18n.t("console.workflowDefinitionUpdated");
   }
   try {
-    const s = stringifyPayload(p);
-    return s.length > 120 ? s.slice(0, 120) + "…" : s;
+    return stringifyPayload(p);
   } catch {
     return i18n.t("console.message");
   }
