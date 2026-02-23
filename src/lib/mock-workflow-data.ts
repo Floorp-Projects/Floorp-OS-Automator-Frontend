@@ -27,7 +27,8 @@
  * 4. app.sapphillon.core.filesystem - ファイルシステム操作
  *    - write(path, content)
  *
- * Optional: ocr (PDF請求書用 - オプション)
+ * 5. ocr (オプション) - PDF請求書テキスト抽出
+ *    - extract_text(filePath)
  * ============================================================================
  */
 
@@ -222,11 +223,6 @@ function createFloorpPlugin() {
               name: "tabId",
               type: "string",
               description: "タブID",
-            }),
-            create(FunctionParameterSchema, {
-              name: "timeout",
-              type: "number",
-              description: "タイムアウト (ms)",
             }),
           ],
           returns: [],
@@ -504,6 +500,63 @@ function createFilesystemPlugin() {
 }
 
 /**
+ * OCR プラグインを作成（オプション）
+ *
+ * workflow.js (Subscription Optimization Deep Research) で使用されている関数:
+ * - ocr.extract_text(filePath) - PDFからテキスト抽出（請求書解析用）
+ *
+ * 注: workflow.jsでは typeof ocr !== "undefined" で存在確認されるオプションプラグイン
+ */
+function createOcrPlugin() {
+  return create(PluginPackageSchema, {
+    packageId: "ocr",
+    packageName: "OCR",
+    packageVersion: "1.0.0",
+    description:
+      "PDFや画像からテキストを抽出するプラグイン（請求書解析用 - オプション）",
+    pluginStoreUrl: "",
+    verified: true,
+    internalPlugin: true,
+    deprecated: false,
+    installedAt: createTimestamp(),
+    updatedAt: createTimestamp(),
+    functions: [
+      // extract_text - workflow.js: ocr.extract_text(filePath)
+      create(PluginFunctionSchema, {
+        functionId: "extract_text",
+        functionName: "テキスト抽出",
+        description: "PDFや画像ファイルからテキストを抽出",
+        functionDefine: create(FunctionDefineSchema, {
+          parameters: [
+            create(FunctionParameterSchema, {
+              name: "filePath",
+              type: "string",
+              description: "PDF/画像ファイルのパス",
+            }),
+          ],
+          returns: [
+            create(FunctionParameterSchema, {
+              name: "text",
+              type: "string",
+              description: "抽出されたテキスト",
+            }),
+          ],
+        }),
+        permissions: [
+          create(PermissionSchema, {
+            displayName: "ファイル読み込み",
+            description: "ファイルを読み込む権限",
+            permissionType: PermissionType.FILESYSTEM_READ,
+            resource: ["filesystem/read"],
+            permissionLevel: PermissionLevel.MEDIUM,
+          }),
+        ],
+      }),
+    ],
+  });
+}
+
+/**
  * 利用可能なモックプラグインを作成
  *
  * デモワークフロー (workflow.js - Subscription Optimization Deep Research) で使用されるプラグインを定義
@@ -513,6 +566,7 @@ function createFilesystemPlugin() {
  * 2. LLM Chat - LLMチャット (chat)
  * 3. Exec - コマンド実行 (exec)
  * 4. Filesystem - ファイル操作 (write)
+ * 5. OCR - テキスト抽出 (extract_text) - オプション
  */
 export function getMockPlugins() {
   return [
@@ -520,6 +574,7 @@ export function getMockPlugins() {
     createLlmChatPlugin(),
     createExecPlugin(),
     createFilesystemPlugin(),
+    createOcrPlugin(),
   ];
 }
 
@@ -534,6 +589,7 @@ export function getMockPlugins() {
  * - llm_chat.* → LLM Chat プラグイン
  * - app.sapphillon.core.exec.* → Exec プラグイン
  * - app.sapphillon.core.filesystem.* → Filesystem プラグイン
+ * - ocr.* → OCR プラグイン（オプション）
  *
  * @param workflow - バックエンドから返されたワークフロー
  * @returns プラグインデータが追加されたワークフロー
@@ -602,6 +658,16 @@ export function enhanceWorkflowWithMockData(workflow: Workflow): Workflow {
       code.includes("writefile")
     ) {
       selectedPlugins.push(mockPlugins[3]); // Filesystem
+    }
+
+    // OCR プラグイン（オプション）
+    // workflow.js: ocr.extract_text()
+    if (
+      code.includes("ocr") ||
+      code.includes("extract_text") ||
+      code.includes("extracttext")
+    ) {
+      selectedPlugins.push(mockPlugins[4]); // OCR
     }
 
     // 何も一致しない場合は、全プラグインをデフォルトとして追加
