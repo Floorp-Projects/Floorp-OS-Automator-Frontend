@@ -37,18 +37,23 @@ export function WorkflowCloneDialog({
   // ダイアログが開かれた時にデフォルト値を設定
   React.useEffect(() => {
     if (open) {
-      setNewName(`${workflow.displayName || t("common.untitledWorkflow")} (${t("common.copy")})`);
+      setNewName(
+        `${workflow.displayName || t("common.untitledWorkflow")} (${
+          t("common.copy")
+        })`,
+      );
       setNewDescription(
         workflow.description
           ? `${workflow.description} (${t("clone.clone")})`
-          : t("clone.clone")
+          : t("clone.clone"),
       );
     }
   }, [open, workflow, t]);
 
   const handleClone = React.useCallback(async () => {
     const cloned = await cloneWorkflow(workflow, {
-      newName: newName.trim() || `${workflow.displayName} (${t("common.copy")})`,
+      newName: newName.trim() ||
+        `${workflow.displayName} (${t("common.copy")})`,
     });
 
     if (cloned) {
@@ -61,12 +66,16 @@ export function WorkflowCloneDialog({
 
   const handleKeyDown = React.useCallback(
     (e: React.KeyboardEvent) => {
+      // IME変換中は無視
+      if (e.nativeEvent.isComposing) {
+        return;
+      }
       if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && !cloning) {
         e.preventDefault();
         handleClone();
       }
     },
-    [handleClone, cloning]
+    [handleClone, cloning],
   );
 
   return (
@@ -185,17 +194,19 @@ export function WorkflowCloneDialog({
                 disabled={cloning || !newName.trim()}
                 flex="1"
               >
-                {cloning ? (
-                  <HStack gap={2}>
-                    <Spinner size="xs" />
-                    <Text>{t("clone.cloning")}</Text>
-                  </HStack>
-                ) : (
-                  <>
-                    <LuCopy />
-                    <Text>{t("clone.clone")}</Text>
-                  </>
-                )}
+                {cloning
+                  ? (
+                    <HStack gap={2}>
+                      <Spinner size="xs" />
+                      <Text>{t("clone.cloning")}</Text>
+                    </HStack>
+                  )
+                  : (
+                    <>
+                      <LuCopy />
+                      <Text>{t("clone.clone")}</Text>
+                    </>
+                  )}
               </Button>
             </HStack>
           </Dialog.Footer>
@@ -206,5 +217,3 @@ export function WorkflowCloneDialog({
     </Dialog.Root>
   );
 }
-
-

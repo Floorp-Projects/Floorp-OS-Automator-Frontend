@@ -6,147 +6,23 @@ import {
     Flex,
     Heading,
     HStack,
-    Separator,
+    IconButton,
     Spinner,
     Tabs,
     Text,
     VStack,
 } from "@chakra-ui/react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { LuArrowLeft, LuHistory, LuPlay } from "react-icons/lu";
+import { LuArrowLeft, LuHistory, LuRefreshCw } from "react-icons/lu";
 import { WorkflowCanvas } from "@/components/workflow/WorkflowCanvas";
 import { WorkflowExecutionTimeline } from "@/components/workflow/WorkflowExecutionTimeline";
-import { StreamConsole } from "@/components/console";
-import type { GenerationEvent } from "@/components/console/utils";
-import { EmptyState } from "@/components/ui/empty-state";
 import { useWorkflow } from "./useWorkflow";
 import { useWorkflowRun } from "./useWorkflowRun";
-import type { RunEvent } from "./useWorkflowRun";
-
-import { PermissionList } from "@/components/workflow/PermissionList";
+import { RunConfirmDialog } from "./RunConfirmDialog";
+import { RunPanel } from "./RunPanel";
 import { useI18n } from "@/hooks/useI18n";
 
-function RunPanel({
-    running,
-    events,
-    workflow,
-    runRes,
-    onRun,
-    latestCode,
-}: {
-    running: boolean;
-    events: RunEvent[];
-    workflow: React.ComponentProps<typeof WorkflowCanvas>["workflow"] | null;
-    runRes: ReturnType<typeof useWorkflowRun>["runRes"];
-    onRun: () => void;
-    latestCode:
-        | React.ComponentProps<
-            typeof WorkflowCanvas
-        >["workflow"]["workflowCode"][0]
-        | null;
-}) {
-    const { t } = useI18n();
-    return (
-        <Flex h="full" gap={4} overflow="hidden">
-            {/* Left Side: Execution Panel */}
-            <VStack
-                flex="1"
-                align="stretch"
-                gap={1}
-                p={{ base: 1.5, md: 2 }}
-                borderWidth="1px"
-                bg="bg"
-                rounded="md"
-                h="full"
-                minH={0}
-                display="grid"
-                gridTemplateRows="auto minmax(0, 1fr)"
-                overflow="hidden"
-            >
-                <HStack justify="space-between" flexWrap="wrap" gap={2}>
-                    <Text
-                        fontWeight="medium"
-                        fontSize={{ base: "sm", md: "md" }}
-                    >
-                        {t("run.title")}
-                    </Text>
-                    <HStack gap={2}>
-                        <Text
-                            fontSize="xs"
-                            color={running
-                                ? "blue.500"
-                                : runRes
-                                ? "green.500"
-                                : "fg.muted"}
-                            fontWeight="medium"
-                        >
-                            {running
-                                ? t("run.running")
-                                : runRes
-                                ? t("run.completed")
-                                : t("run.waiting")}
-                        </Text>
-                        <Button
-                            size="sm"
-                            onClick={onRun}
-                            disabled={!workflow || running}
-                            minH={{ base: "36px", md: "auto" }}
-                            colorPalette="floorp"
-                        >
-                            <LuPlay size={14} />
-                            <Text fontSize={{ base: "xs", sm: "sm" }}>
-                                {t("run.title")}
-                            </Text>
-                        </Button>
-                    </HStack>
-                </HStack>
-                <Separator my={{ base: 1, md: 2 }} />
-                <Box minH={0} h="full" overflow="hidden">
-                    {events.length === 0 && !running && !runRes
-                        ? (
-                            <EmptyState
-                                icon={<LuPlay />}
-                                title={t("run.notExecuted")}
-                                description={t("run.notExecutedDescription")}
-                            />
-                        )
-                        : (
-                            <StreamConsole
-                                events={events as GenerationEvent[]}
-                                streaming={running}
-                            />
-                        )}
-                </Box>
-            </VStack>
-
-            {/* Right Side: Permissions Panel */}
-            <Box
-                w="320px"
-                borderWidth="1px"
-                rounded="md"
-                bg="bg"
-                p={4}
-                overflowY="auto"
-                display={{ base: "none", xl: "block" }}
-            >
-                <Heading size="sm" mb={4}>
-                    {t("workflowView.requiredPermissions")}
-                </Heading>
-                {latestCode?.allowedPermissions
-                    ? (
-                        <PermissionList
-                            permissions={latestCode.allowedPermissions}
-                        />
-                    )
-                    : (
-                        <Text fontSize="sm" color="fg.muted">
-                            {t("workflowView.noPermissionInfo")}
-                        </Text>
-                    )}
-            </Box>
-        </Flex>
-    );
-}
+// Extracted components: RunConfirmDialog, RunPanel
 
 export function WorkflowRunPage() {
     const { t } = useI18n();
@@ -158,6 +34,7 @@ export function WorkflowRunPage() {
     const [activeTab, setActiveTab] = React.useState<
         "workflow" | "run" | "history"
     >("run");
+    const [confirmDialogOpen, setConfirmDialogOpen] = React.useState(false);
 
     // 戻る先を決定（Home から来た場合は Home に戻る）
     const backPath = React.useMemo(() => {
@@ -170,13 +47,13 @@ export function WorkflowRunPage() {
         return "/workflows";
     }, [location.state]);
 
-    // 自動実行フラグを取得
+    // 自動実行フラグを取得 → 確認ダイアログを開く
     const shouldAutoRun = React.useMemo(() => {
         const state = location.state as { autoRun?: boolean } | null;
         return state?.autoRun === true;
     }, [location.state]);
 
-    // 自動実行が有効で、ワークフローが読み込まれたら実行
+    // 自動実行が有効で、ワークフローが読み込まれたら確認ダイアログを開く
     const hasAutoRunRef = React.useRef(false);
     React.useEffect(() => {
         if (
@@ -189,12 +66,9 @@ export function WorkflowRunPage() {
             workflow.workflowCode.length > 0
         ) {
             hasAutoRunRef.current = true;
-            clearEvents();
-            const latestCodeId = workflow
-                .workflowCode[workflow.workflowCode.length - 1]?.id;
-            runById(workflow.id, latestCodeId, workflow);
+            setConfirmDialogOpen(true);
         }
-    }, [shouldAutoRun, workflow, loading, running, runById, clearEvents]);
+    }, [shouldAutoRun, workflow, loading, running]);
 
     const latestCode = React.useMemo(() => {
         if (!workflow?.workflowCode || workflow.workflowCode.length === 0) {
@@ -203,8 +77,16 @@ export function WorkflowRunPage() {
         return workflow.workflowCode[workflow.workflowCode.length - 1];
     }, [workflow]);
 
-    const handleRun = React.useCallback(() => {
+    // 確認ダイアログを開く
+    const handleOpenConfirm = React.useCallback(() => {
         if (!workflow) return;
+        setConfirmDialogOpen(true);
+    }, [workflow]);
+
+    // 実行を実行
+    const handleConfirmRun = React.useCallback(() => {
+        if (!workflow) return;
+        setConfirmDialogOpen(false);
         clearEvents();
         const latestCodeId = workflow.workflowCode
             ?.[workflow.workflowCode.length - 1]?.id;
@@ -247,38 +129,46 @@ export function WorkflowRunPage() {
     }
 
     return (
-        <Flex direction="column" h="full" overflow="hidden">
-            {/* Header */}
+        <Flex direction="column" h="full" overflow="hidden" fontSize="md">
+            {/* Header - Agentスタイルに統一 */}
             <Box
                 borderBottomWidth="1px"
-                borderBottomColor="border"
-                px={{ base: 4, md: 6 }}
-                py={3}
+                px={3}
+                py={2}
                 bg="bg.panel"
-                zIndex={10}
+                flexShrink={0}
             >
                 <HStack justify="space-between" align="center">
-                    <HStack gap={3}>
-                        <Button
+                    <HStack gap={2}>
+                        <IconButton
+                            aria-label={t("common.back")}
                             variant="ghost"
-                            size="sm"
+                            size="xs"
                             onClick={() => navigate(backPath)}
                         >
                             <LuArrowLeft />
-                        </Button>
+                        </IconButton>
                         <VStack align="start" gap={0}>
-                            <Heading size="md">
+                            <Heading size="sm" lineClamp={1}>
                                 {workflow.displayName ||
-                                    t("common.untitledWorkflow")} -{" "}
-                                {t("run.title")}
+                                    t("common.untitledWorkflow")}
                             </Heading>
                             {workflow.description && (
-                                <Text fontSize="sm" color="fg.muted">
+                                <Text fontSize="xs" color="fg.muted" lineClamp={1}>
                                     {workflow.description}
                                 </Text>
                             )}
                         </VStack>
                     </HStack>
+                    <IconButton
+                        aria-label={t("workflows.refresh")}
+                        variant="ghost"
+                        size="xs"
+                        onClick={() => handleOpenConfirm()}
+                        disabled={running}
+                    >
+                        <LuRefreshCw />
+                    </IconButton>
                 </HStack>
             </Box>
 
@@ -295,29 +185,29 @@ export function WorkflowRunPage() {
                         display="flex"
                         flexDirection="column"
                     >
-                        <Tabs.List borderBottomWidth="1px" flexShrink={0}>
-                            <Tabs.Trigger value="workflow" px={4} py={2}>
-                                <Text fontSize="sm">
+                        <Tabs.List borderBottomWidth="1px" flexShrink={0} px={2}>
+                            <Tabs.Trigger value="workflow" px={3} py={1.5}>
+                                <Text fontSize="xs">
                                     {t("workflowView.workflow")}
                                 </Text>
                             </Tabs.Trigger>
-                            <Tabs.Trigger value="run" px={4} py={2}>
-                                <Text fontSize="sm">{t("run.title")}</Text>
+                            <Tabs.Trigger value="run" px={3} py={1.5}>
+                                <Text fontSize="xs">{t("run.title")}</Text>
                             </Tabs.Trigger>
-                            <Tabs.Trigger value="history" px={4} py={2}>
+                            <Tabs.Trigger value="history" px={3} py={1.5}>
                                 <HStack gap={1}>
-                                    <LuHistory size={14} />
-                                    <Text fontSize="sm">
+                                    <LuHistory size={12} />
+                                    <Text fontSize="xs">
                                         {t("workflowView.executionHistory")}
                                     </Text>
                                     {workflow.workflowResults &&
                                         workflow.workflowResults.length > 0 && (
                                         <Box
                                             as="span"
-                                            px={1.5}
+                                            px={1}
                                             py={0.5}
                                             rounded="full"
-                                            bg="blue.500"
+                                            bg="floorp.500"
                                             color="white"
                                             fontSize="2xs"
                                             fontWeight="medium"
@@ -335,7 +225,7 @@ export function WorkflowRunPage() {
                             overflow="hidden"
                             p={0}
                         >
-                            <Box h="full" overflow="auto" p={4}>
+                            <Box h="full" overflow="auto" p={3}>
                                 <WorkflowCanvas
                                     workflow={workflow}
                                     withBackground={true}
@@ -347,14 +237,14 @@ export function WorkflowRunPage() {
                             value="run"
                             flex="1"
                             overflow="auto"
-                            p={4}
+                            p={3}
                         >
                             <RunPanel
                                 running={running}
                                 events={events}
                                 workflow={workflow}
                                 runRes={runRes}
-                                onRun={handleRun}
+                                onRun={handleOpenConfirm}
                                 latestCode={latestCode}
                             />
                         </Tabs.Content>
@@ -363,7 +253,7 @@ export function WorkflowRunPage() {
                             value="history"
                             flex="1"
                             overflow="auto"
-                            p={4}
+                            p={3}
                         >
                             <WorkflowExecutionTimeline
                                 results={workflow.workflowResults || []}
@@ -372,6 +262,16 @@ export function WorkflowRunPage() {
                     </Tabs.Root>
                 </Box>
             </Flex>
+
+            {/* 実行確認ダイアログ */}
+            <RunConfirmDialog
+                open={confirmDialogOpen}
+                onClose={() => setConfirmDialogOpen(false)}
+                onConfirm={handleConfirmRun}
+                workflow={workflow}
+                latestCode={latestCode}
+                running={running}
+            />
         </Flex>
     );
 }

@@ -56,9 +56,7 @@ export function PluginsPanel() {
       align="stretch"
       gap={2}
       p={{ base: 2, md: 3 }}
-      borderWidth="1px"
       bg="bg"
-      rounded="md"
       h="full"
       minH={0}
       display="grid"
@@ -161,7 +159,13 @@ function PluginItem({
           v{plugin.packageVersion}
         </Text>
         {plugin.description && (
-          <Text fontSize="xs" color="fg.subtle" truncate>
+          <Text
+            fontSize="xs"
+            color="fg.subtle"
+            truncate
+            w="full"
+            minW={0}
+          >
             {plugin.description}
           </Text>
         )}

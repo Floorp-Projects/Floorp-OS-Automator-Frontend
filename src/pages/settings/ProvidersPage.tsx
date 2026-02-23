@@ -4,7 +4,6 @@ import {
     Button,
     Card,
     Flex,
-    Heading,
     HStack,
     IconButton,
     Input,
@@ -46,6 +45,12 @@ type ProviderFormData = {
     apiEndpoint: string;
 };
 
+type ProviderEditFormData = {
+    displayName: string;
+    apiKey?: string;
+    apiEndpoint: string;
+};
+
 export function ProvidersPage() {
     const { t } = useI18n();
     const [providers, setProviders] = React.useState<Provider[]>([]);
@@ -53,11 +58,19 @@ export function ProvidersPage() {
     const [editingId, setEditingId] = React.useState<string | null>(null);
     const [isCreating, setIsCreating] = React.useState(false);
 
-    // バリデーションスキーマ
+    // バリデーションスキーマ（新規作成用）
     const providerFormSchema = React.useMemo(() =>
         z.object({
             displayName: z.string().min(1, t("providers.displayNameRequired")),
             apiKey: z.string().min(1, t("providers.apiKeyRequired")),
+            apiEndpoint: z.string().url(t("providers.apiEndpointInvalid")),
+        }), [t]);
+
+    // バリデーションスキーマ（編集用 - APIキーはオプション）
+    const providerEditSchema = React.useMemo(() =>
+        z.object({
+            displayName: z.string().min(1, t("providers.displayNameRequired")),
+            apiKey: z.string().optional(),
             apiEndpoint: z.string().url(t("providers.apiEndpointInvalid")),
         }), [t]);
 
@@ -76,8 +89,8 @@ export function ProvidersPage() {
         handleSubmit: handleSubmitEdit,
         reset: resetEdit,
         formState: { isSubmitting: isSubmittingEdit },
-    } = useForm<ProviderFormData>({
-        resolver: zodResolver(providerFormSchema),
+    } = useForm<ProviderEditFormData>({
+        resolver: zodResolver(providerEditSchema),
     });
 
     // プロバイダ一覧の取得
@@ -137,15 +150,20 @@ export function ProvidersPage() {
     // プロバイダの更新
     const onUpdateProvider = async (
         providerId: string,
-        data: ProviderFormData,
+        data: ProviderEditFormData,
     ) => {
         try {
-            const provider = create(ProviderSchema, {
+            // APIキーが空の場合は含めない（変更なし）
+            const providerData: Record<string, string> = {
                 name: providerId,
                 displayName: data.displayName,
-                apiKey: data.apiKey,
                 apiEndpoint: data.apiEndpoint,
-            });
+            };
+            if (data.apiKey && data.apiKey.trim() !== "") {
+                providerData.apiKey = data.apiKey;
+            }
+
+            const provider = create(ProviderSchema, providerData);
 
             const request = create(UpdateProviderRequestSchema, {
                 provider,
@@ -156,7 +174,7 @@ export function ProvidersPage() {
                 title: t("providers.updateSuccess"),
                 type: "success",
             });
-            reset();
+            resetEdit();
             setEditingId(null);
             fetchProviders();
         } catch (error) {
@@ -216,32 +234,32 @@ export function ProvidersPage() {
     };
 
     return (
-        <Box p={6}>
-            <VStack align="stretch" gap={6}>
-                <Flex justify="space-between" align="center">
-                    <Heading size="xl">{t("providers.title")}</Heading>
-                    {!isCreating && !loading && (
+        <Box p={4}>
+            <VStack align="stretch" gap={4}>
+                {!isCreating && !loading && (
+                    <Flex justify="flex-end">
                         <Button
                             colorPalette="floorp"
+                            size="sm"
                             onClick={startCreate}
                         >
                             <LuPlus />
                             {t("providers.new")}
                         </Button>
-                    )}
-                </Flex>
+                    </Flex>
+                )}
 
                 {/* 作成フォーム */}
                 {isCreating && (
-                    <Card.Root>
-                        <Card.Header>
+                    <Card.Root borderRadius="xl">
+                        <Card.Header py={3} px={4}>
                             <Flex justify="space-between" align="center">
-                                <Heading size="md">
+                                <Text fontWeight="semibold" fontSize="sm">
                                     {t("providers.createNew")}
-                                </Heading>
+                                </Text>
                                 <IconButton
                                     aria-label={t("providers.cancel")}
-                                    size="sm"
+                                    size="xs"
                                     variant="ghost"
                                     onClick={() => {
                                         setIsCreating(false);
@@ -252,7 +270,7 @@ export function ProvidersPage() {
                                 </IconButton>
                             </Flex>
                         </Card.Header>
-                        <Card.Body>
+                        <Card.Body pt={0}>
                             <form onSubmit={handleSubmit(onCreateProvider)}>
                                 <Stack gap={4}>
                                     <Field
@@ -307,9 +325,11 @@ export function ProvidersPage() {
                 )}
 
                 {/* プロバイダ一覧 */}
-                <Card.Root>
-                    <Card.Header>
-                        <Heading size="md">{t("providers.list")}</Heading>
+                <Card.Root borderRadius="xl">
+                    <Card.Header py={3} px={4}>
+                        <Text fontWeight="semibold" fontSize="sm">
+                            {t("providers.list")}
+                        </Text>
                     </Card.Header>
                     <Card.Body p={0}>
                         {loading
@@ -330,19 +350,32 @@ export function ProvidersPage() {
                                 />
                             )
                             : (
-                                <Table.Root>
+                                <Table.Root size="sm" variant="line">
                                     <Table.Header>
-                                        <Table.Row>
-                                            <Table.ColumnHeader>
+                                        <Table.Row bg="bg.subtle">
+                                            <Table.ColumnHeader
+                                                fontSize="xs"
+                                                color="fg.muted"
+                                            >
                                                 {t("providers.displayName")}
                                             </Table.ColumnHeader>
-                                            <Table.ColumnHeader>
+                                            <Table.ColumnHeader
+                                                fontSize="xs"
+                                                color="fg.muted"
+                                            >
                                                 {t("providers.apiEndpoint")}
                                             </Table.ColumnHeader>
-                                            <Table.ColumnHeader>
+                                            <Table.ColumnHeader
+                                                fontSize="xs"
+                                                color="fg.muted"
+                                            >
                                                 {t("providers.resourceName")}
                                             </Table.ColumnHeader>
-                                            <Table.ColumnHeader textAlign="right">
+                                            <Table.ColumnHeader
+                                                fontSize="xs"
+                                                color="fg.muted"
+                                                textAlign="right"
+                                            >
                                                 {t("providers.operations")}
                                             </Table.ColumnHeader>
                                         </Table.Row>

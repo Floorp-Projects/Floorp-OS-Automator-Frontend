@@ -62,7 +62,7 @@ export const workflowHandler: ServiceImpl<typeof WorkflowService> = {
     yield create(GenerateWorkflowResponseSchema, {
       workflowDefinition: create(WorkflowSchema, {
         id: `workflow-${Date.now()}`,
-        displayName: `Generated: ${request.prompt.substring(0, 30)}...`,
+        displayName: `${request.prompt.substring(0, 30)}...`,
         description: request.prompt,
         workflowLanguage: WFLang.TYPESCRIPT,
         workflowCode: [],
@@ -118,7 +118,7 @@ workflow();`;
     yield create(GenerateWorkflowResponseSchema, {
       workflowDefinition: create(WorkflowSchema, {
         id: `workflow-${Date.now()}`,
-        displayName: `Generated: ${request.prompt.substring(0, 30)}...`,
+        displayName: `${request.prompt.substring(0, 30)}...`,
         description: request.prompt,
         workflowLanguage: WFLang.TYPESCRIPT,
         workflowCode: [

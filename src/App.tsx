@@ -7,24 +7,31 @@ import {
   WorkflowRunPage,
   WorkflowsPage,
 } from "@/pages/workflows";
-import { PluginsPage } from "@/pages/plugins";
+import { PluginDetailPage, PluginsPage } from "@/pages/plugins";
+import { InstallPluginPage } from "@/pages/install-plugin";
 import { SettingsPage } from "@/pages/settings";
+import { useI18n } from "@/hooks/useI18n";
 
 function App() {
+  const { t } = useI18n();
   return (
     <AppShell>
       <Routes>
         <Route path="/" element={<Navigate to="/home" replace />} />
         <Route path="/home" element={<HomePage />} />
+        {/* /agent は /home に統合されたためリダイレクト */}
+        <Route path="/agent" element={<Navigate to="/home" replace />} />
         <Route path="/generate" element={<GeneratePage />} />
         <Route path="/workflows" element={<WorkflowsPage />} />
         <Route path="/workflows/:id" element={<WorkflowRunPage />} />
         <Route path="/workflows-parser-test" element={<WorkflowParserTest />} />
         <Route path="/settings" element={<SettingsPage />} />
-        <Route path="/fix" element={<PageBox title="Fix" />} />
-        <Route path="/run" element={<PageBox title="Run" />} />
+        <Route path="/fix" element={<PageBox title={t("pages.fix")} />} />
+        <Route path="/run" element={<PageBox title={t("pages.run")} />} />
         <Route path="/plugins" element={<PluginsPage />} />
-        <Route path="/about" element={<PageBox title="About" />} />
+        <Route path="/plugins/*" element={<PluginDetailPage />} />
+        <Route path="/install-plugin" element={<InstallPluginPage />} />
+        <Route path="/about" element={<PageBox title={t("pages.about")} />} />
       </Routes>
     </AppShell>
   );
@@ -32,10 +39,11 @@ function App() {
 
 import { Box, Text } from "@chakra-ui/react";
 function PageBox({ title }: { title: string }) {
+  const { t } = useI18n();
   return (
     <Box borderWidth="1px" rounded="md" p={4}>
       <Text fontWeight="medium">{title}</Text>
-      <Text color="fg.muted">Mock content for {title} page.</Text>
+      <Text color="fg.muted">{t("pages.mockContent", { title })}</Text>
     </Box>
   );
 }

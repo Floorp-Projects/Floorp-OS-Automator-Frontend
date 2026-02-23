@@ -11,6 +11,7 @@ export { ActionNode } from "./ActionNode";
 export { NodeContainer } from "./NodeContainer";
 export { WorkflowProgressDots } from "./WorkflowProgressDots";
 export { WorkflowFunctionList } from "./WorkflowFunctionList";
+export { hasHighRiskFunctions } from "./workflow-utils";
 
 // ユーティリティ
 export {

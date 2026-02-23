@@ -6,11 +6,11 @@ import tsconfigPaths from "vite-tsconfig-paths";
 export default defineConfig({
   plugins: [react(), tsconfigPaths()],
   server: {
-    port: 8999,
+    port: 8081,
   },
   define: {
     "process.env.NODE_ENV": JSON.stringify(
-      process.env.NODE_ENV || "development",
+      process.env.NODE_ENV || "development"
     ),
   },
 });

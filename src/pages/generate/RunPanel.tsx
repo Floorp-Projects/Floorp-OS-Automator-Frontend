@@ -40,7 +40,6 @@ export function RunPanel(
       align="stretch"
       gap={1}
       p={{ base: 1.5, md: 2 }}
-      borderWidth="1px"
       bg="bg"
       rounded="md"
       h="full"

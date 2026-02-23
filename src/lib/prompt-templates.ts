@@ -7,6 +7,207 @@ export interface PromptTemplate {
   tags: string[];
 }
 
+type TranslationFunction = (
+  key: string,
+  options?: Record<string, unknown>,
+) => string;
+
+// i18n対応のテンプレート取得関数
+export function getPromptTemplates(t: TranslationFunction): PromptTemplate[] {
+  return [
+    // 自動化カテゴリ
+    {
+      id: "report-download-email",
+      title: t("promptTemplates.reportDownloadEmail.title"),
+      description: t("promptTemplates.reportDownloadEmail.description"),
+      prompt: t("promptTemplates.reportDownloadEmail.prompt"),
+      category: "automation",
+      tags: [
+        t("promptTemplates.tags.email"),
+        t("promptTemplates.tags.report"),
+        t("promptTemplates.tags.automation"),
+      ],
+    },
+    {
+      id: "file-backup",
+      title: t("promptTemplates.fileBackup.title"),
+      description: t("promptTemplates.fileBackup.description"),
+      prompt: t("promptTemplates.fileBackup.prompt"),
+      category: "automation",
+      tags: [
+        t("promptTemplates.tags.backup"),
+        t("promptTemplates.tags.fileManagement"),
+      ],
+    },
+    {
+      id: "schedule-meeting",
+      title: t("promptTemplates.scheduleMeeting.title"),
+      description: t("promptTemplates.scheduleMeeting.description"),
+      prompt: t("promptTemplates.scheduleMeeting.prompt"),
+      category: "automation",
+      tags: [
+        t("promptTemplates.tags.calendar"),
+        t("promptTemplates.tags.meeting"),
+        t("promptTemplates.tags.notification"),
+      ],
+    },
+
+    // データ処理カテゴリ
+    {
+      id: "csv-analysis",
+      title: t("promptTemplates.csvAnalysis.title"),
+      description: t("promptTemplates.csvAnalysis.description"),
+      prompt: t("promptTemplates.csvAnalysis.prompt"),
+      category: "data",
+      tags: [
+        t("promptTemplates.tags.csv"),
+        t("promptTemplates.tags.dataAnalysis"),
+        t("promptTemplates.tags.statistics"),
+      ],
+    },
+    {
+      id: "json-transform",
+      title: t("promptTemplates.jsonTransform.title"),
+      description: t("promptTemplates.jsonTransform.description"),
+      prompt: t("promptTemplates.jsonTransform.prompt"),
+      category: "data",
+      tags: [
+        t("promptTemplates.tags.json"),
+        t("promptTemplates.tags.dataTransform"),
+        t("promptTemplates.tags.api"),
+      ],
+    },
+    {
+      id: "data-merge",
+      title: t("promptTemplates.dataMerge.title"),
+      description: t("promptTemplates.dataMerge.description"),
+      prompt: t("promptTemplates.dataMerge.prompt"),
+      category: "data",
+      tags: [
+        t("promptTemplates.tags.dataIntegration"),
+        t("promptTemplates.tags.csv"),
+        t("promptTemplates.tags.merge"),
+      ],
+    },
+
+    // コミュニケーションカテゴリ
+    {
+      id: "daily-report",
+      title: t("promptTemplates.dailyReport.title"),
+      description: t("promptTemplates.dailyReport.description"),
+      prompt: t("promptTemplates.dailyReport.prompt"),
+      category: "communication",
+      tags: [
+        t("promptTemplates.tags.report"),
+        t("promptTemplates.tags.email"),
+        t("promptTemplates.tags.dailyWork"),
+      ],
+    },
+    {
+      id: "notification-summary",
+      title: t("promptTemplates.notificationSummary.title"),
+      description: t("promptTemplates.notificationSummary.description"),
+      prompt: t("promptTemplates.notificationSummary.prompt"),
+      category: "communication",
+      tags: [
+        t("promptTemplates.tags.notification"),
+        t("promptTemplates.tags.summary"),
+        t("promptTemplates.tags.priority"),
+      ],
+    },
+    {
+      id: "slack-update",
+      title: t("promptTemplates.slackUpdate.title"),
+      description: t("promptTemplates.slackUpdate.description"),
+      prompt: t("promptTemplates.slackUpdate.prompt"),
+      category: "communication",
+      tags: [
+        t("promptTemplates.tags.slack"),
+        t("promptTemplates.tags.status"),
+        t("promptTemplates.tags.automation"),
+      ],
+    },
+
+    // 開発カテゴリ
+    {
+      id: "code-review",
+      title: t("promptTemplates.codeReview.title"),
+      description: t("promptTemplates.codeReview.description"),
+      prompt: t("promptTemplates.codeReview.prompt"),
+      category: "development",
+      tags: [
+        t("promptTemplates.tags.git"),
+        t("promptTemplates.tags.codeReview"),
+        t("promptTemplates.tags.development"),
+      ],
+    },
+    {
+      id: "test-run",
+      title: t("promptTemplates.testRun.title"),
+      description: t("promptTemplates.testRun.description"),
+      prompt: t("promptTemplates.testRun.prompt"),
+      category: "development",
+      tags: [
+        t("promptTemplates.tags.test"),
+        t("promptTemplates.tags.cicd"),
+        t("promptTemplates.tags.notification"),
+      ],
+    },
+    {
+      id: "dependency-update",
+      title: t("promptTemplates.dependencyUpdate.title"),
+      description: t("promptTemplates.dependencyUpdate.description"),
+      prompt: t("promptTemplates.dependencyUpdate.prompt"),
+      category: "development",
+      tags: [
+        t("promptTemplates.tags.dependency"),
+        t("promptTemplates.tags.security"),
+        t("promptTemplates.tags.update"),
+      ],
+    },
+
+    // その他
+    {
+      id: "web-scraping",
+      title: t("promptTemplates.webScraping.title"),
+      description: t("promptTemplates.webScraping.description"),
+      prompt: t("promptTemplates.webScraping.prompt"),
+      category: "other",
+      tags: [
+        t("promptTemplates.tags.scraping"),
+        t("promptTemplates.tags.web"),
+        t("promptTemplates.tags.dataCollection"),
+      ],
+    },
+    {
+      id: "image-resize",
+      title: t("promptTemplates.imageResize.title"),
+      description: t("promptTemplates.imageResize.description"),
+      prompt: t("promptTemplates.imageResize.prompt"),
+      category: "other",
+      tags: [
+        t("promptTemplates.tags.imageProcessing"),
+        t("promptTemplates.tags.resize"),
+        t("promptTemplates.tags.batchProcessing"),
+      ],
+    },
+    {
+      id: "system-health-check",
+      title: t("promptTemplates.systemHealthCheck.title"),
+      description: t("promptTemplates.systemHealthCheck.description"),
+      prompt: t("promptTemplates.systemHealthCheck.prompt"),
+      category: "other",
+      tags: [
+        t("promptTemplates.tags.monitoring"),
+        t("promptTemplates.tags.system"),
+        t("promptTemplates.tags.alert"),
+      ],
+    },
+  ];
+}
+
+// レガシーサポート（静的エクスポート）
+// 注意: これは非推奨です。getPromptTemplates(t)を使用してください。
 export const PROMPT_TEMPLATES: PromptTemplate[] = [
   // 自動化カテゴリ
   {
@@ -154,19 +355,39 @@ export const PROMPT_TEMPLATES: PromptTemplate[] = [
   },
 ];
 
-// カテゴリ別にテンプレートを取得
+// i18n対応のカテゴリ別テンプレート取得
+export function getTemplatesByCategoryI18n(
+  t: TranslationFunction,
+  category: PromptTemplate["category"],
+) {
+  return getPromptTemplates(t).filter((tmpl) => tmpl.category === category);
+}
+
+// i18n対応のキーワード検索
+export function searchTemplatesI18n(t: TranslationFunction, keyword: string) {
+  const lowerKeyword = keyword.toLowerCase();
+  return getPromptTemplates(t).filter(
+    (tmpl) =>
+      tmpl.title.toLowerCase().includes(lowerKeyword) ||
+      tmpl.description.toLowerCase().includes(lowerKeyword) ||
+      tmpl.prompt.toLowerCase().includes(lowerKeyword) ||
+      tmpl.tags.some((tag) => tag.toLowerCase().includes(lowerKeyword)),
+  );
+}
+
+// カテゴリ別にテンプレートを取得（レガシー）
 export function getTemplatesByCategory(category: PromptTemplate["category"]) {
   return PROMPT_TEMPLATES.filter((t) => t.category === category);
 }
 
-// タグで検索
+// タグで検索（レガシー）
 export function searchTemplatesByTag(tag: string) {
   return PROMPT_TEMPLATES.filter((t) =>
-    t.tags.some((t) => t.toLowerCase().includes(tag.toLowerCase()))
+    t.tags.some((t) => t.toLowerCase().includes(tag.toLowerCase())),
   );
 }
 
-// キーワード検索
+// キーワード検索（レガシー）
 export function searchTemplates(keyword: string) {
   const lowerKeyword = keyword.toLowerCase();
   return PROMPT_TEMPLATES.filter(
@@ -174,14 +395,27 @@ export function searchTemplates(keyword: string) {
       t.title.toLowerCase().includes(lowerKeyword) ||
       t.description.toLowerCase().includes(lowerKeyword) ||
       t.prompt.toLowerCase().includes(lowerKeyword) ||
-      t.tags.some((tag) => tag.toLowerCase().includes(lowerKeyword))
+      t.tags.some((tag) => tag.toLowerCase().includes(lowerKeyword)),
   );
 }
 
-// カテゴリラベルの取得
-export function getCategoryLabel(
-  category: PromptTemplate["category"]
+// i18n対応のカテゴリラベルの取得
+export function getCategoryLabelI18n(
+  t: TranslationFunction,
+  category: PromptTemplate["category"],
 ): string {
+  const labelKeys: Record<PromptTemplate["category"], string> = {
+    automation: "templates.category.automation",
+    data: "templates.category.data",
+    communication: "templates.category.communication",
+    development: "templates.category.development",
+    other: "templates.category.other",
+  };
+  return t(labelKeys[category]);
+}
+
+// カテゴリラベルの取得（レガシー）
+export function getCategoryLabel(category: PromptTemplate["category"]): string {
   const labels: Record<PromptTemplate["category"], string> = {
     automation: "自動化",
     data: "データ処理",
@@ -193,9 +427,7 @@ export function getCategoryLabel(
 }
 
 // カテゴリカラーの取得
-export function getCategoryColor(
-  category: PromptTemplate["category"]
-): string {
+export function getCategoryColor(category: PromptTemplate["category"]): string {
   const colors: Record<PromptTemplate["category"], string> = {
     automation: "blue",
     data: "green",
@@ -205,5 +437,3 @@ export function getCategoryColor(
   };
   return colors[category];
 }
-
-

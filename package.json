@@ -7,7 +7,7 @@
     "dev": "vite",
     "dev:mock": "concurrently -n \"mock,vite\" -c \"cyan,magenta\" \"cross-env PORT=50099 pnpm mock-server\" \"vite --mode mock --port 5199\"",
     "dev:prod": "cross-env VITE_GRPC_BASE_URL=http://localhost:50051 vite",
-    "dev:docker": "cross-env VITE_GRPC_BASE_URL=http://host.docker.internal:50051 vite --host 0.0.0.0 --port 8999",
+    "dev:docker": "cross-env VITE_GRPC_BASE_URL=http://host.docker.internal:50051 vite --host 0.0.0.0 --port 8081",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",

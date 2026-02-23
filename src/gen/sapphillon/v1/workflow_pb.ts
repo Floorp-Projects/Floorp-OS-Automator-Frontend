@@ -34,7 +34,7 @@ export const file_sapphillon_v1_workflow: GenFile = /*@__PURE__*/
 
 /**
  * Represents a specific revision of workflow source code and metadata.
- * 
+ *
  * Fields:
  * - id: Stable identifier of the workflow code entity.
  * - code_revision: Monotonic integer representing the code version within the workflow.
@@ -43,7 +43,7 @@ export const file_sapphillon_v1_workflow: GenFile = /*@__PURE__*/
  * - created_at: Timestamp when this code revision was created.
  * - result: Optional preview or last run result associated with this code revision.
  * - required_permissions: Permissions required to run this code (declared by the author).
- * 
+ *
  * Notes:
  * - code_revision should increase by 1 for each new revision of the same workflow.
  * - required_permissions should be kept minimal and specific to support principle of least privilege.
@@ -128,7 +128,7 @@ export const WorkflowCodeSchema: GenMessage<WorkflowCode> = /*@__PURE__*/
 
 /**
  * Captures the result of running a workflow at a specific code revision.
- * 
+ *
  * Fields:
  * - id: Identifier of the result record.
  * - display_name: Human-friendly name for UIs (e.g., "Nightly Run 2025-08-05").
@@ -139,7 +139,7 @@ export const WorkflowCodeSchema: GenMessage<WorkflowCode> = /*@__PURE__*/
  * - exit_code: Process exit code when applicable (0 for success).
  * - workflow_code_revision: The code revision that produced this result.
  * - workflow_result_revision: Monotonic revision of this result record itself.
- * 
+ *
  * TODO: Add structured data types for results (logs, metrics, artifacts).
  *
  * @generated from message sapphillon.v1.WorkflowResult
@@ -212,7 +212,7 @@ export const WorkflowResultSchema: GenMessage<WorkflowResult> = /*@__PURE__*/
 
 /**
  * Represents a workflow entity including its code history and execution results.
- * 
+ *
  * Fields:
  * - id: Stable identifier for the workflow.
  * - display_name: Human-readable name.
@@ -222,7 +222,7 @@ export const WorkflowResultSchema: GenMessage<WorkflowResult> = /*@__PURE__*/
  * - created_at: Time the workflow was created.
  * - updated_at: Time the workflow was last modified.
  * - workflow_results: Historical execution results for this workflow.
- * 
+ *
  * Notes:
  * - Keep workflow_code revisions append-only to preserve history.
  *

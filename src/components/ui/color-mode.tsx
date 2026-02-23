@@ -9,6 +9,7 @@ import {
   ColorModeCtx,
   useColorMode,
 } from "./color-mode-context";
+import { useI18n } from "@/hooks/useI18n";
 
 function applyRootClass(mode: ColorMode) {
   if (typeof document === "undefined") return;
@@ -76,13 +77,15 @@ export const ColorModeButton = React.forwardRef<
   ColorModeButtonProps
 >(function ColorModeButton(props, ref) {
   const { toggleColorMode } = useColorMode();
+  const { t } = useI18n();
   return (
     <ClientOnly fallback={<Skeleton boxSize="9" />}>
       <IconButton
         onClick={toggleColorMode}
         variant="ghost"
-        aria-label="Toggle color mode"
+        aria-label={t("colorMode.toggle")}
         size="sm"
+        color="fg"
         ref={ref}
         {...props}
         css={{

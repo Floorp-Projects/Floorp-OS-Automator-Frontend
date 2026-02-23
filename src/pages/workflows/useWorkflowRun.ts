@@ -21,17 +21,7 @@ import {
   type WorkflowProgressStep,
 } from "@/lib/workflow-progress";
 
-/**
- * ワークフロー実行中のイベント
- */
-export type RunEvent = {
-  /** イベント発生時刻（Unixタイムスタンプ） */
-  t: number;
-  /** イベント種別 */
-  kind: "message" | "error" | "done";
-  /** イベントのペイロード（種別により異なる） */
-  payload?: unknown;
-};
+import type { RunEvent } from "@/types/workflow";
 
 /**
  * useWorkflowRunフックの戻り値
@@ -47,7 +37,7 @@ export interface UseWorkflowRunReturn {
   runById: (
     workflowId: string,
     workflowCodeId?: string,
-    workflow?: Workflow
+    workflow?: Workflow,
   ) => Promise<void>;
   /** ワークフローを実行（定義指定） */
   runByDefinition: (workflow: Workflow) => Promise<void>;
@@ -73,27 +63,44 @@ function getPluginFunctionIds(workflow?: Workflow): string[] {
  *
  * @returns ワークフロー実行のための状態と関数
  */
-export function useWorkflowRun(): UseWorkflowRunReturn {
-  const [running, setRunning] = React.useState(false);
-  const [events, setEvents] = React.useState<RunEvent[]>([]);
-  const [runRes, setRunRes] = React.useState<RunWorkflowResponse | null>(null);
+import { useWorkflowRunState } from "@/contexts/WorkflowRunContext";
 
-  const append = React.useCallback((e: Omit<RunEvent, "t">) => {
-    setEvents((prev) => [...prev, { t: Date.now(), ...e }]);
-  }, []);
+/**
+ * ワークフロー実行フック
+ *
+ * 既存のワークフローを実行するための状態管理とロジックを提供します。
+ *
+ * @returns ワークフロー実行のための状態と関数
+ */
+export function useWorkflowRun(): UseWorkflowRunReturn {
+  const {
+    running,
+    setRunning,
+    events,
+    appendEvent,
+    clearEvents,
+    runRes,
+    setRunRes,
+    setActiveWorkflowId,
+  } = useWorkflowRunState();
+
+  // const append = React.useCallback((e: Omit<RunEvent, "t">) => {
+  //   setEvents((prev) => [...prev, { t: Date.now(), ...e }]);
+  // }, []);
 
   const runById = React.useCallback(
     async (
       workflowId: string,
       workflowCodeId?: string,
-      workflow?: Workflow
+      workflow?: Workflow,
     ) => {
       if (running) {
         return;
       }
-      setEvents([]);
+      clearEvents();
       setRunRes(null);
       setRunning(true);
+      setActiveWorkflowId(workflowId);
 
       // 進捗ウィンドウ用のステップを生成
       const pluginFunctionIds = getPluginFunctionIds(workflow);
@@ -111,16 +118,23 @@ export function useWorkflowRun(): UseWorkflowRunReturn {
       }
 
       try {
-        append({ kind: "message", payload: { stage: "run", status: "start" } });
-        const res = await clients.workflow.runWorkflow({
-          byId: create(WorkflowSourceByIdSchema, {
-            workflowId,
-            workflowCodeId: workflowCodeId || "",
-          }) as WorkflowSourceById,
+        appendEvent({
+          kind: "message",
+          payload: { stage: "run", status: "start" },
         });
+        const res = await clients.workflow.runWorkflow(
+          {
+            byId: create(WorkflowSourceByIdSchema, {
+              workflowId,
+              workflowCodeId: workflowCodeId || "",
+            }) as WorkflowSourceById,
+          },
+          // OCR等の重い処理でバックエンドが長時間ブロックするため、タイムアウトを30分に延長
+          { timeoutMs: 30 * 60 * 1000 },
+        );
         setRunRes(res);
-        append({ kind: "message", payload: res });
-        append({ kind: "done", payload: { stage: "run" } });
+        appendEvent({ kind: "message", payload: res });
+        appendEvent({ kind: "done", payload: { stage: "run" } });
 
         // 進捗完了を通知
         if (steps.length > 0) {
@@ -132,7 +146,7 @@ export function useWorkflowRun(): UseWorkflowRunReturn {
           notifyWorkflowComplete(workflowId, steps);
         }
       } catch (e) {
-        append({ kind: "error", payload: e });
+        appendEvent({ kind: "error", payload: e });
 
         // 進捗エラーを通知
         if (steps.length > 0) {
@@ -143,14 +157,22 @@ export function useWorkflowRun(): UseWorkflowRunReturn {
           notifyWorkflowError(
             workflowId,
             steps,
-            currentIndex >= 0 ? currentIndex : 0
+            currentIndex >= 0 ? currentIndex : 0,
           );
         }
       } finally {
         setRunning(false);
+        setActiveWorkflowId(null);
       }
     },
-    [append, running]
+    [
+      appendEvent,
+      running,
+      setActiveWorkflowId,
+      setRunning,
+      setRunRes,
+      clearEvents,
+    ],
   );
 
   /**
@@ -161,7 +183,8 @@ export function useWorkflowRun(): UseWorkflowRunReturn {
   const runByDefinition = React.useCallback(
     async (workflow: Workflow) => {
       if (running) return;
-      setEvents([]);
+      if (running) return;
+      clearEvents();
       setRunRes(null);
       setRunning(true);
 
@@ -171,7 +194,7 @@ export function useWorkflowRun(): UseWorkflowRunReturn {
       const workflowName = workflow.displayName || "Workflow";
 
       try {
-        append({
+        appendEvent({
           kind: "message",
           payload: { stage: "save", status: "start" },
         });
@@ -186,18 +209,20 @@ export function useWorkflowRun(): UseWorkflowRunReturn {
         }
 
         const workflowId = saveResponse.workflow.id;
+        setActiveWorkflowId(workflowId); // Set active ID
+
         const workflowCodeId =
           saveResponse.workflow.workflowCode?.[0]?.id || "";
 
         // 保存後に最新のステップを再取得
         const savedPluginFunctionIds = getPluginFunctionIds(
-          saveResponse.workflow
+          saveResponse.workflow,
         );
         if (savedPluginFunctionIds.length > 0) {
           steps = parseWorkflowSteps(savedPluginFunctionIds);
         }
 
-        append({
+        appendEvent({
           kind: "message",
           payload: { stage: "save", status: "done", workflowId },
         });
@@ -213,18 +238,25 @@ export function useWorkflowRun(): UseWorkflowRunReturn {
         }
 
         // 保存されたワークフローをIDで実行
-        append({ kind: "message", payload: { stage: "run", status: "start" } });
-
-        const res = await clients.workflow.runWorkflow({
-          byId: create(WorkflowSourceByIdSchema, {
-            workflowId,
-            workflowCodeId,
-          }) as WorkflowSourceById,
+        appendEvent({
+          kind: "message",
+          payload: { stage: "run", status: "start" },
         });
 
+        const res = await clients.workflow.runWorkflow(
+          {
+            byId: create(WorkflowSourceByIdSchema, {
+              workflowId,
+              workflowCodeId,
+            }) as WorkflowSourceById,
+          },
+          // OCR等の重い処理でバックエンドが長時間ブロックするため、タイムアウトを30分に延長
+          { timeoutMs: 30 * 60 * 1000 },
+        );
+
         setRunRes(res);
-        append({ kind: "message", payload: res });
-        append({ kind: "done", payload: { stage: "run" } });
+        appendEvent({ kind: "message", payload: res });
+        appendEvent({ kind: "done", payload: { stage: "run" } });
 
         // 進捗完了を通知
         if (steps.length > 0) {
@@ -236,7 +268,7 @@ export function useWorkflowRun(): UseWorkflowRunReturn {
           notifyWorkflowComplete(workflowId, steps);
         }
       } catch (e) {
-        append({ kind: "error", payload: e });
+        appendEvent({ kind: "error", payload: e });
 
         // 進捗エラーを通知
         if (steps.length > 0) {
@@ -247,19 +279,23 @@ export function useWorkflowRun(): UseWorkflowRunReturn {
           notifyWorkflowError(
             workflow.id,
             steps,
-            currentIndex >= 0 ? currentIndex : 0
+            currentIndex >= 0 ? currentIndex : 0,
           );
         }
       } finally {
         setRunning(false);
+        setActiveWorkflowId(null);
       }
     },
-    [append, running]
+    [
+      appendEvent,
+      running,
+      setActiveWorkflowId,
+      setRunning,
+      setRunRes,
+      clearEvents,
+    ],
   );
-
-  const clearEvents = React.useCallback(() => {
-    setEvents([]);
-  }, []);
 
   return {
     running,

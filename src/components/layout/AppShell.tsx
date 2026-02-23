@@ -8,7 +8,7 @@
  */
 
 import React from "react";
-import { Box, Drawer, Flex } from "@chakra-ui/react";
+import { Box, Drawer, Flex, Image } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { TopNav } from "@/components/nav/TopNav";
 import { StatusBar } from "@/components/status/StatusBar";
@@ -17,7 +17,8 @@ import { SideNav } from "@/components/nav/SideNav";
 import { KeyboardShortcutsDialog } from "@/components/ui/KeyboardShortcutsDialog";
 import { MemoryRouter, useInRouterContext } from "react-router-dom";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcut";
-import { GLOBAL_SHORTCUTS, createShortcut } from "@/lib/keyboard-shortcuts";
+import { createShortcut, GLOBAL_SHORTCUTS } from "@/lib/keyboard-shortcuts";
+import { useColorMode } from "@/components/ui/use-color-mode";
 
 /**
  * AppShellコンポーネントのProps
@@ -65,6 +66,18 @@ export function AppShell({ children }: AppShellProps) {
   const [shortcutsDialogOpen, setShortcutsDialogOpen] = React.useState(false);
   const inRouter = useInRouterContext();
   const navigate = useNavigate();
+  const { colorMode } = useColorMode();
+
+  // ロゴURL
+  const lightLogoUrl = new URL(
+    "../../assets/Floorp_Logo_OS_C_Light.png",
+    import.meta.url,
+  ).toString();
+  const darkLogoUrl = new URL(
+    "../../assets/Floorp_Logo_OS_D_Dark.png",
+    import.meta.url,
+  ).toString();
+  const logoUrl = colorMode === "dark" ? darkLogoUrl : lightLogoUrl;
 
   // グローバルキーボードショートカット
   const shortcuts = React.useMemo(() => {
@@ -116,7 +129,15 @@ export function AppShell({ children }: AppShellProps) {
             <Drawer.Positioner>
               <Drawer.Content>
                 <Drawer.Header borderBottomWidth="1px">
-                  <Drawer.Title>Menu</Drawer.Title>
+                  <Drawer.Title>
+                    <Image
+                      src={logoUrl}
+                      alt="Floorp OS"
+                      height="6"
+                      width="auto"
+                      css={{ objectFit: "contain" }}
+                    />
+                  </Drawer.Title>
                 </Drawer.Header>
                 <Drawer.CloseTrigger />
                 <Drawer.Body
@@ -135,7 +156,7 @@ export function AppShell({ children }: AppShellProps) {
         <Box
           id="main-content"
           flex="1"
-          p={{ base: 2, md: 4 }}
+          p={0}
           minH="0"
           minW="0"
           overflow="hidden"
@@ -156,7 +177,7 @@ export function AppShell({ children }: AppShellProps) {
             <OmniBar isOpen={omniOpen} onClose={() => setOmniOpen(false)} />
           </MemoryRouter>
         )}
-      
+
       {/* キーボードショートカット一覧ダイアログ */}
       <KeyboardShortcutsDialog
         open={shortcutsDialogOpen}

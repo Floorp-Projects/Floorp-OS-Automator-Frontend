@@ -16,10 +16,30 @@ export type AppRoute = {
 
 export const getRoutes = (t: (key: string) => string): AppRoute[] => [
   { path: "/home", key: "home", label: t("nav.home"), icon: LuHouse },
-  { path: "/generate", key: "generate", label: t("nav.generate"), icon: LuSparkles },
-  { path: "/workflows", key: "workflows", label: t("nav.workflows"), icon: LuWrench },
-  { path: "/plugins", key: "plugins", label: t("nav.plugins"), icon: LuPlugZap },
-  { path: "/settings", key: "settings", label: t("nav.settings"), icon: LuSettings },
+  {
+    path: "/generate",
+    key: "generate",
+    label: t("nav.generate"),
+    icon: LuSparkles,
+  },
+  {
+    path: "/workflows",
+    key: "workflows",
+    label: t("nav.workflows"),
+    icon: LuWrench,
+  },
+  {
+    path: "/plugins",
+    key: "plugins",
+    label: t("nav.plugins"),
+    icon: LuPlugZap,
+  },
+  {
+    path: "/settings",
+    key: "settings",
+    label: t("nav.settings"),
+    icon: LuSettings,
+  },
   { path: "/about", key: "about", label: t("nav.about"), icon: LuInfo },
 ];
 

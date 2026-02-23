@@ -28,17 +28,17 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file sapphillon/v1/plugin.proto.
  */
 export const file_sapphillon_v1_plugin: GenFile = /*@__PURE__*/
-  fileDesc("ChpzYXBwaGlsbG9uL3YxL3BsdWdpbi5wcm90bxINc2FwcGhpbGxvbi52MSJEChFGdW5jdGlvblBhcmFtZXRlchIMCgRuYW1lGAEgASgJEgwKBHR5cGUYAiABKAkSEwoLZGVzY3JpcHRpb24YAyABKAkieQoORnVuY3Rpb25EZWZpbmUSNAoKcGFyYW1ldGVycxgBIAMoCzIgLnNhcHBoaWxsb24udjEuRnVuY3Rpb25QYXJhbWV0ZXISMQoHcmV0dXJucxgCIAMoCzIgLnNhcHBoaWxsb24udjEuRnVuY3Rpb25QYXJhbWV0ZXIi2QEKDlBsdWdpbkZ1bmN0aW9uEhMKC2Z1bmN0aW9uX2lkGAEgASgJEhUKDWZ1bmN0aW9uX25hbWUYAiABKAkSEwoLZGVzY3JpcHRpb24YAyABKAkSLgoLcGVybWlzc2lvbnMYBCADKAsyGS5zYXBwaGlsbG9uLnYxLlBlcm1pc3Npb24SNgoPZnVuY3Rpb25fZGVmaW5lGAcgASgLMh0uc2FwcGhpbGxvbi52MS5GdW5jdGlvbkRlZmluZUoECAUQBkoECAYQB1IJYXJndW1lbnRzUgdyZXR1cm5zIpMDCg1QbHVnaW5QYWNrYWdlEhIKCnBhY2thZ2VfaWQYASABKAkSFAoMcGFja2FnZV9uYW1lGAIgASgJEhcKD3BhY2thZ2VfdmVyc2lvbhgDIAEoCRITCgtkZXNjcmlwdGlvbhgEIAEoCRIwCglmdW5jdGlvbnMYBSADKAsyHS5zYXBwaGlsbG9uLnYxLlBsdWdpbkZ1bmN0aW9uEhgKEHBsdWdpbl9zdG9yZV91cmwYBiABKAkSHAoPaW50ZXJuYWxfcGx1Z2luGAcgASgISACIAQESFQoIdmVyaWZpZWQYCCABKAhIAYgBARIXCgpkZXByZWNhdGVkGAkgASgISAKIAQESMAoMaW5zdGFsbGVkX2F0GAogASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIuCgp1cGRhdGVkX2F0GAsgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEISChBfaW50ZXJuYWxfcGx1Z2luQgsKCV92ZXJpZmllZEINCgtfZGVwcmVjYXRlZGIGcHJvdG8z", [file_google_protobuf_timestamp, file_sapphillon_v1_permission]);
+  fileDesc("ChpzYXBwaGlsbG9uL3YxL3BsdWdpbi5wcm90bxINc2FwcGhpbGxvbi52MSJEChFGdW5jdGlvblBhcmFtZXRlchIMCgRuYW1lGAEgASgJEgwKBHR5cGUYAiABKAkSEwoLZGVzY3JpcHRpb24YAyABKAkieQoORnVuY3Rpb25EZWZpbmUSNAoKcGFyYW1ldGVycxgBIAMoCzIgLnNhcHBoaWxsb24udjEuRnVuY3Rpb25QYXJhbWV0ZXISMQoHcmV0dXJucxgCIAMoCzIgLnNhcHBoaWxsb24udjEuRnVuY3Rpb25QYXJhbWV0ZXIi6gEKDlBsdWdpbkZ1bmN0aW9uEhMKC2Z1bmN0aW9uX2lkGAEgASgJEhUKDWZ1bmN0aW9uX25hbWUYAiABKAkSEwoLZGVzY3JpcHRpb24YAyABKAkSLgoLcGVybWlzc2lvbnMYBCADKAsyGS5zYXBwaGlsbG9uLnYxLlBlcm1pc3Npb24SNgoPZnVuY3Rpb25fZGVmaW5lGAcgASgLMh0uc2FwcGhpbGxvbi52MS5GdW5jdGlvbkRlZmluZRIPCgd2ZXJzaW9uGAggASgJSgQIBRAGSgQIBhAHUglhcmd1bWVudHNSB3JldHVybnMiqAMKDVBsdWdpblBhY2thZ2USEgoKcGFja2FnZV9pZBgBIAEoCRIUCgxwYWNrYWdlX25hbWUYAiABKAkSFwoPcGFja2FnZV92ZXJzaW9uGAMgASgJEhMKC2Rlc2NyaXB0aW9uGAQgASgJEjAKCWZ1bmN0aW9ucxgFIAMoCzIdLnNhcHBoaWxsb24udjEuUGx1Z2luRnVuY3Rpb24SGAoQcGx1Z2luX3N0b3JlX3VybBgGIAEoCRIcCg9pbnRlcm5hbF9wbHVnaW4YByABKAhIAIgBARIVCgh2ZXJpZmllZBgIIAEoCEgBiAEBEhcKCmRlcHJlY2F0ZWQYCSABKAhIAogBARIwCgxpbnN0YWxsZWRfYXQYCiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEi4KCnVwZGF0ZWRfYXQYCyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhMKC3Byb3ZpZGVyX2lkGAwgASgJQhIKEF9pbnRlcm5hbF9wbHVnaW5CCwoJX3ZlcmlmaWVkQg0KC19kZXByZWNhdGVkYgZwcm90bzM", [file_google_protobuf_timestamp, file_sapphillon_v1_permission]);
 
 /**
  * Represents a single parameter (argument or return value) of a function.
  * Stores the variable name, type, and description similar to JSDoc @param or @returns.
- * 
+ *
  * Fields:
  * - name: The variable name of the parameter.
  * - type: The type of the parameter (e.g., "string", "number", "object").
  * - description: A short description of what the parameter represents.
- * 
+ *
  * Example:
  *   FunctionParameter {
  *     name: "userId"
@@ -83,11 +83,11 @@ export const FunctionParameterSchema: GenMessage<FunctionParameter> = /*@__PURE_
 /**
  * Represents the function definition including JSDoc-style documentation.
  * Stores the function parameters and return value information.
- * 
+ *
  * Fields:
  * - parameters: The list of function parameters (arguments).
  * - returns: The return value information.
- * 
+ *
  * Example:
  *   FunctionDefine {
  *     parameters: [
@@ -127,14 +127,14 @@ export const FunctionDefineSchema: GenMessage<FunctionDefine> = /*@__PURE__*/
 /**
  * Describes a callable function exposed by a plugin.
  * A function declares its purpose, identity, and required permissions for execution.
- * 
+ *
  * Fields:
  * - function_id: Stable unique identifier used by systems to reference the function.
  * - function_name: Human-friendly name suitable for UIs.
  * - description: Summary of what the function does and typical use cases.
  * - permissions: Permissions required for the caller to execute this function.
  * - function_define: JSDoc-style definition with parameters and return value.
- * 
+ *
  * Example:
  *   PluginFunction {
  *     function_id: "send_notification"
@@ -153,6 +153,10 @@ export type PluginFunction = Message<"sapphillon.v1.PluginFunction"> & {
   /**
    * Stable unique identifier for the function.
    * Behavior: Required. Must be unique within the plugin package.
+   * Format: Plugin-scoped identifier (e.g. "send_notification").
+   *         When referenced from AllowedPermission.plugin_function_id, it MAY be used
+   *         either as this bare identifier or as part of a fully qualified name such
+   *         as "package.send_notification".
    *
    * @generated from field: string function_id = 1;
    */
@@ -188,6 +192,29 @@ export type PluginFunction = Message<"sapphillon.v1.PluginFunction"> & {
    * @generated from field: sapphillon.v1.FunctionDefine function_define = 7;
    */
   functionDefine?: FunctionDefine;
+
+  /**
+   * Version of the function.
+   *
+   * Behavior: Optional. When unset (empty string in proto3), the function is
+   * considered versionless or uses a default/unspecified version. Callers MUST NOT
+   * rely on this field always being populated.
+   *
+   * Format: Semantic versioning "MAJOR.MINOR.PATCH" (e.g., "1.0.0", "2.1.3") is
+   * RECOMMENDED for clarity and consistency. Free-form strings are permitted but
+   * discouraged as they complicate version comparison.
+   *
+   * Uniqueness: The combination of (function_id, version) SHOULD be unique within
+   * a PluginPackage. For example, "send_notification" v1.0.0 is conceptually
+   * distinct from "send_notification" v2.0.0, allowing the plugin to expose both
+   * versions simultaneously if needed.
+   *
+   * Default behavior: When this field is not set, implementations typically treat
+   * the function as the "default" or "latest" version of that function_id.
+   *
+   * @generated from field: string version = 8;
+   */
+  version: string;
 };
 
 /**
@@ -200,7 +227,7 @@ export const PluginFunctionSchema: GenMessage<PluginFunction> = /*@__PURE__*/
 /**
  * Represents a plugin package that can be installed into the platform.
  * A plugin groups one or more functions and includes metadata useful for discovery and governance.
- * 
+ *
  * Fields:
  * - package_id: Stable unique identifier of the plugin package.
  * - package_name: Human-friendly name of the plugin.
@@ -210,19 +237,20 @@ export const PluginFunctionSchema: GenMessage<PluginFunction> = /*@__PURE__*/
  * - plugin_store_url: URL to the plugin page or documentation.
  * - internal_plugin: Indicates whether the plugin is internal-only.
  * - verified: Indicates whether the plugin is verified by the platform.
- * 
+ *
  * - deprecated: Indicates whether the plugin is deprecated and should not be used for new workflows.
  * - installed_at: Time when the plugin was installed.
  * - updated_at: Time when the plugin was last updated.
- * 
+ *
  * Example:
  *   PluginPackage {
- *     package_id: "com.example.notifications"
+ *     package_id: "notifications"
  *     package_name: "Notifications"
  *     package_version: "1.4.0"
  *     description: "Provides functions for sending notifications"
- *     plugin_store_url: "https://plugins.example.com/com.example.notifications"
+ *     plugin_store_url: "https://plugins.example.com/notifications"
  *     verified: true
+ *     provider_id: "com.example"
  *     functions: [{ function_id: "send_notification", ... }]
  *   }
  *
@@ -232,6 +260,7 @@ export type PluginPackage = Message<"sapphillon.v1.PluginPackage"> & {
   /**
    * Stable unique identifier for the plugin package.
    * Behavior: Required; unique across all installed plugins.
+   * Format: Pure package name only (e.g. "sapphillon").
    *
    * @generated from field: string package_id = 1;
    */
@@ -312,6 +341,30 @@ export type PluginPackage = Message<"sapphillon.v1.PluginPackage"> & {
    * @generated from field: google.protobuf.Timestamp updated_at = 11;
    */
   updatedAt?: Timestamp;
+
+  /**
+   * The provider identifier of the plugin package.
+   *
+   * Behavior: Optional. When unset (empty string in proto3), the provider is
+   * considered unknown or uses a default platform provider. Callers MUST NOT
+   * rely on this field always being populated.
+   *
+   * Format: Reverse-domain-style identifier for the publisher or organization
+   * that owns this plugin package (not the package itself).
+   * Examples: "app.sapphillon", "com.example", "org.acme.plugins".
+   *
+   * Relationship to package_id:
+   * - provider_id identifies the provider/publisher.
+   * - package_id identifies a specific plugin package.
+   * - Multiple PluginPackage resources may share the same provider_id.
+   *
+   * Note: This provider_id is conceptually distinct from the AI provider
+   * resource IDs used in sapphillon.ai.v1 (e.g., "providers/{provider_id}").
+   * It should not be confused or intermixed with those identifiers.
+   *
+   * @generated from field: string provider_id = 12;
+   */
+  providerId: string;
 };
 
 /**

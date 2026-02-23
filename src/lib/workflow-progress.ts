@@ -38,11 +38,13 @@ declare global {
  * Floorp の進捗ウィンドウへメッセージを送信
  */
 export function sendProgressMessage(message: WorkflowProgressMessage): void {
-  if (window.OSAutomotor?.sendWorkflowProgress) {
-    window.OSAutomotor.sendWorkflowProgress(message).catch(() => {
-      // Ignore errors silently
-    });
-  }
+  void message; // Prevent unused variable error
+  // Disabled by user request
+  // if (window.OSAutomotor?.sendWorkflowProgress) {
+  //   window.OSAutomotor.sendWorkflowProgress(message).catch(() => {
+  //     // Ignore errors silently
+  //   });
+  // }
 }
 
 /**

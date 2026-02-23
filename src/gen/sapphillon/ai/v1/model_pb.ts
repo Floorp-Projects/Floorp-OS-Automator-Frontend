@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file sapphillon/ai/v1/model.proto.
  */
 export const file_sapphillon_ai_v1_model: GenFile = /*@__PURE__*/
-  fileDesc("ChxzYXBwaGlsbG9uL2FpL3YxL21vZGVsLnByb3RvEhBzYXBwaGlsbG9uLmFpLnYxIn0KBk1vZGVscxIMCgRuYW1lGAEgASgJEhQKDGRpc3BsYXlfbmFtZRgCIAEoCRIYCgtkZXNjcmlwdGlvbhgDIAEoCUgAiAEBEhUKDXByb3ZpZGVyX25hbWUYBSABKAlCDgoMX2Rlc2NyaXB0aW9uSgQIBBAFUghwcm92aWRlcmIGcHJvdG8z");
+  fileDesc("ChxzYXBwaGlsbG9uL2FpL3YxL21vZGVsLnByb3RvEhBzYXBwaGlsbG9uLmFpLnYxIqEBCgZNb2RlbHMSDAoEbmFtZRgBIAEoCRIUCgxkaXNwbGF5X25hbWUYAiABKAkSGAoLZGVzY3JpcHRpb24YAyABKAlIAIgBARIVCg1wcm92aWRlcl9uYW1lGAUgASgJEhUKCHByaW9yaXR5GAYgASgNSAGIAQFCDgoMX2Rlc2NyaXB0aW9uQgsKCV9wcmlvcml0eUoECAQQBVIIcHJvdmlkZXJiBnByb3RvMw");
 
 /**
  * Models represents a configured Large Language Model.
@@ -49,6 +49,20 @@ export type Models = Message<"sapphillon.ai.v1.Models"> & {
    * @generated from field: string provider_name = 5;
    */
   providerName: string;
+
+  /**
+   * The priority of the model.
+   * Higher numbers indicate higher priority.
+   * This value is used to order models when multiple models are eligible for
+   * selection, such as when listing available models or choosing a default
+   * model for a request. Clients may treat 0 as the lowest priority and use
+   * larger values for models that should be preferred. When multiple models
+   * share the same priority, their relative order is not guaranteed and may
+   * be determined by other factors (for example, name or provider).
+   *
+   * @generated from field: optional uint32 priority = 6;
+   */
+  priority?: number;
 };
 
 /**

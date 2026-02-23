@@ -6,6 +6,7 @@
 
 import React from "react";
 import { clients } from "@/lib/grpc-clients";
+import { WorkflowRunContext } from "@/contexts/WorkflowRunContext";
 
 /**
  * gRPC接続のステータス
@@ -74,7 +75,16 @@ export function useVersionPing(intervalMs = 10000): UseVersionPingReturn {
   const [error, setError] = React.useState<unknown>(undefined);
   const [lastUpdated, setLastUpdated] = React.useState<number>(0);
 
+  // ワークフロー実行中はpingを一時停止する（バックエンドがcurrent_threadランタイムのため、
+  // 長時間ブロックされるとpingも失敗し、UIが"disconnected"表示になる）
+  const workflowCtx = React.useContext(WorkflowRunContext);
+  const isWorkflowRunning = workflowCtx?.running ?? false;
+
   const refetch = React.useCallback(async () => {
+    if (isWorkflowRunning) {
+      // ワークフロー実行中はスキップ — 前回のステータスを維持
+      return;
+    }
     try {
       setStatus("connecting");
       setError(undefined);
@@ -86,7 +96,7 @@ export function useVersionPing(intervalMs = 10000): UseVersionPingReturn {
       setError(e);
       setStatus("disconnected");
     }
-  }, []);
+  }, [isWorkflowRunning]);
 
   React.useEffect(() => {
     let cancelled = false;

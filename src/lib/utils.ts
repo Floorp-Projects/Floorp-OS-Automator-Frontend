@@ -55,39 +55,6 @@ export function formatBytes(bytes: number, decimals = 2): string {
 }
 
 /**
- * Format date to relative time string (e.g., "2 hours ago")
- */
-export function formatRelativeTime(date: Date | string | number): string {
-  const now = new Date();
-  const targetDate = new Date(date);
-  const diffInSeconds = Math.floor(
-    (now.getTime() - targetDate.getTime()) / 1000,
-  );
-
-  if (diffInSeconds < 60) {
-    return "just now";
-  }
-
-  const intervals = {
-    year: 31536000,
-    month: 2592000,
-    week: 604800,
-    day: 86400,
-    hour: 3600,
-    minute: 60,
-  };
-
-  for (const [unit, seconds] of Object.entries(intervals)) {
-    const interval = Math.floor(diffInSeconds / seconds);
-    if (interval >= 1) {
-      return `${interval} ${unit}${interval === 1 ? "" : "s"} ago`;
-    }
-  }
-
-  return "just now";
-}
-
-/**
  * Truncate text to specified length with ellipsis
  */
 export function truncate(text: string, length: number): string {
